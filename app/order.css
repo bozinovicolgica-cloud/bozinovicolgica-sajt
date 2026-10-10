@@ -1,0 +1,67 @@
+/* Forma za porudžbinu + email korak u kvizu (isti vizuelni jezik kao kviz) */
+.of-form { margin-top: 28px; display: flex; flex-direction: column; gap: 16px; }
+.of-row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; }
+.of-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.of-label { font-weight: 600; font-size: 15px; line-height: 20px; color: #24211D; }
+.of-label em { font-style: normal; font-weight: 400; color: #7A6D5E; }
+.of-input { width: 100%; height: 52px; padding: 0 18px; border-radius: 16px; border: 1px solid #EDE5D8; background: #FFFFFF; font-family: 'Nunito Sans', sans-serif; font-size: 17px; line-height: 24px; color: #24211D; transition: border-color 160ms ease, box-shadow 160ms ease; -webkit-appearance: none; appearance: none; }
+.of-input::placeholder { color: #A89C8D; }
+.of-input:hover { border-color: #C2D3BE; }
+.of-input:focus { outline: none; border-color: #3A5139; box-shadow: 0 0 0 3px rgba(58,81,57,0.12); }
+.of-input[aria-invalid="true"] { border-color: #B4483C; }
+.of-select { padding-right: 44px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 256 256' fill='none' stroke='%233A5139' stroke-width='24' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='48 96 128 176 208 96'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 18px center; cursor: pointer; }
+.of-textarea { height: auto; min-height: 76px; padding: 14px 18px; resize: vertical; }
+.of-check { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; line-height: 22px; color: #4A453F; cursor: pointer; }
+.of-check input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: #3A5139; cursor: pointer; }
+.of-check a { color: #3A5139; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.of-error { font-size: 14px; line-height: 20px; color: #B4483C; margin: 0; }
+.of-error--box { padding: 12px 16px; border-radius: 12px; background: #FBEDEA; border: 1px solid #EBC5BF; }
+.of-hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
+.of-summary { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; border-radius: 20px; background: #3A5139; color: #FFFFFF; }
+.of-summary > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.of-sumname { font-family: 'EB Garamond', serif; font-weight: 600; font-size: 22px; line-height: 28px; color: #FFFFFF; }
+.of-sumdesc { font-size: 14px; line-height: 20px; color: #DFE8DC; }
+.of-sumprice { flex: none; font-family: 'EB Garamond', serif; font-weight: 500; font-size: 36px; line-height: 40px; color: #FFFFFF; }
+.of-sumprice small { font-family: 'Nunito Sans', sans-serif; font-size: 15px; color: #DFE8DC; margin-left: 6px; }
+.of-pay { margin-top: 24px; padding: 8px 20px; border-radius: 24px; background: #FFFFFF; border: 1px solid #EDE5D8; }
+.of-payrow { display: grid; grid-template-columns: 128px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 0; }
+.of-payrow + .of-payrow { border-top: 1px solid #F1EBE2; }
+.of-paylabel { font-size: 14px; line-height: 20px; color: #7A6D5E; }
+.of-payval { font-weight: 600; font-size: 16px; line-height: 22px; color: #24211D; overflow-wrap: anywhere; }
+.of-mono { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+.of-copy { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #DFE8DC; background: #F1F5F0; font-family: 'Nunito Sans', sans-serif; font-weight: 600; font-size: 13px; color: #3A5139; cursor: pointer; transition: background 160ms ease; }
+.of-copy:hover { background: #DFE8DC; }
+.of-qr { margin-top: 16px; display: flex; align-items: center; gap: 20px; padding: 20px; border-radius: 24px; background: #F5EFE6; border: 1px solid #EAE0D2; }
+.of-qrimg { flex: none; width: 132px; height: 132px; padding: 8px; border-radius: 16px; background: #FFFFFF; }
+.of-qrimg svg { display: block; width: 100%; height: 100%; }
+@media (max-width: 560px) {
+  .of-row { grid-template-columns: 1fr; }
+  .of-summary { padding: 18px 20px; }
+  .of-sumname { font-size: 20px; line-height: 26px; }
+  .of-sumprice { font-size: 30px; }
+  .of-pay { padding: 4px 16px; }
+  .of-payrow { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; }
+  .of-paylabel { grid-column: 1 / -1; }
+  .of-qr { flex-direction: column; text-align: center; }
+  .of-qrimg { width: 176px; height: 176px; }
+}
+
+/* Obavezni pop-up sa zdravstvenom napomenom */
+.dg-overlay { background: rgba(36,33,29,0.62); }
+.dg-card { width: 520px; text-align: center; }
+.dg-body { padding: 40px 40px 32px; display: flex; flex-direction: column; align-items: center; }
+.dg-icon { width: 64px; height: 64px; margin-bottom: 20px; border-radius: 999px; background: #F1F5F0; box-shadow: 0 0 0 1px #C2D3BE; display: flex; align-items: center; justify-content: center; }
+.dg-h { font-size: 36px; line-height: 42px; }
+.dg-text { margin-top: 16px; font-size: 19px; line-height: 30px; color: #24211D; }
+.dg-actions { margin-top: 28px; width: 100%; display: flex; justify-content: center; }
+.dg-btn { min-width: 220px; }
+.dg-fine { margin-top: 18px; }
+.dg-fine a { color: #3A5139; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 560px) {
+  .dg-overlay { padding: 16px; align-items: center; }
+  .dg-card { border-radius: 28px; max-height: calc(100dvh - 32px); }
+  .dg-body { padding: 32px 22px 24px; }
+  .dg-h { font-size: 30px; line-height: 36px; }
+  .dg-text { font-size: 17px; line-height: 27px; }
+  .dg-btn { width: 100%; }
+}
