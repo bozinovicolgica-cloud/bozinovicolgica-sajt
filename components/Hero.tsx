@@ -15,7 +15,7 @@ export default function Hero() {
           fill
           priority
           fetchPriority="high"
-          quality={90}
+          quality={80}
           sizes="(max-width: 860px) 100vw, 50vw"
           className="hero__img"
         />

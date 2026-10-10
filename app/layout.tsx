@@ -4,7 +4,8 @@ import './globals.css';
 import './quiz.css';
 import './order.css';
 import { AnalyticsBody, AnalyticsHead } from '@/components/Analytics';
-import { img, imgT } from '@/lib/images';
+import { imgT } from '@/lib/images';
+import { DISCLAIMER_HEAD_SCRIPT } from '@/lib/disclaimer';
 
 const OG = imgT('olgica-hero.webp', 'c_fill,g_face,w_1200,h_630,f_jpg,q_85');
 
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: '9 dana spašavanja jetre | Olgica Božinović',
   description: DESC,
-  icons: { icon: { url: img('logo-ob.svg'), type: 'image/svg+xml' } },
+  icons: { icon: { url: '/images/logo.svg', type: 'image/svg+xml' } },
   alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
@@ -35,12 +36,13 @@ export const viewport: Viewport = {
   themeColor: '#FBF8F3',
 };
 
-const PRELOAD = ['eb-garamond-500-latin', 'eb-garamond-500-latin-ext', 'nunito-sans-400-latin', 'nunito-sans-400-latin-ext'];
+const PRELOAD = ['eb-garamond-latin', 'eb-garamond-sr', 'nunito-sans-latin', 'nunito-sans-sr'];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sr">
+    <html lang="sr" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: DISCLAIMER_HEAD_SCRIPT }} />
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         {PRELOAD.map((f) => (

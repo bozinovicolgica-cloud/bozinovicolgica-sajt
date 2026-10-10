@@ -1,7 +1,27 @@
-node_modules
-.next
-.env*.local
-.env
-next-env.d.ts
+# zavisnosti i build
+node_modules/
+.next/
+out/
+build/
 *.tsbuildinfo
-.vercel
+next-env.d.ts
+
+# okruženje (tajni ključevi) — commituje se samo .env.example
+.env
+.env*
+!.env.example
+
+# deploy / alati
+.vercel/
+.turbo/
+coverage/
+
+# logovi i sistemski fajlovi
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json

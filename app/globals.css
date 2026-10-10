@@ -48,7 +48,7 @@ body { overflow-x: clip; }
 .hdr { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); width: 1200px; max-width: calc(100% - 48px); height: 64px; border-radius: 999px; background: rgba(251,248,243,0.6); -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); border: 1px solid rgba(255,255,255,0.6); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 12px 32px rgba(31,43,32,0.08); display: flex; align-items: center; justify-content: space-between; padding: 0 8px 0 12px; z-index: 50; }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .hdr { background: #FBF8F3; } }
 .brand { display: flex; align-items: center; gap: 12px; }
-.brand__mark { width: 88px; height: 44px; flex: none; background: #3A5139; -webkit-mask: url('https://res.cloudinary.com/ozdkiori/image/upload/v1791666595/logo-ob.svg') center / contain no-repeat; mask: url('https://res.cloudinary.com/ozdkiori/image/upload/v1791666595/logo-ob.svg') center / contain no-repeat; }
+.brand__mark { width: 88px; height: 44px; flex: none; background: #3A5139; -webkit-mask: url('/images/logo.svg') center / contain no-repeat; mask: url('/images/logo.svg') center / contain no-repeat; }
 .brand__txt { display: flex; flex-direction: column; gap: 2px; }
 .brand__name { font-family: 'EB Garamond', serif; font-weight: 600; font-size: 20px; line-height: 22px; color: #24211D; }
 .brand__role { font-family: 'Nunito Sans', sans-serif; font-weight: 600; font-size: 11px; line-height: 12px; letter-spacing: 0.14em; color: #4A453F; }

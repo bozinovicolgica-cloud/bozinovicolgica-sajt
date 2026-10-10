@@ -3,16 +3,28 @@
 Landing stranica za Olgicu Božinović, prebačena iz statičnog HTML dizajna u Next.js 16 (App Router, TypeScript).
 Desktop (≥1081px) je 1:1 sa originalnim dizajnom; tablet i mobilni imaju posebne rasporede (breakpointi 1180 / 1080 / 860 / 640 / 380).
 
-## Pokretanje
+## Pokretanje (PowerShell)
 
 ```powershell
 npm install
-copy .env.example .env.local   # pa popuni vrednosti
-npm run dev                     # http://localhost:3000
-npm run build; npm start        # produkcija
+Copy-Item .env.example .env.local   # pa popuni vrednosti
+npm run dev                         # http://localhost:3000
+npm run typecheck                   # provera tipova
+npm run build; npm start            # produkcija
 ```
 
-Deploy: Vercel → Import projekta → u Settings → Environment Variables unesi sve iz `.env.example`.
+Potreban je Node 20.9+ (preporučeno 22, vidi `.nvmrc`).
+
+## GitHub + Vercel
+
+```powershell
+git remote add origin https://github.com/<korisnik>/<repo>.git
+git push -u origin main
+```
+
+- `.env.local` se nikad ne šalje na GitHub (zaštićeno u `.gitignore`); tajni ključevi idu samo u Vercel → Settings → Environment Variables.
+- GitHub Actions (`.github/workflows/ci.yml`) na svaki push proverava tipove i radi build.
+- Vercel: New Project → Import repo → Framework se prepoznaje sam → unesi env promenljive → Deploy. Svaki push na `main` automatski ide u produkciju.
 
 ## Šta radi
 

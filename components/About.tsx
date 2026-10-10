@@ -64,7 +64,7 @@ export default function About() {
                 alt=""
                 width={1100}
                 height={1650}
-                quality={90}
+                quality={80}
                 sizes="(max-width: 860px) 100vw, (max-width: 1180px) 45vw, 867px"
                 className="about__img"
                 style={{

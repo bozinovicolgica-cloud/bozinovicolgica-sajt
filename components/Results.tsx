@@ -14,7 +14,8 @@ function Shot({ n, w, dup }: { n: string; w: number; dup?: boolean }) {
         aria-hidden={dup || undefined}
         width={w}
         height={304}
-        unoptimized
+        sizes={`${w}px`}
+        quality={90}
         loading="lazy"
         className="mq__img"
       />
@@ -40,32 +41,40 @@ export default function Results() {
 
   useEffect(() => {
     if (prefersReducedMotion()) { setReduced(true); return; }
-    let off = 0, boost = 0, lastY = window.scrollY, lastT = 0, raf = 0;
+    const box = mqRef.current; if (!box) return;
+    const rows = Array.from(box.querySelectorAll<HTMLElement>('[data-mq-row]'));
+    // širine se mere samo pri promeni veličine, ne u svakom frejmu (bez forced reflow)
+    let widths = rows.map((r) => r.scrollWidth / 2);
+    const ro = new ResizeObserver(() => { widths = rows.map((r) => r.scrollWidth / 2); });
+    rows.forEach((r) => ro.observe(r));
+    let off = 0, boost = 0, lastY = window.scrollY, lastT = 0, raf = 0, visible = false;
     const tick = (now: number) => {
+      if (!visible) { raf = 0; lastT = 0; return; }
       raf = requestAnimationFrame(tick);
       const dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 0;
       lastT = now;
-      const box = mqRef.current; if (!box) return;
-      const rect = box.getBoundingClientRect();
-      if (rect.bottom < -200 || rect.top > window.innerHeight + 200) return;
       // osnovno klizanje + ubrzanje na skrol koje se postepeno smiruje
       boost *= Math.pow(0.04, dt);
       off += (32 + boost) * dt;
-      box.querySelectorAll<HTMLElement>('[data-mq-row]').forEach((row) => {
-        const W = row.scrollWidth / 2; if (!W) return;
+      rows.forEach((row, i) => {
+        const W = widths[i]; if (!W) return;
         const right = row.dataset.mqRow === 'right';
         const o = (off * (right ? 0.8 : 1)) % W;
-        const x = right ? -W + o : -o;
-        row.style.transform = `translate3d(${x.toFixed(1)}px,0,0)`;
+        row.style.transform = `translate3d(${(right ? -W + o : -o).toFixed(1)}px,0,0)`;
       });
     };
+    // animacija radi samo dok je traka (približno) na ekranu
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (visible && !raf) raf = requestAnimationFrame(tick);
+    }, { rootMargin: '200px 0px' });
+    io.observe(box);
     const onScroll = () => {
       const y = window.scrollY, d = Math.abs(y - lastY); lastY = y;
-      boost = Math.min(900, boost + d * 6);
+      if (visible) boost = Math.min(900, boost + d * 6);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
-    raf = requestAnimationFrame(tick);
-    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); };
+    return () => { io.disconnect(); ro.disconnect(); window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); };
   }, []);
 
   const row = (items: [string, number][], dir: 'left' | 'right') => (

@@ -25,11 +25,11 @@ export default function HowItWorks() {
       if (Math.abs(p - cur) > 0.01 || (p === 1 && cur !== 1)) { cur = p; setTl(p); }
     };
     const onResize = () => { measure(); onScroll(); };
-    measure();
+    // prvo merenje tek u sledećem frejmu, da ne forsira layout tokom učitavanja
+    const r0 = requestAnimationFrame(() => { measure(); onScroll(); });
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
-    onScroll();
-    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onResize); };
+    return () => { cancelAnimationFrame(r0); window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onResize); };
   }, []);
 
   return (

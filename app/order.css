@@ -65,3 +65,7 @@
   .dg-text { font-size: 17px; line-height: 27px; }
   .dg-btn { width: 100%; }
 }
+
+/* pop-up je u HTML-u od starta; sakriven kad je napomena već prihvaćena */
+.dg-ok .dg-overlay { display: none; }
+html:not(.dg-ok):has(.dg-overlay) { overflow: hidden; }

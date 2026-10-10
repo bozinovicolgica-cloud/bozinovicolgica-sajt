@@ -17,7 +17,7 @@ export default function Final() {
             src={img('olgica-zavrsna.webp')}
             alt=""
             fill
-            quality={90}
+            quality={80}
             sizes="(max-width: 860px) 100vw, 50vw"
             className="final__img"
           />

@@ -1,48 +1,25 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { track } from '@/lib/track';
+import { DISCLAIMER, DISCLAIMER_KEY } from '@/lib/disclaimer';
 
-const KEY = 'ob_disclaimer_v1';
-const VALID_DAYS = 30; // posle 30 dana se pop-up ponovo prikazuje
-
-export const DISCLAIMER = 'Usluge su edukativnog karaktera i ne predstavljaju medicinski savet, dijagnozu ili lečenje. Za zdravstvene probleme obratite se lekaru.';
-
-function accepted(): boolean {
-  try {
-    const t = Number(localStorage.getItem(KEY) || 0);
-    return t > 0 && Date.now() - t < VALID_DAYS * 864e5;
-  } catch {
-    return false;
-  }
-}
+const isAccepted = () => document.documentElement.classList.contains('dg-ok');
 
 /**
- * Obavezni pop-up sa zdravstvenom napomenom. Ne zatvara se klikom van prozora
- * ni tasterom Escape; jedini izlaz je dugme „Razumem“. Prihvatanje se pamti
- * u pregledaču (30 dana).
+ * Obavezni pop-up sa zdravstvenom napomenom. Renderuje se već u HTML-u
+ * (vidljiv odmah, bez čekanja na JavaScript); sakriva ga klasa "dg-ok".
+ * Ne zatvara se klikom van prozora ni tasterom Escape — samo dugmetom „Razumem“.
  */
 export default function DisclaimerGate() {
-  const [open, setOpen] = useState(false);
-  const [shown, setShown] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (accepted()) return;
-    setOpen(true);
-    let r2 = 0;
-    const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setShown(true)); });
+    if (isAccepted()) return;
     track('disclaimer_view');
-    return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-    const html = document.documentElement;
-    const prev = html.style.overflow;
-    html.style.overflow = 'hidden';
     const onKey = (e: KeyboardEvent) => {
+      if (isAccepted()) return;
       if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); return; }
       if (e.key === 'Tab' && cardRef.current) {
         const f = Array.from(cardRef.current.querySelectorAll<HTMLElement>('button,a[href]'));
@@ -53,21 +30,19 @@ export default function DisclaimerGate() {
       }
     };
     document.addEventListener('keydown', onKey, true);
-    const t = setTimeout(() => { try { btnRef.current?.focus({ preventScroll: true }); } catch {} }, 50);
-    return () => { html.style.overflow = prev; document.removeEventListener('keydown', onKey, true); clearTimeout(t); };
-  }, [open]);
+    try { btnRef.current?.focus({ preventScroll: true }); } catch {}
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, []);
 
   const accept = () => {
-    try { localStorage.setItem(KEY, String(Date.now())); } catch {}
+    try { localStorage.setItem(DISCLAIMER_KEY, String(Date.now())); } catch {}
     track('disclaimer_accept');
     setLeaving(true);
-    setShown(false);
-    setTimeout(() => setOpen(false), 260);
+    setTimeout(() => document.documentElement.classList.add('dg-ok'), 260);
   };
 
-  if (!open) return null;
   return (
-    <div className={`oq-overlay dg-overlay${shown && !leaving ? ' oq-in' : ''}`}>
+    <div className={`oq-overlay dg-overlay${leaving ? '' : ' oq-in'}`}>
       <div ref={cardRef} className="oq-card dg-card" role="alertdialog" aria-modal="true" aria-labelledby="dg-title" aria-describedby="dg-text">
         <div className="oq-body dg-body">
           <span className="dg-icon" aria-hidden="true">

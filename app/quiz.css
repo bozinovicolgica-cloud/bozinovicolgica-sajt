@@ -6,7 +6,7 @@
 .oq-card *{box-sizing:border-box}
 .oq-top{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px 16px 28px;background:#FBF8F3;border-radius:32px 32px 0 0}
 .oq-brand{display:flex;align-items:center;gap:10px}
-.oq-logo{width:56px;height:28px;flex:none;background:#3A5139;-webkit-mask:url("https://res.cloudinary.com/ozdkiori/image/upload/v1791666595/logo-ob.svg") center / contain no-repeat;mask:url("https://res.cloudinary.com/ozdkiori/image/upload/v1791666595/logo-ob.svg") center / contain no-repeat}
+.oq-logo{width:56px;height:28px;flex:none;background:#3A5139;-webkit-mask:url("/images/logo.svg") center / contain no-repeat;mask:url("/images/logo.svg") center / contain no-repeat}
 .oq-brandtxt{font-weight:600;font-size:11px;line-height:12px;letter-spacing:0.14em;color:#4A453F;text-transform:uppercase}
 .oq-iconbtn{width:40px;height:40px;flex:none;border:0;margin:0;padding:0;border-radius:999px;background:#F1F5F0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 200ms ease}
 .oq-iconbtn:hover{background:#DFE8DC}

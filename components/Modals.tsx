@@ -1,7 +1,13 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import Quiz from './Quiz';
-import OrderModal, { type OrderContext } from './OrderModal';
+import dynamic from 'next/dynamic';
+import type { OrderContext } from './OrderModal';
+
+// Kviz i forma se učitavaju tek kad zatrebaju (manje JavaScript-a na prvom učitavanju)
+const loadQuiz = () => import('./Quiz');
+const loadOrder = () => import('./OrderModal');
+const Quiz = dynamic(loadQuiz, { ssr: false });
+const OrderModal = dynamic(loadOrder, { ssr: false });
 
 declare global {
   interface Window { openLiverQuiz?: () => void; openOrderForm?: (source?: string) => void }
@@ -14,9 +20,10 @@ declare global {
 export default function Modals() {
   const [active, setActive] = useState<'quiz' | 'order' | null>(null);
   const [ctx, setCtx] = useState<OrderContext>({ source: 'stranica' });
+  const [used, setUsed] = useState({ quiz: false, order: false });
 
-  const openQuiz = useCallback(() => setActive('quiz'), []);
-  const openOrder = useCallback((c: OrderContext) => { setCtx(c); setActive('order'); }, []);
+  const openQuiz = useCallback(() => { setUsed((u) => ({ ...u, quiz: true })); setActive('quiz'); }, []);
+  const openOrder = useCallback((c: OrderContext) => { setCtx(c); setUsed((u) => ({ ...u, order: true })); setActive('order'); }, []);
   const close = useCallback(() => setActive(null), []);
 
   useEffect(() => {
@@ -42,20 +49,28 @@ export default function Modals() {
 
     // direktan link: /#kviz ili /#porudzbina
     if (location.hash === '#porudzbina') openOrder({ source: 'link' });
-    return () => document.removeEventListener('click', onClick, true);
+
+    // kad je stranica mirna, unapred preuzmi kod za kviz i formu (bez blokiranja)
+    let idle = 0;
+    const prefetch = () => {
+      const ric = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+      idle = ric ? ric(() => { loadQuiz(); loadOrder(); }) : window.setTimeout(() => { loadQuiz(); loadOrder(); }, 1);
+    };
+    const t = window.setTimeout(prefetch, 5000);
+    return () => { document.removeEventListener('click', onClick, true); clearTimeout(t); void idle; };
   }, [openQuiz, openOrder]);
 
   return (
     <>
-      <Quiz
+      {used.quiz && <Quiz
         open={active === 'quiz'}
         onClose={close}
         onBuy={(r) => {
           setActive(null);
           setTimeout(() => openOrder({ source: 'kviz', quizResult: r.result, quizScore: r.score }), 280);
         }}
-      />
-      <OrderModal open={active === 'order'} ctx={ctx} onClose={close} />
+      />}
+      {used.order && <OrderModal open={active === 'order'} ctx={ctx} onClose={close} />}
     </>
   );
 }
