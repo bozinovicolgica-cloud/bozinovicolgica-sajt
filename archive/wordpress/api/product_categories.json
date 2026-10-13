@@ -1,0 +1,250 @@
+[
+  {
+    "id": 25,
+    "count": 0,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/product-category/programi-zdravlja/program-zdravlja-za-porodicu-porodicni-jelovnik/",
+    "name": "Program zdravlja za porodicu-porodicni jelovnik",
+    "slug": "program-zdravlja-za-porodicu-porodicni-jelovnik",
+    "taxonomy": "product_cat",
+    "parent": 22,
+    "meta": [],
+    "menu_order": 0,
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat/25",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/product_cat"
+        }
+      ],
+      "up": [
+        {
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat/22"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product?product_cat=25"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 22,
+    "count": 2,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/product-category/programi-zdravlja/",
+    "name": "Programi zdravlja",
+    "slug": "programi-zdravlja",
+    "taxonomy": "product_cat",
+    "parent": 0,
+    "meta": [],
+    "menu_order": 0,
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat/22",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/product_cat"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product?product_cat=22"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 23,
+    "count": 0,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/product-category/programi-zdravlja/programi-zdravlja-za-hronicne-bolesnike/",
+    "name": "Programi zdravlja za hronične bolesnike",
+    "slug": "programi-zdravlja-za-hronicne-bolesnike",
+    "taxonomy": "product_cat",
+    "parent": 22,
+    "meta": [],
+    "menu_order": 0,
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat/23",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/product_cat"
+        }
+      ],
+      "up": [
+        {
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat/22"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product?product_cat=23"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 24,
+    "count": 1,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/product-category/programi-zdravlja/programi-zdravlja-za-prevenciju/",
+    "name": "Programi zdravlja za prevenciju",
+    "slug": "programi-zdravlja-za-prevenciju",
+    "taxonomy": "product_cat",
+    "parent": 22,
+    "meta": [],
+    "menu_order": 0,
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat/24",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/product_cat"
+        }
+      ],
+      "up": [
+        {
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat/22"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product?product_cat=24"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 15,
+    "count": 0,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/product-category/uncategorized/",
+    "name": "Uncategorized",
+    "slug": "uncategorized",
+    "taxonomy": "product_cat",
+    "parent": 0,
+    "meta": [],
+    "menu_order": 0,
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat/15",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/product_cat"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product?product_cat=15"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  }
+]

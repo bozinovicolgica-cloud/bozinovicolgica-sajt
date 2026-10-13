@@ -1,0 +1,182 @@
+[
+  {
+    "id": 30,
+    "count": 3,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/category/ishrana/",
+    "name": "Ishrana",
+    "slug": "ishrana",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/categories/30",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/posts?categories=30"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 31,
+    "count": 1,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/category/prevencija/",
+    "name": "Prevencija",
+    "slug": "prevencija",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/categories/31",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/posts?categories=31"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 32,
+    "count": 3,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/category/programi-zdravlja/",
+    "name": "Programi zdravlja",
+    "slug": "programi-zdravlja",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/categories/32",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/posts?categories=32"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 1,
+    "count": 0,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/category/uncategorized/",
+    "name": "Uncategorized",
+    "slug": "uncategorized",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/categories/1",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/posts?categories=1"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1650,
+    "date": "2024-10-06T14:34:45",
+    "date_gmt": "2024-10-06T12:34:45",
+    "guid": {
+      "rendered": "https://bozinovicolgica.rs/?post_type=mpa_employee&#038;p=1650"
+    },
+    "modified": "2024-10-06T14:34:46",
+    "modified_gmt": "2024-10-06T12:34:46",
+    "slug": "bozinovic-olgica",
+    "status": "publish",
+    "type": "mpa_employee",
+    "link": "https://bozinovicolgica.rs/employee/bozinovic-olgica/",
+    "title": {
+      "rendered": "Božinović Olgica"
+    },
+    "content": {
+      "rendered": "",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "",
+      "protected": false
+    },
+    "featured_media": 0,
+    "menu_order": 0,
+    "template": "",
+    "class_list": [
+      "post-1650",
+      "mpa_employee",
+      "type-mpa_employee",
+      "status-publish",
+      "hentry"
+    ],
+    "blocksy_meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/mpa_employee/1650",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/mpa_employee"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/types/mpa_employee"
+        }
+      ],
+      "wp:attachment": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/media?parent=1650"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  }
+]

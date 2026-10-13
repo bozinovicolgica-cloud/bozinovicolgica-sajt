@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1652,
+    "date": "2024-10-06T14:37:24",
+    "date_gmt": "2024-10-06T12:37:24",
+    "guid": {
+      "rendered": "https://bozinovicolgica.rs/?post_type=mpa_location&#038;p=1652"
+    },
+    "modified": "2024-10-06T14:37:24",
+    "modified_gmt": "2024-10-06T12:37:24",
+    "slug": "beograd",
+    "status": "publish",
+    "type": "mpa_location",
+    "link": "https://bozinovicolgica.rs/location/beograd/",
+    "title": {
+      "rendered": "Beograd"
+    },
+    "content": {
+      "rendered": "",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "",
+      "protected": false
+    },
+    "featured_media": 0,
+    "menu_order": 0,
+    "template": "",
+    "class_list": [
+      "post-1652",
+      "mpa_location",
+      "type-mpa_location",
+      "status-publish",
+      "hentry"
+    ],
+    "blocksy_meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/mpa_location/1652",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/mpa_location"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/types/mpa_location"
+        }
+      ],
+      "wp:attachment": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/media?parent=1652"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 1651,
+    "date": "2024-10-06T14:37:08",
+    "date_gmt": "2024-10-06T12:37:08",
+    "guid": {
+      "rendered": "https://bozinovicolgica.rs/?post_type=mpa_location&#038;p=1651"
+    },
+    "modified": "2024-10-06T14:37:08",
+    "modified_gmt": "2024-10-06T12:37:08",
+    "slug": "krusevac",
+    "status": "publish",
+    "type": "mpa_location",
+    "link": "https://bozinovicolgica.rs/location/krusevac/",
+    "title": {
+      "rendered": "Kruševac"
+    },
+    "content": {
+      "rendered": "",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "",
+      "protected": false
+    },
+    "featured_media": 0,
+    "menu_order": 0,
+    "template": "",
+    "class_list": [
+      "post-1651",
+      "mpa_location",
+      "type-mpa_location",
+      "status-publish",
+      "hentry"
+    ],
+    "blocksy_meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/mpa_location/1651",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/mpa_location"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/types/mpa_location"
+        }
+      ],
+      "wp:attachment": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/media?parent=1651"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  }
+]

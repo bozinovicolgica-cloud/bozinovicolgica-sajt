@@ -1,0 +1,217 @@
+[
+  {
+    "id": 2786,
+    "date": "2025-03-27T13:30:43",
+    "date_gmt": "2025-03-27T12:30:43",
+    "guid": {
+      "rendered": "https://bozinovicolgica.rs/?post_type=product&#038;p=2786"
+    },
+    "modified": "2025-04-05T12:54:32",
+    "modified_gmt": "2025-04-05T10:54:32",
+    "slug": "program-put-zdravlja",
+    "status": "publish",
+    "type": "product",
+    "link": "https://bozinovicolgica.rs/product/program-put-zdravlja/",
+    "title": {
+      "rendered": "Program PUT ZDRAVLJA"
+    },
+    "content": {
+      "rendered": "",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "",
+      "protected": false
+    },
+    "featured_media": 2102,
+    "comment_status": "open",
+    "ping_status": "closed",
+    "template": "",
+    "meta": [],
+    "product_brand": [],
+    "product_cat": [
+      22
+    ],
+    "product_tag": [],
+    "class_list": {
+      "0": "post-2786",
+      "1": "product",
+      "2": "type-product",
+      "3": "status-publish",
+      "4": "has-post-thumbnail",
+      "6": "product_cat-programi-zdravlja",
+      "8": "first",
+      "9": "instock",
+      "10": "shipping-taxable",
+      "11": "purchasable",
+      "12": "product-type-simple"
+    },
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product/2786",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/types/product"
+        }
+      ],
+      "replies": [
+        {
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/comments?post=2786"
+        }
+      ],
+      "wp:featuredmedia": [
+        {
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/media/2102"
+        }
+      ],
+      "wp:attachment": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/media?parent=2786"
+        }
+      ],
+      "wp:term": [
+        {
+          "taxonomy": "product_brand",
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_brand?post=2786"
+        },
+        {
+          "taxonomy": "product_cat",
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat?post=2786"
+        },
+        {
+          "taxonomy": "product_tag",
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_tag?post=2786"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 2683,
+    "date": "2024-11-02T18:52:40",
+    "date_gmt": "2024-11-02T17:52:40",
+    "guid": {
+      "rendered": "https://bozinovicolgica.rs/?post_type=product&#038;p=2683"
+    },
+    "modified": "2026-05-04T19:19:57",
+    "modified_gmt": "2026-05-04T17:19:57",
+    "slug": "ciscenje-jetre",
+    "status": "publish",
+    "type": "product",
+    "link": "https://bozinovicolgica.rs/product/ciscenje-jetre/",
+    "title": {
+      "rendered": "Čišćenje jetre"
+    },
+    "content": {
+      "rendered": "",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "",
+      "protected": false
+    },
+    "featured_media": 0,
+    "comment_status": "open",
+    "ping_status": "closed",
+    "template": "",
+    "meta": [],
+    "product_brand": [],
+    "product_cat": [
+      24
+    ],
+    "product_tag": [],
+    "class_list": {
+      "0": "post-2683",
+      "1": "product",
+      "2": "type-product",
+      "3": "status-publish",
+      "5": "product_cat-programi-zdravlja-za-prevenciju",
+      "7": "",
+      "8": "instock",
+      "9": "shipping-taxable",
+      "10": "purchasable",
+      "11": "product-type-simple"
+    },
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product/2683",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/types/product"
+        }
+      ],
+      "replies": [
+        {
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/comments?post=2683"
+        }
+      ],
+      "wp:attachment": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/media?parent=2683"
+        }
+      ],
+      "wp:term": [
+        {
+          "taxonomy": "product_brand",
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_brand?post=2683"
+        },
+        {
+          "taxonomy": "product_cat",
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_cat?post=2683"
+        },
+        {
+          "taxonomy": "product_tag",
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/product_tag?post=2683"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  }
+]

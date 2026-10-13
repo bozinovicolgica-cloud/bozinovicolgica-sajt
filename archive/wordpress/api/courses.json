@@ -1,0 +1,202 @@
+[
+  {
+    "id": 2680,
+    "date": "2026-05-04T19:28:48",
+    "date_gmt": "2026-05-04T17:28:48",
+    "guid": {
+      "rendered": "https://bozinovicolgica.rs/?post_type=courses&#038;p=2680"
+    },
+    "modified": "2026-05-04T19:28:49",
+    "modified_gmt": "2026-05-04T17:28:49",
+    "slug": "ciscenje-jetre",
+    "status": "publish",
+    "type": "courses",
+    "link": "https://bozinovicolgica.rs/courses/ciscenje-jetre/",
+    "title": {
+      "rendered": "Čišćenje jetre"
+    },
+    "content": {
+      "rendered": "",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 1325,
+    "template": "",
+    "course-category": [
+      18
+    ],
+    "course-tag": [],
+    "class_list": [
+      "post-2680",
+      "courses",
+      "type-courses",
+      "status-publish",
+      "has-post-thumbnail",
+      "hentry",
+      "course-category-programi-zdravlja-za-prevenciju"
+    ],
+    "blocksy_meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/courses/2680",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/courses"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/types/courses"
+        }
+      ],
+      "author": [
+        {
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/users/1"
+        }
+      ],
+      "wp:featuredmedia": [
+        {
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/media/1325"
+        }
+      ],
+      "wp:attachment": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/media?parent=2680"
+        }
+      ],
+      "wp:term": [
+        {
+          "taxonomy": "course-category",
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/course-category?post=2680"
+        },
+        {
+          "taxonomy": "course-tag",
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/course-tag?post=2680"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 2787,
+    "date": "2025-05-08T20:41:11",
+    "date_gmt": "2025-05-08T18:41:11",
+    "guid": {
+      "rendered": "https://bozinovicolgica.rs/?post_type=courses&#038;p=2787"
+    },
+    "modified": "2025-05-08T20:41:12",
+    "modified_gmt": "2025-05-08T18:41:12",
+    "slug": "program-put-zdravlja",
+    "status": "publish",
+    "type": "courses",
+    "link": "https://bozinovicolgica.rs/courses/program-put-zdravlja/",
+    "title": {
+      "rendered": "Program Put Zdravlja"
+    },
+    "content": {
+      "rendered": "<p>U ovom programu, ćeš nedelju po nedelju polako koračati putevima zdravlja.</p>\n<p>Menjaćemo navike, jutarnje rutine, i nakon 12 nedelja novi životni stil biće deo tvoje svakodnevice. Ako budeš pratio/la redovno lekcije, i preporuke, benefiti za zdravlje biće ogromni. </p>\n<p>Na ovom programu očekuju te osim recepata i preporuke knjiga koje ćeš čitati, zatim vežbanje koje ćeš upražnjavati, a pošto smo i duša i telo imaćemo i gostovanje telesnog psihoterapeuta. Ovaj program praktikuje integrativni pristup zdravlju.</p>\n",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>U ovom programu, ćeš nedelju po nedelju polako koračati putevima zdravlja. Menjaćemo navike, jutarnje rutine, i nakon 12 nedelja novi životni stil biće deo tvoje svakodnevice. Ako budeš pratio/la redovno lekcije, i preporuke, benefiti za zdravlje biće ogromni.  Na ovom programu očekuju te osim recepata i preporuke knjiga koje ćeš čitati, zatim vežbanje koje ćeš [&hellip;]</p>\n",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 2102,
+    "template": "",
+    "course-category": [
+      19
+    ],
+    "course-tag": [],
+    "class_list": [
+      "post-2787",
+      "courses",
+      "type-courses",
+      "status-publish",
+      "has-post-thumbnail",
+      "hentry",
+      "course-category-programi-zdravlja-za-hronicne-bolesnike"
+    ],
+    "blocksy_meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/courses/2787",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/courses"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/types/courses"
+        }
+      ],
+      "author": [
+        {
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/users/1"
+        }
+      ],
+      "wp:featuredmedia": [
+        {
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/media/2102"
+        }
+      ],
+      "wp:attachment": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/media?parent=2787"
+        }
+      ],
+      "wp:term": [
+        {
+          "taxonomy": "course-category",
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/course-category?post=2787"
+        },
+        {
+          "taxonomy": "course-tag",
+          "embeddable": true,
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/course-tag?post=2787"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  }
+]

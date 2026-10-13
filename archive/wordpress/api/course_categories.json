@@ -1,0 +1,137 @@
+[
+  {
+    "id": 19,
+    "count": 1,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/course-category/programi-zdravlja-za-hronicne-bolesnike/?tutor-course-filter-category=19",
+    "name": "Programi zdravlja za hronične bolesnike",
+    "slug": "programi-zdravlja-za-hronicne-bolesnike",
+    "taxonomy": "course-category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/course-category/19",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/course-category"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/course-category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/courses?course-category=19"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 20,
+    "count": 1,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/course-category/programi-zdravlja-za-porodicu-porodicni-jelovnik/?tutor-course-filter-category=20",
+    "name": "Programi zdravlja za porodicu - porodični jelovnik",
+    "slug": "programi-zdravlja-za-porodicu-porodicni-jelovnik",
+    "taxonomy": "course-category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/course-category/20",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/course-category"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/course-category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/courses?course-category=20"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 18,
+    "count": 1,
+    "description": "",
+    "link": "https://bozinovicolgica.rs/course-category/programi-zdravlja-za-prevenciju/?tutor-course-filter-category=18",
+    "name": "Programi zdravlja za prevenciju",
+    "slug": "programi-zdravlja-za-prevenciju",
+    "taxonomy": "course-category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/course-category/18",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/course-category"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/taxonomies/course-category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://bozinovicolgica.rs/wp-json/wp/v2/courses?course-category=18"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  }
+]
