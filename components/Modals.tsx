@@ -49,6 +49,7 @@ export default function Modals() {
 
     // direktan link: /#kviz ili /#porudzbina
     if (location.hash === '#porudzbina') openOrder({ source: 'link' });
+    else if (location.hash === '#kviz') openQuiz();
 
     // kad je stranica mirna, unapred preuzmi kod za kviz i formu (bez blokiranja)
     let idle = 0;

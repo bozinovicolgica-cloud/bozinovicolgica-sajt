@@ -6,8 +6,10 @@ export default function Footer() {
     <footer data-screen-label="Footer" className="ftr">
       <div className="container ftr__inner">
         <div className="ftr__row">
-          <Brand light />
-          <nav className="ftr__nav" aria-label="Pravne informacije">
+          <Brand light href="/" />
+          <nav className="ftr__nav" aria-label="Informacije">
+            <Link href="/o-meni">O meni</Link>
+            <Link href="/blog">Blog</Link>
             <Link href="/uslovi-kupovine">Uslovi kupovine</Link>
             <Link href="/politika-privatnosti">Politika privatnosti</Link>
           </nav>

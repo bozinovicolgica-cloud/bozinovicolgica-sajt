@@ -622,3 +622,44 @@ body { overflow-x: clip; }
   .legal__body ul { padding-left: 18px; }
   .legal__body { font-size: 16px; line-height: 26px; }
 }
+
+/* ---------- blog i O meni ---------- */
+.legal__body h3 { margin: 28px 0 8px; font-family: 'EB Garamond', serif; font-weight: 600; font-size: 22px; line-height: 28px; color: #24211D; }
+.legal__body ol { margin: 0 0 16px; padding-left: 22px; }
+.legal__body strong { color: #24211D; }
+.crumbs { margin: 0 0 20px; font-family: 'Nunito Sans', sans-serif; font-size: 14px; color: #7A6D5E; }
+.crumbs a { color: #3A5139; }
+.post__lead { margin: 20px 0 0; font-family: 'Nunito Sans', sans-serif; font-size: 19px; line-height: 30px; color: #4A453F; text-wrap: pretty; }
+.post__img { display: block; width: 100%; height: auto; margin-top: 32px; border-radius: 20px; background: #F5EFE6; }
+.note { margin-top: 40px; padding: 20px 24px; border-radius: 16px; background: #F5EFE6; font-family: 'Nunito Sans', sans-serif; font-size: 15px; line-height: 24px; color: #4A453F; }
+.author { display: flex; gap: 20px; align-items: center; margin-top: 40px; padding: 24px; border: 1px solid #EDE5D8; border-radius: 20px; font-family: 'Nunito Sans', sans-serif; }
+.author__img { flex: none; width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: 50% 20%; }
+.author__name { margin: 0; font-family: 'EB Garamond', serif; font-weight: 600; font-size: 22px; line-height: 28px; color: #24211D; }
+.author__role { margin: 2px 0 0; font-size: 14px; line-height: 20px; color: #7A6D5E; }
+.author__link { display: inline-block; margin-top: 6px; font-weight: 600; font-size: 15px; color: #3A5139; text-decoration: underline; text-underline-offset: 3px; }
+.cta { margin-top: 40px; padding: 32px; border-radius: 24px; background: #3A5139; color: #FFFFFF; font-family: 'Nunito Sans', sans-serif; }
+.cta__h { margin: 0; font-family: 'EB Garamond', serif; font-weight: 500; font-size: 30px; line-height: 36px; }
+.cta__p { margin: 10px 0 24px; font-size: 16px; line-height: 26px; color: #DFE8DC; }
+.cta__row { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+.cta__link { color: #FFFFFF; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+.posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin-top: 48px; }
+.pcard { display: flex; flex-direction: column; border: 1px solid #EDE5D8; border-radius: 20px; overflow: hidden; background: #FFFFFF; font-family: 'Nunito Sans', sans-serif; transition: border-color 200ms ease; }
+.pcard:hover { border-color: #C2D3BE; }
+.pcard__img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; background: #F5EFE6; }
+.pcard__body { padding: 24px; }
+.pcard__date { margin: 0; font-size: 13px; color: #7A6D5E; }
+.pcard__h { margin: 8px 0 0; font-family: 'EB Garamond', serif; font-weight: 600; font-size: 24px; line-height: 30px; color: #24211D; }
+.pcard__p { margin: 10px 0 0; font-size: 15px; line-height: 24px; color: #4A453F; }
+.legal__wrap--wide { width: 1000px; }
+.legal__body .bio__facts { display: grid; gap: 4px; margin: 0 0 16px; padding: 0; list-style: none; }
+@media (max-width: 860px) {
+  .posts { grid-template-columns: 1fr; gap: 24px; margin-top: 32px; }
+}
+@media (max-width: 640px) {
+  .post__lead { font-size: 17px; line-height: 27px; }
+  .post__img { margin-top: 24px; border-radius: 16px; }
+  .author { align-items: flex-start; padding: 20px; gap: 16px; }
+  .author__img { width: 56px; height: 56px; }
+  .cta { padding: 24px; border-radius: 20px; }
+  .cta__h { font-size: 26px; line-height: 32px; }
+}

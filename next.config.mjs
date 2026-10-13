@@ -12,6 +12,24 @@ const nextConfig = {
     qualities: [75, 80, 90],
     deviceSizes: [390, 640, 768, 1024, 1280, 1440, 1920, 2560],
   },
+  // Stari WordPress sajt (arhiva: archive/wordpress): svaki stari URL vodi na novu stranicu, da se ne izgubi SEO
+  async redirects() {
+    const r = (source, destination) => ({ source: `${source}{/}?`, destination, permanent: true });
+    const blog = ['ciscenje-jetre', 'glavobolje-i-migrene', 'neredovan-menstrualni-ciklus', 'protokol-ciscenja-jetre-pojednostavljen'];
+    return [
+      ...blog.map((s) => r(`/${s}`, `/blog/${s}`)),
+      r('/lekovitost-lista-maline', '/blog'),
+      r('/category/:path*', '/blog'),
+      r('/feed', '/blog'),
+      r('/kontakt', '/o-meni#kontakt'),
+      r('/:p(instagram|tiktok|bozinovic-olgica-linkovi|employee|location)/:rest*', '/o-meni'),
+      r('/privacy-policy', '/politika-privatnosti'),
+      r('/refund_returns', '/uslovi-kupovine'),
+      r('/:p(shop|cart|cart-2|checkout|checkout-2|porucivanje|product|product-category)/:rest*', '/#cena'),
+      r('/:p(protokol-ciscenja-jetre|lp|poziv-za-program-put-zdravlja|poziv-za-program-put-zdravlja-1|programi-zdravlja|konsultacije|edukacije|courses|course-category|service|service-category)/:rest*', '/'),
+      r('/:p(dashboard|my-account|student-registration|instructor-registration|sample-page|optin_confirmation|preference_page|unsubscribe_confirmation|kratak-vodic-uspesno-preuzimanje|pocetna)/:rest*', '/'),
+    ];
+  },
   async headers() {
     return [
       {

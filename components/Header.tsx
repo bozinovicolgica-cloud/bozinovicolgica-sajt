@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 import { nav } from '@/lib/content';
 import { Pill } from './ui';
 
-export function Brand({ light = false }: { light?: boolean }) {
+export function Brand({ light = false, href = '#' }: { light?: boolean; href?: string }) {
   return (
-    <a href="#" aria-label="Olgica Božinović, početna" className={`brand${light ? ' brand--light' : ''}`}>
+    <a href={href} aria-label="Olgica Božinović, početna" className={`brand${light ? ' brand--light' : ''}`}>
       <span aria-hidden="true" className="brand__mark" />
       <span className="brand__txt">
         <span className="brand__name">Olgica Božinović</span>

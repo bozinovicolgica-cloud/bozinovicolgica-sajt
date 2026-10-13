@@ -38,6 +38,9 @@ git push -u origin main
 | Webhook | `ORDER_WEBHOOK_URL` / `QUIZ_WEBHOOK_URL` – JSON za n8n, Make, Airtable ili CRM; header `X-Webhook-Secret`. |
 | Analitika | `NEXT_PUBLIC_GTM_ID`, `NEXT_PUBLIC_META_PIXEL_ID`. Događaji: `order_form_open` (Meta: InitiateCheckout), `order_submit` (Lead), `liver_quiz_open/start/lead/complete/cta`, `video_play`. UTM parametri se pamte i upisuju uz porudžbinu. |
 | Slike | Sve slike i logo idu sa Cloudinary-ja (`lib/images.ts`, cloud `ozdkiori`). Fotografije (hero, o meni, završna) Cloudinary smanjuje po ekranu i šalje kao AVIF/WebP, kvalitet 90 (`lib/cloudinary-loader.ts`). Screenshotovi poruka idu kao originali, bez kompresije. Slika za deljenje na mrežama je 1200×630 isečena oko lica. Kopije su i u `public/images` (`NEXT_PUBLIC_IMAGES=local`). Kad zameniš sliku na Cloudinary-ju, promeni broj verzije (`v…`) u `lib/images.ts`. |
+| Blog | Tekstovi su Markdown fajlovi u `content/blog/<slug>.md` (zaglavlje: naslov, opis, datumi, slika) i prikazuju se na `/blog/<slug>`. Novi tekst = novi `.md` fajl + slika u `public/images/blog/`; sitemap, llms.txt i schema se ažuriraju sami. |
+| AEO / SEO | Povezan schema.org graf (`lib/schema.ts`): Organization, WebSite, Person (Olgica, sa obrazovanjem i mrežama), Product, FAQPage, BlogPosting, ProfilePage, BreadcrumbList. `/llms.txt` je sažetak sajta za AI asistente. Podaci o Olgici i mrežama su u `lib/site.ts`. |
+| Stari WordPress | Arhiviran u `archive/wordpress` (ne ide na Vercel, vidi `.vercelignore`). Svi stari URL-ovi se preusmeravaju u `next.config.mjs` → `redirects()`. |
 | Video | `NEXT_PUBLIC_VIDEO_SRC` = .mp4, YouTube ili Vimeo link; `NEXT_PUBLIC_VIDEO_POSTER` = slika pre puštanja. |
 
 Ako nijedna integracija (Supabase, webhook, email Olgici) nije podešena, porudžbina u produkciji vraća grešku umesto da se tiho izgubi.
