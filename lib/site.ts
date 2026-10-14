@@ -13,6 +13,18 @@ export const LEGAL_NAME = (process.env.NEXT_PUBLIC_LEGAL_NAME || 'OB METHOD PUT 
 
 export const EMAIL = 'bozinovic.olgica@gmail.com';
 
+/** Firma koja prodaje (Uslovi kupovine, Politika privatnosti, schema.org). */
+export const COMPANY = {
+  name: LEGAL_NAME,
+  email: 'info@bozinovicolgica.rs',
+  street: '30 N Gould St, Ste N',
+  city: 'Sheridan',
+  region: 'WY',
+  zip: '82801',
+  country: 'US',
+  addressLine: '30 N Gould St, Ste N, Sheridan, WY 82801, SAD',
+};
+
 export const SOCIAL = {
   instagram: 'https://www.instagram.com/bozinovic.olgica/',
   tiktok: 'https://www.tiktok.com/@bozinovic.olgica',

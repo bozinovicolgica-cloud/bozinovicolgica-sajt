@@ -4,7 +4,7 @@
  */
 import { faqs, PRICE_EUR, PRODUCT_NAME } from './content';
 import { img, imgT } from './images';
-import { ID, LEGAL_NAME, EMAIL, SITE, SITE_NAME, SITE_TAGLINE, SOCIAL, person } from './site';
+import { COMPANY, EMAIL, ID, LEGAL_NAME, SITE, SITE_NAME, SITE_TAGLINE, SOCIAL, person } from './site';
 import type { Post } from './blog';
 
 type Node = Record<string, unknown>;
@@ -26,7 +26,15 @@ export const organization = (): Node => ({
   ...(LEGAL_NAME ? { legalName: LEGAL_NAME } : {}),
   url: SITE,
   logo: { '@type': 'ImageObject', url: img('logo-ob.svg') },
-  email: EMAIL,
+  email: COMPANY.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: COMPANY.street,
+    addressLocality: COMPANY.city,
+    addressRegion: COMPANY.region,
+    postalCode: COMPANY.zip,
+    addressCountry: COMPANY.country,
+  },
   founder: { '@id': ID.person },
   sameAs: Object.values(SOCIAL),
 });

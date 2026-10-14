@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import LegalPage from '@/components/LegalPage';
+import { COMPANY } from '@/lib/site';
 
 export const metadata: Metadata = { title: 'Politika privatnosti | Olgica Božinović', alternates: { canonical: '/politika-privatnosti' } };
 
 export default function Page() {
   return (
     <LegalPage title="Politika privatnosti" updated="[datum]">
-      <p>Rukovalac podacima je OB METHOD PUT ZDRAVLJA LLC, [adresa], email bozinovic.olgica@gmail.com. Podatke obrađujemo u skladu sa Zakonom o zaštiti podataka o ličnosti Republike Srbije.</p>
+      <p>Rukovalac podacima je {COMPANY.name}, {COMPANY.addressLine}, email <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>. Podatke obrađujemo u skladu sa Zakonom o zaštiti podataka o ličnosti Republike Srbije.</p>
       <h2>Koje podatke prikupljamo</h2>
       <ul>
         <li><b>Porudžbina:</b> ime i prezime, email, broj telefona, kada planiraš da počneš i napomena, ako je upišeš. Podatke čuvamo već dok popunjavaš formu (posle svakog koraka), da bismo mogli da ti se javimo ako zapneš pre plaćanja. Svrha: obrada porudžbine, slanje materijala, podrška tokom programa. Osnov: izvršenje ugovora i radnje pre zaključenja ugovora.</li>
@@ -19,7 +20,7 @@ export default function Page() {
       <h2>Koliko dugo čuvamo podatke</h2>
       <p>Podatke iz porudžbina čuvamo onoliko koliko propisi o računovodstvu i porezima zahtevaju. Podatke iz kviza čuvamo dok ne povučeš pristanak, a najduže [rok].</p>
       <h2>Tvoja prava</h2>
-      <p>Imaš pravo na pristup, ispravku i brisanje podataka, ograničenje obrade, prenosivost i pravo na prigovor. Pristanak možeš da povučeš odgovorom „odjava“ na bilo koji naš email ili pisanjem na [email]. Pritužbu možeš da podneseš Povereniku za informacije od javnog značaja i zaštitu podataka o ličnosti.</p>
+      <p>Imaš pravo na pristup, ispravku i brisanje podataka, ograničenje obrade, prenosivost i pravo na prigovor. Pristanak možeš da povučeš odgovorom „odjava“ na bilo koji naš email ili pisanjem na <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>. Pritužbu možeš da podneseš Povereniku za informacije od javnog značaja i zaštitu podataka o ličnosti.</p>
     </LegalPage>
   );
 }
