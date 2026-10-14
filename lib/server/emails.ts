@@ -18,57 +18,42 @@ const row = (k: string, v: string) => `<tr><td style="padding:10px 0;border-bott
 const list = (items: string[]) => `<ol style="margin:0 0 16px;padding-left:20px;font-size:15px;line-height:24px;color:#24211D">${items.map((i) => `<li style="margin-bottom:6px">${esc(i)}</li>`).join('')}</ol>`;
 const button = (href: string, label: string) => `<a href="${href}" style="display:inline-block;background:#3A5139;color:#FFFFFF;text-decoration:none;font-weight:bold;font-size:15px;padding:14px 28px;border-radius:999px">${label}</a>`;
 
-export type PaymentView = {
-  reference: string; amountEur: number; amountRsd: number | null; recipient: string; account: string | null;
-  bank: string | null; iban: string | null; swift: string | null; purpose: string; model: string; deliveryNote: string;
-};
-
-export function orderCustomerEmail(name: string, pay: PaymentView, domestic: boolean) {
+/** Kupcu, odmah posle uspešnog plaćanja. */
+export function paidCustomerEmail(name: string, o: { reference: string; amount: string; deliveryNote: string }) {
   const first = esc(name.trim().split(/\s+/)[0] || '');
-  const rows = domestic
-    ? [
-        row('Primalac', esc(pay.recipient)),
-        pay.account ? row('Račun', esc(pay.account)) : '',
-        pay.bank ? row('Banka', esc(pay.bank)) : '',
-        row('Iznos', pay.amountRsd ? `${pay.amountRsd.toLocaleString('sr-RS')} RSD` : `${pay.amountEur} EUR`),
-        row('Svrha uplate', esc(pay.purpose)),
-        row('Poziv na broj', `${pay.model ? esc(pay.model) + ' ' : ''}${esc(pay.reference)}`),
-      ]
-    : [
-        row('Beneficiary', esc(pay.recipient)),
-        pay.iban ? row('IBAN', esc(pay.iban)) : '',
-        pay.swift ? row('SWIFT/BIC', esc(pay.swift)) : '',
-        pay.bank ? row('Banka', esc(pay.bank)) : '',
-        row('Iznos', `${pay.amountEur} EUR`),
-        row('Svrha / Reference', `${esc(pay.purpose)} ${esc(pay.reference)}`),
-      ];
   const html = wrap(
-    h1(`Hvala${first ? ', ' + first : ''}! Još samo uplata.`) +
-      p(`Primila sam tvoju porudžbinu za <b>${PRODUCT_NAME}</b>. Uplati iznos na račun ispod i obavezno upiši poziv na broj, da tvoju uplatu prepoznam. ${esc(pay.deliveryNote)}`) +
-      `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 24px">${rows.join('')}</table>` +
+    h1(`Hvala${first ? ', ' + first : ''}! Plaćanje je uspelo.`) +
+      p(`Tvoja porudžbina za <b>${PRODUCT_NAME}</b> je plaćena. ${esc(o.deliveryNote)}`) +
+      `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 24px">${[
+        row('Broj porudžbine', esc(o.reference)),
+        row('Plaćeno', esc(o.amount)),
+      ].join('')}</table>` +
+      p('Dok čekaš materijale: ne kreći još sa ishranom iz protokola. Prvo stiže spisak za kupovinu, pa nabaviš namirnice i počinješ prvog dana.') +
       p('Ako ti nešto nije jasno, samo odgovori na ovaj email.') +
       p('Olgica')
   );
-  const text = `Hvala! Porudžbina za ${PRODUCT_NAME} je primljena.\nPoziv na broj: ${pay.reference}\nIznos: ${pay.amountRsd && domestic ? pay.amountRsd + ' RSD' : pay.amountEur + ' EUR'}\n${pay.deliveryNote}`;
-  return { subject: `Podaci za uplatu – ${PRODUCT_NAME} (${pay.reference})`, html, text };
+  const text = `Hvala! Plaćanje za ${PRODUCT_NAME} je uspelo.\nBroj porudžbine: ${o.reference}\nPlaćeno: ${o.amount}\n${o.deliveryNote}`;
+  return { subject: `Plaćanje uspelo – ${PRODUCT_NAME} (${o.reference})`, html, text };
 }
 
-export function orderOwnerEmail(o: { name: string; email: string; phone: string; country: string; note?: string; source?: string; quizResult?: string; reference: string; amount: string }) {
+/** Olgici: nova plaćena porudžbina. */
+export function paidOwnerEmail(o: { reference: string; name: string; email: string; phone: string; amount: string; startWhen: string; note: string; source: string; quizResult: string; stripeUrl: string }) {
   const html = wrap(
-    h1('Nova porudžbina') +
+    h1('Nova plaćena porudžbina') +
       `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${[
-        row('Poziv na broj', esc(o.reference)),
+        row('Broj porudžbine', esc(o.reference)),
         row('Ime', esc(o.name)),
         row('Email', esc(o.email)),
-        row('Telefon', esc(o.phone)),
-        row('Plaća iz', o.country === 'RS' ? 'Srbije' : 'inostranstva'),
-        row('Iznos', esc(o.amount)),
+        o.phone ? row('Telefon', esc(o.phone)) : '',
+        row('Plaćeno', esc(o.amount)),
+        o.startWhen ? row('Počinje', esc(o.startWhen)) : '',
         o.note ? row('Napomena', esc(o.note)) : '',
         row('Izvor', esc(o.source || '-')),
         o.quizResult ? row('Rezultat kviza', esc(o.quizResult)) : '',
-      ].join('')}</table>`
+      ].join('')}</table>` +
+      `<p style="margin:24px 0 0">${button(o.stripeUrl, 'Otvori u Stripe-u')}</p>`
   );
-  return { subject: `Nova porudžbina ${o.reference} – ${o.name}`, html };
+  return { subject: `Plaćeno ${o.amount}: ${o.name} (${o.reference})`, html };
 }
 
 export function quizResultEmail(name: string, result: ResultKey) {

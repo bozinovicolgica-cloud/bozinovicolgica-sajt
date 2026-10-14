@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  agentRules: false, // ne generiši AGENTS.md pri next dev
   experimental: {
     // CSS se ugrađuje direktno u HTML -> nema zahteva koji blokiraju prikaz
     inlineCss: true,

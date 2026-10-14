@@ -8,8 +8,8 @@ export const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 export const SITE_NAME = 'Olgica Božinović';
 export const SITE_TAGLINE = 'Programi zdravlja, ishrana i suplementacija';
 
-/** Pravni naziv firme (LLC) za schema.org; prazno = koristi se samo naziv brenda. */
-export const LEGAL_NAME = (process.env.NEXT_PUBLIC_LEGAL_NAME || '').trim();
+/** Pravni naziv firme za schema.org (prodavac). */
+export const LEGAL_NAME = (process.env.NEXT_PUBLIC_LEGAL_NAME || 'OB METHOD PUT ZDRAVLJA LLC').trim();
 
 export const EMAIL = 'bozinovic.olgica@gmail.com';
 

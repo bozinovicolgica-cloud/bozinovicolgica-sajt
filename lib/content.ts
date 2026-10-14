@@ -72,7 +72,7 @@ export const marqueeLeft: [string, number][] = [['01', 225], ['10', 191], ['09',
 export const marqueeRight: [string, number][] = [['02', 299], ['05', 298], ['06', 370], ['11', 234], ['04', 220]];
 
 export const steps = [
-  ['Odmah', 'Kupiš protokol', 'Popuniš kratku formu i dobiješ podatke za uplatu na račun.'],
+  ['Odmah', 'Kupiš protokol', 'Popuniš kratku formu u 3 koraka i platiš karticom.'],
   ['[Rok, npr. isti dan]', 'Dobiješ materijale', 'Plan ishrane, spisak za kupovinu, recepte i video lekcije.'],
   ['Pre prvog dana', 'Nabaviš i pripremiš', 'Sa spiskom u ruci nabaviš namirnice i pripremiš se za početak.'],
   ['Dan 1-9', '9 dana protokola', 'Pratiš plan i lekcije i svakog dana znaš šta je na redu.'],

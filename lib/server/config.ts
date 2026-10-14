@@ -4,19 +4,14 @@ const env = (k: string) => (process.env[k] || '').trim();
 
 export const siteUrl = () => env('NEXT_PUBLIC_SITE_URL') || 'http://localhost:3000';
 
-export const paymentConfig = () => ({
-  recipient: env('PAYMENT_RECIPIENT') || 'Olgica Božinović',
-  recipientAddress: env('PAYMENT_RECIPIENT_ADDRESS'),
-  account: env('PAYMENT_ACCOUNT') || null, // domaći račun, npr. 160-0000000000000-00
-  bank: env('PAYMENT_BANK') || null,
-  iban: env('PAYMENT_IBAN') || null,
-  swift: env('PAYMENT_SWIFT') || null,
-  priceRsd: env('PRICE_RSD') ? Number(env('PRICE_RSD').replace(',', '.')) : null,
-  code: env('PAYMENT_CODE') || '289',
-  purpose: env('PAYMENT_PURPOSE') || '9 dana spasavanja jetre',
-  model: env('PAYMENT_MODEL') || '00',
-  deliveryNote: env('DELIVERY_NOTE') || 'Materijale šaljem na tvoj email čim uplata legne.',
+export const stripeConfig = () => ({
+  secretKey: env('STRIPE_SECRET_KEY'),
+  webhookSecret: env('STRIPE_WEBHOOK_SECRET'),
+  priceId: env('STRIPE_PRICE_ID') || null, // bez njega: cena PRICE_EUR iz lib/content.ts
+  locale: env('STRIPE_LOCALE') || 'hr', // Stripe nema srpski; hrvatski je najbliži
 });
+
+export const deliveryNote = () => env('DELIVERY_NOTE') || 'Materijale ti šaljem na email u roku od 24 sata.';
 
 export const supabaseConfig = () => ({ url: env('SUPABASE_URL'), key: env('SUPABASE_SERVICE_ROLE_KEY') });
 

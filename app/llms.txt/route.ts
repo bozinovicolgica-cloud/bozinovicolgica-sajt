@@ -16,7 +16,7 @@ export function GET() {
 ## Program: ${PRODUCT_NAME}
 
 - [${PRODUCT_NAME}](${SITE}/): ${PRODUCT_DESC}
-- Cena: ${PRICE_EUR} EUR, jednokratno. Kupuje se preko forme na stranici.
+- Cena: ${PRICE_EUR} EUR, jednokratno. Kupuje se preko kratke forme na stranici, plaćanje karticom preko Stripe-a; materijali stižu na email.
 - Šta dobijaš: ${gets.map(([t, d]) => `${t} (${d.replace(/\.$/, '').toLowerCase()})`).join('; ')}.
 - U paketu: ${items.join(', ')}.
 - Nije za tebe ako: ${fitNo.join('; ')}.
