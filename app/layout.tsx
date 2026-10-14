@@ -16,7 +16,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: '9 dana spašavanja jetre | Olgica Božinović',
   description: DESC,
-  icons: { icon: { url: '/images/logo.svg', type: 'image/svg+xml' } },
   alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
