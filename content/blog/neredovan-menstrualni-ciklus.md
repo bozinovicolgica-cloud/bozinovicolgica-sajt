@@ -33,4 +33,4 @@ Komorač je biljka koja se često koristi u tradicionalnoj medicini za olakšava
 
 Kurkuma je začin poznat po aktivnom sastojku kurkuminu, koji ima antiinflamatorna i antioksidativna svojstva. Može pomoći u regulaciji menstrualnog ciklusa tako što podržava ravnotežu hormona i smanjuje upalu u telu. Dodaje se u razna jela, a može se konzumirati i kao čaj ili dodatak ishrani.
 
-Ako imate probleme i neregularnost u ciklusu, pišite na [bozinovic.olgica@gmail.com](mailto:bozinovic.olgica@gmail.com) i zakažite konsultaciju.
+Ako imate probleme i neregularnost u ciklusu, pišite na [info@bozinovicolgica.rs](mailto:info@bozinovicolgica.rs) i zakažite konsultaciju.

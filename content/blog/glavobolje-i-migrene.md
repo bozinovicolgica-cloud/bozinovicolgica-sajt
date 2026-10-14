@@ -36,4 +36,4 @@ Ja sam se izvukla iz kandži migrene, a evo šta sam uvela u svoju svakodnevicu:
 9. Hidriranje sokom od limuna, krastavca i aloje, uz izbacivanje mlečnih proizvoda, glutena i jaja
 10. Dosta voća i povrća u ishrani
 
-Ako želite da vam pomognem da se rešite migrene, pišite na [bozinovic.olgica@gmail.com](mailto:bozinovic.olgica@gmail.com). Sastavila sam protokol ishrane prilagođen osobama koje pate od migrene.
+Ako želite da vam pomognem da se rešite migrene, pišite na [info@bozinovicolgica.rs](mailto:info@bozinovicolgica.rs). Sastavila sam protokol ishrane prilagođen osobama koje pate od migrene.

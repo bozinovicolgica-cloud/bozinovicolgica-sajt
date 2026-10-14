@@ -11,12 +11,13 @@ export const SITE_TAGLINE = 'Programi zdravlja, ishrana i suplementacija';
 /** Pravni naziv firme za schema.org (prodavac). */
 export const LEGAL_NAME = (process.env.NEXT_PUBLIC_LEGAL_NAME || 'OB METHOD PUT ZDRAVLJA LLC').trim();
 
-export const EMAIL = 'bozinovic.olgica@gmail.com';
+/** Javni kontakt email (jedini koji se prikazuje na sajtu). */
+export const EMAIL = 'info@bozinovicolgica.rs';
 
 /** Firma koja prodaje (Uslovi kupovine, Politika privatnosti, schema.org). */
 export const COMPANY = {
   name: LEGAL_NAME,
-  email: 'info@bozinovicolgica.rs',
+  email: EMAIL,
   street: '30 N Gould St, Ste N',
   city: 'Sheridan',
   region: 'WY',
