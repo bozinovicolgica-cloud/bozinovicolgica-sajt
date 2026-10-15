@@ -27,6 +27,8 @@ export const metadata: Metadata = {
   },
   twitter: { card: 'summary_large_image', title: '9 dana spašavanja jetre', description: DESC, images: [OG] },
   robots: { index: true, follow: true },
+  // Google Search Console (URL prefix: https://program.bozinovicolgica.rs)
+  verification: { google: 'MWYGF_iromI7-sX1b19ZPWzihp9-FuN3GoC43EjOcAE' },
 };
 
 export const viewport: Viewport = {
