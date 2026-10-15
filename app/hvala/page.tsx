@@ -40,6 +40,9 @@ export default async function Page({ searchParams }: Props) {
             <>
               <h1 className="h2" style={{ marginTop: 12 }}>Hvala{first ? `, ${first}` : ''}! Plaćanje je uspelo.</h1>
               <p className="post__lead">{deliveryNote()}{email ? <> Materijali stižu na <b>{email}</b>.</> : null}</p>
+              <video className="thanks__video" src="/video/hvala.mp4" poster="/video/hvala-poster.webp" width={1080} height={1920} controls playsInline preload="metadata">
+                Tvoj pregledač ne podržava video.
+              </video>
               <div className="legal__body">
                 {reference && <p>Broj porudžbine: <b>{reference}</b>. Potvrdu plaćanja dobijaš i na email.</p>}
                 <h2>Šta sledi</h2>
