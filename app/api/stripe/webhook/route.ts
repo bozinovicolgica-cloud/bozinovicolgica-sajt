@@ -105,8 +105,10 @@ async function onClosed(session: Stripe.Checkout.Session, status: 'expired' | 'f
   const id = session.metadata?.order_id || session.client_reference_id;
   if (!id) return;
   // samo ako još nije plaćeno i ako je ovo poslednja sesija te porudžbine (kupac je mogao da pokuša ponovo)
+  const email = session.customer_email || session.customer_details?.email;
   await saveOrder(event, id, {
     status,
     stripe_session_id: session.id,
+    ...(email ? { email } : {}),
   }, { onlyIfStatus: ['started', 'checkout'], where: { stripe_session_id: session.id } });
 }

@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { syncQuizLeadToAirtable } from '@/lib/server/airtable';
 import { postWebhook, sendEmail, supabase } from '@/lib/server/integrations';
 import { quizResultEmail } from '@/lib/server/emails';
 import { clientIp, limited } from '@/lib/server/rate-limit';
@@ -50,6 +51,7 @@ export async function POST(req: Request) {
     if (error) console.error('[quiz] supabase', error);
   }
   await postWebhook('quiz', row);
+  if (hasContact) after(() => syncQuizLeadToAirtable({ name: row.name, email: d.email, result: d.result, score: d.score }));
 
   let emailed = false;
   if (hasContact) {

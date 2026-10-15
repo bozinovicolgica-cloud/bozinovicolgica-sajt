@@ -1,5 +1,7 @@
 import 'server-only';
 import { randomInt } from 'node:crypto';
+import { after } from 'next/server';
+import { syncOrderToAirtable } from './airtable';
 import { postWebhook, supabase } from './integrations';
 
 /** Broj porudžbine koji kupac vidi (npr. 26483920). */
@@ -8,8 +10,8 @@ export const newReference = () => `${String(new Date().getFullYear()).slice(2)}$
 export type OrderEvent = 'order.started' | 'order.updated' | 'checkout.started' | 'order.paid' | 'checkout.expired' | 'payment.failed';
 
 /**
- * Upisuje promenu porudžbine u Supabase (ako je podešen) i šalje događaj na ORDER_WEBHOOK_URL
- * (n8n / Make / Airtable). Vraća true ako je bar jedno od ta dva uspelo.
+ * Upisuje promenu porudžbine u Supabase (ako je podešen), šalje događaj na ORDER_WEBHOOK_URL
+ * i, posle odgovora kupcu, u Airtable CRM. Vraća true ako je Supabase ili webhook uspeo.
  */
 export async function saveOrder(
   event: OrderEvent,
@@ -35,6 +37,7 @@ export async function saveOrder(
       else if (opts.onlyIfStatus || opts.where) return false;
     }
   }
+  after(() => syncOrderToAirtable(event, id, fields));
   const hooked = await postWebhook('order', { event, id, ...fields, at: new Date().toISOString() });
   return stored || hooked;
 }
