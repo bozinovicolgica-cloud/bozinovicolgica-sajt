@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import SubPage from '@/components/SubPage';
 import PurchaseDone from '@/components/PurchaseDone';
+import ThanksVideo from '@/components/ThanksVideo';
 import { PRODUCT_NAME } from '@/lib/content';
 import { deliveryNote } from '@/lib/server/config';
 import { stripe } from '@/lib/server/stripe';
@@ -13,6 +14,10 @@ export const dynamic = 'force-dynamic';
 type Props = { searchParams: Promise<{ session_id?: string }> };
 
 async function load(id: string | undefined) {
+  // samo lokalno: /hvala?session_id=preview prikazuje stranicu kao posle uspešne kupovine
+  if (process.env.NODE_ENV === 'development' && id === 'preview') {
+    return { id: 'cs_preview', payment_status: 'paid', metadata: { name: 'Marija', reference: 'OB-TEST' }, customer_details: { email: 'marija@primer.rs' }, amount_total: 18000, currency: 'eur' } as unknown as Awaited<ReturnType<NonNullable<ReturnType<typeof stripe>>['checkout']['sessions']['retrieve']>>;
+  }
   const s = stripe();
   if (!s || !id || !/^cs_[A-Za-z0-9_]+$/.test(id)) return null;
   try {
@@ -40,9 +45,7 @@ export default async function Page({ searchParams }: Props) {
             <>
               <h1 className="h2" style={{ marginTop: 12 }}>Hvala{first ? `, ${first}` : ''}! Plaćanje je uspelo.</h1>
               <p className="post__lead">{deliveryNote()}{email ? <> Materijali stižu na <b>{email}</b>.</> : null}</p>
-              <video className="thanks__video" src="/video/hvala.mp4" poster="/video/hvala-poster.webp" width={1080} height={1920} controls playsInline preload="metadata">
-                Tvoj pregledač ne podržava video.
-              </video>
+              <ThanksVideo />
               <div className="legal__body">
                 {reference && <p>Broj porudžbine: <b>{reference}</b>. Potvrdu plaćanja dobijaš i na email.</p>}
                 <h2>Šta sledi</h2>
@@ -53,7 +56,7 @@ export default async function Page({ searchParams }: Props) {
                 </ol>
                 <p>Ako materijali ne stignu, proveri spam folder ili mi piši na <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.</p>
               </div>
-              <PurchaseDone sessionId={session.id} value={value} currency={currency} reference={reference} />
+              {session.id !== 'cs_preview' && <PurchaseDone sessionId={session.id} value={value} currency={currency} reference={reference} />}
             </>
           ) : session ? (
             <>
