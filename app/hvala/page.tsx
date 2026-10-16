@@ -4,6 +4,7 @@ import SubPage from '@/components/SubPage';
 import PurchaseDone from '@/components/PurchaseDone';
 import ThanksVideo from '@/components/ThanksVideo';
 import { PRODUCT_NAME } from '@/lib/content';
+import { vocative } from '@/lib/vocative';
 import { deliveryNote } from '@/lib/server/config';
 import { stripe } from '@/lib/server/stripe';
 import { EMAIL } from '@/lib/site';
@@ -30,7 +31,7 @@ async function load(id: string | undefined) {
 export default async function Page({ searchParams }: Props) {
   const session = await load((await searchParams).session_id);
   const paid = session?.payment_status === 'paid';
-  const first = (session?.metadata?.name || session?.customer_details?.name || '').trim().split(/\s+/)[0];
+  const first = vocative(session?.metadata?.name || session?.customer_details?.name || '');
   const email = session?.customer_details?.email || session?.customer_email || '';
   const reference = session?.metadata?.reference || '';
   const value = (session?.amount_total ?? 0) / 100;

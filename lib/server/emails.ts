@@ -1,6 +1,7 @@
 import 'server-only';
 import { esc } from './integrations';
 import { siteUrl } from './config';
+import { vocative } from '@/lib/vocative';
 import { PRODUCT_NAME } from '@/lib/content';
 import { RESULT_TITLES, TIPS_DOCTOR, TIPS_LIKELY, TIPS_OK, type ResultKey } from '@/lib/quiz-data';
 
@@ -20,7 +21,7 @@ const button = (href: string, label: string) => `<a href="${href}" style="displa
 
 /** Kupcu, odmah posle uspešnog plaćanja. */
 export function paidCustomerEmail(name: string, o: { reference: string; amount: string; deliveryNote: string }) {
-  const first = esc(name.trim().split(/\s+/)[0] || '');
+  const first = esc(vocative(name));
   const html = wrap(
     h1(`Hvala${first ? ', ' + first : ''}! Plaćanje je uspelo.`) +
       p(`Tvoja porudžbina za <b>${PRODUCT_NAME}</b> je plaćena. ${esc(o.deliveryNote)}`) +
@@ -57,7 +58,7 @@ export function paidOwnerEmail(o: { reference: string; name: string; email: stri
 }
 
 export function quizResultEmail(name: string, result: ResultKey) {
-  const first = esc(name.trim().split(/\s+/)[0] || '');
+  const first = esc(vocative(name));
   const tips = result === 'likely' ? TIPS_LIKELY : result === 'doctor' ? TIPS_DOCTOR : TIPS_OK;
   const intro: Record<ResultKey, string> = {
     likely: 'Tvoji odgovori se poklapaju sa znakovima koje viđam kod klijenata čija jetra ne stiže da obavi sav posao koji joj dajemo. Evo prvih koraka koje možeš da uradiš već od danas:',
