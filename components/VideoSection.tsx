@@ -49,7 +49,7 @@ export default function VideoSection() {
                     <span className="video__label">[Poster: kadar iz videa, Olgica gleda u kameru]</span>
                   )}
                   <span className="video__play">
-                    <svg width="30" height="30" viewBox="0 0 256 256" fill="#3A5139" stroke="#3A5139" strokeWidth="12" strokeLinejoin="round" style={{ marginLeft: 4 }}>
+                    <svg width="30" height="30" viewBox="0 0 256 256" fill="#3A5139" stroke="#3A5139" strokeWidth="12" strokeLinejoin="round" aria-hidden="true">
                       <path d="M72,40V216a8,8,0,0,0,12,7l144-88a8,8,0,0,0,0-14L84,33A8,8,0,0,0,72,40Z" />
                     </svg>
                   </span>
