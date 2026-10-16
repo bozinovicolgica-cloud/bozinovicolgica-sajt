@@ -4,8 +4,9 @@ import { rv, useSeen } from '@/lib/reveal';
 import { track } from '@/lib/track';
 import { Pill } from './ui';
 
-const SRC = process.env.NEXT_PUBLIC_VIDEO_SRC || '';
-const POSTER = process.env.NEXT_PUBLIC_VIDEO_POSTER || '';
+// VSL (public/video); NEXT_PUBLIC_VIDEO_SRC / _POSTER mogu da ga zamene (npr. YouTube ili Vimeo link)
+const SRC = process.env.NEXT_PUBLIC_VIDEO_SRC || '/video/vsl.mp4';
+const POSTER = process.env.NEXT_PUBLIC_VIDEO_POSTER || '/video/vsl-poster.webp';
 
 /** YouTube / Vimeo link -> embed URL; .mp4 ostaje null */
 function embedUrl(src: string): string | null {
