@@ -1,5 +1,5 @@
 /**
- * Vokativ imena za obraćanje ("Hvala, Marijo!", "Zdravo Milice,").
+ * Vokativ imena za obraćanje ("Hvala, Jeleno!", "Zdravo Milice,").
  * Uzima prvo ime iz unosa i vraća ga sa velikim početnim slovom, latinicom ili ćirilicom kako je upisano.
  * Kad pravilo nije sigurno (strana imena, ženska imena na suglasnik...), ime ostaje u nominativu.
  */
@@ -33,7 +33,7 @@ function vocativeLatin(n: string): string {
   if (KEEP.has(n)) return n;
   if (SPECIAL[n]) return SPECIAL[n];
   if (n.endsWith('ica')) return n.slice(0, -1) + 'e'; // Milica → Milice
-  if (n.endsWith('ija')) return n.slice(0, -1) + 'o'; // Marija → Marijo
+  if (n.endsWith('ija')) return n; // Marija, Sofija ostaju ista
   if (n.endsWith('a')) {
     // dvosložna (Ana, Maja, Vesna), na -ka (Branka), -ina (Kristina), -ela/-ea (Danijela, Andrea) ostaju ista
     if (syllables(n) <= 2 || /(ka|ina|ela|ea)$/.test(n)) return n;
@@ -45,7 +45,7 @@ function vocativeLatin(n: string): string {
 
 const capitalize = (s: string) => s.charAt(0).toLocaleUpperCase('sr') + s.slice(1);
 
-/** "marija petrović" → "Marijo"; prazan unos → "". */
+/** "jelena petrović" → "Jeleno"; prazan unos → "". */
 export function vocative(fullName: string): string {
   const first = fullName.trim().split(/\s+/)[0] || '';
   if (!first) return '';
