@@ -9,7 +9,7 @@ export const PRICE_EUR = 180;
 export const PRODUCT_NAME = '9 dana spašavanja jetre';
 
 /**
- * Kružići pored „100+ izlečenih ljudi“ u hero sekciji (ukupno 4).
+ * Kružići pored „100+ zadovoljnih klijenata“ u hero sekciji (ukupno 4).
  * Svaka stavka je ili fotografija sa Cloudinary-ja (ime fajla) ili boja (placeholder).
  * Kad stignu nove slike, samo zameni boju imenom fajla.
  */

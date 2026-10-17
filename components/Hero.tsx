@@ -41,7 +41,7 @@ export default function Hero() {
                   )
                 )}
               </div>
-              <span className="badge__txt">100+ izlečenih ljudi</span>
+              <span className="badge__txt">100+ zadovoljnih klijenata</span>
             </div>
           </div>
 

@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { useRef } from 'react';
 import { PRICE_EUR } from '@/lib/content';
-import { EASE, rv, useSeen } from '@/lib/reveal';
+import { rv, useSeen } from '@/lib/reveal';
 import { img } from '@/lib/images';
 import { Pill } from './ui';
 
@@ -35,16 +35,6 @@ export default function Final() {
           </div>
           <div data-rv style={rv(sn, 260)}>
             <p className="lead final__p">Znam kako je kad probaš sve, a stomak i dalje ne sarađuje. Zato sam napravila plan u kom ništa ne moraš da smišljaš: samo pratiš dan po dan, a ja sam tu ako zapneš.</p>
-          </div>
-          <div
-            data-rv
-            style={{
-              clipPath: sn ? 'inset(0 0 0 0)' : 'inset(0 100% 0 0)',
-              opacity: sn ? 1 : 0,
-              transition: `clip-path 900ms ${EASE} 500ms, opacity 200ms ease 500ms`,
-            }}
-          >
-            <p className="final__sig">Olgica</p>
           </div>
           <div data-rv style={rv(sn, 700)}>
             <div className="final__row">

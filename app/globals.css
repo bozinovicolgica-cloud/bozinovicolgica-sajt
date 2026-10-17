@@ -281,7 +281,6 @@ body { overflow-x: clip; }
 .final__col { grid-column: 7 / span 6; }
 .final__h2 { margin: 16px 0 0; text-wrap: balance; }
 .final__p { margin: 24px 0 0; color: #DFE8DC; }
-.final__sig { margin: 24px 0 0; font-family: 'EB Garamond', serif; font-weight: 500; font-style: italic; font-size: 32px; line-height: 40px; color: #FFFFFF; }
 .final__row { margin-top: 40px; display: flex; align-items: center; flex-wrap: wrap; gap: 24px; }
 .final__price { font-family: 'EB Garamond', serif; font-weight: 600; font-size: 32px; line-height: 40px; color: #FFFFFF; }
 .final__quiz { display: inline-block; margin-top: 16px; font-family: 'Nunito Sans', sans-serif; font-weight: 600; font-size: 16px; line-height: 24px; color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
