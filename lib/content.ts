@@ -58,7 +58,8 @@ export const gets = [
   ['Spisak za kupovinu', 'Sve namirnice na jednom mestu.'],
   ['Recepti', 'Jednostavni, gotovi za desetak minuta.'],
   ['Video lekcije', 'Kratka lekcija svakog dana, na telefonu.'],
-  ['Podrška na WhatsApp-u', 'Ako zapneš, pišeš mi i zajedno rešavamo.'],
+  ['2 meseca podrške na WhatsApp-u', 'Ako zapneš, pišeš mi i zajedno rešavamo.'],
+  ['Pristup Viber grupi', 'Zajednica ljudi koji prolaze isti protokol.'],
 ] as const;
 
 export const testimonials = [
@@ -92,14 +93,21 @@ export const fitNo = [
   'ti je lekar zabranio neki od prirodnih preparata koji se pominju u protokolu',
 ];
 
-export const included = [
-  'Plan ishrane za svih 9 dana',
-  'Spisak za kupovinu',
-  'Recepti za svako jelo iz plana',
-  'Video lekcije za svaki dan',
-  'Podrška na WhatsApp-u',
-  '[Garancija, ako postoji]',
+/**
+ * Stavke paketa sa pojedinačnom vrednošću (EUR), za karticu sa cenom.
+ * Ukupna vrednost i ušteda se računaju automatski iz ovih brojeva i PRICE_EUR.
+ */
+export const included: { label: string; value: number }[] = [
+  { label: 'Plan ishrane za svih 9 dana, sa spiskom za kupovinu', value: 149 },
+  { label: 'Recepti za svako jelo iz plana', value: 29 },
+  { label: 'Video lekcija za svaki dan', value: 59 },
+  { label: '2 meseca podrške na WhatsApp-u, direktno sa mnom', value: 399 },
+  { label: 'Pristup Viber grupi', value: 39 },
 ];
+
+/** Zbir vrednosti stavki ("Ukupna vrednost") i ušteda u odnosu na PRICE_EUR. */
+export const VALUE_TOTAL_EUR = included.reduce((sum, i) => sum + i.value, 0);
+export const SAVE_EUR = VALUE_TOTAL_EUR - PRICE_EUR;
 
 export const faqs: [string, string][] = [
   ['Hoće li me mučiti glad?', 'Ne. Protokol nije gladovanje: imaš tri glavna obroka i užine i tačno znaš šta jedeš i kada.'],

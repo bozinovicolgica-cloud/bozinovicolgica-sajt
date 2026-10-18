@@ -78,6 +78,8 @@
 .oq-offer h4{margin:0;font-family:'EB Garamond',serif;font-weight:600;font-size:28px;line-height:36px;color:#FFFFFF}
 .oq-offer p{margin:8px 0 0;font-size:17px;line-height:26px;color:#DFE8DC;text-wrap:pretty}
 .oq-offer-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:24px}
+.oq-priceWrap{display:flex;flex-direction:column;align-items:flex-start}
+.oq-value{font-family:'Nunito Sans',sans-serif;font-weight:600;font-size:15px;line-height:20px;color:rgba(255,255,255,0.45);text-decoration-thickness:1.5px;text-decoration-color:rgba(255,255,255,0.55);white-space:nowrap}
 .oq-price{font-family:'EB Garamond',serif;font-weight:500;font-size:40px;line-height:44px;color:#FFFFFF}
 .oq-price small{font-family:'Nunito Sans',sans-serif;font-size:16px;color:#DFE8DC;margin-left:6px}
 .oq-alert{margin-top:28px;padding:24px;border-radius:24px;background:#F5EFE6;border:1px solid #E8D3BA}

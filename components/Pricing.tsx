@@ -1,6 +1,6 @@
 'use client';
 import { useRef } from 'react';
-import { included, PRICE_EUR } from '@/lib/content';
+import { included, PRICE_EUR, SAVE_EUR, VALUE_TOTAL_EUR } from '@/lib/content';
 import { Q } from '@/lib/quiz-data';
 import { EASE, rv, useSeen } from '@/lib/reveal';
 import { Ghost, Pill } from './ui';
@@ -35,22 +35,34 @@ export default function Pricing() {
             </div>
             <h3 className="price__h3">9 dana spašavanja jetre</h3>
             <p className="price__tag">Sve što ti treba za 9 dana, u jednom paketu.</p>
-            <div style={{ marginTop: 20 }}>
-              <div className="price__amount">
-                <span className="price__num">{PRICE_EUR}</span>
-                <span className="price__cur">EUR</span>
-              </div>
-            </div>
-            <p className="price__incH">Šta je uključeno</p>
+
+            <p className="price__incH">Šta dobijaš</p>
             <ul className="price__inc">
               {included.map((inc) => (
-                <li key={inc}>
-                  <svg width="20" height="20" viewBox="0 0 256 256" fill="none" stroke="#9DB799" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', marginTop: 2 }}><path d="M40,144l56,56L224,72" /></svg>
-                  <span>{inc}</span>
+                <li key={inc.label}>
+                  <svg className="price__chk" width="20" height="20" viewBox="0 0 256 256" fill="none" stroke="#9DB799" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M40,144l56,56L224,72" /></svg>
+                  <span className="price__lbl">{inc.label}</span>
+                  <span className="price__val">{inc.value} EUR</span>
                 </li>
               ))}
             </ul>
-            <div className="price__rule" />
+
+            <div className="price__total">
+              <span className="price__totalL">Ukupna vrednost</span>
+              <s className="price__totalV">{VALUE_TOTAL_EUR} EUR</s>
+            </div>
+
+            <div className="price__box">
+              <p className="price__boxH">Tvoja cena</p>
+              <span className="price__amount">
+                <span className="price__num">{PRICE_EUR}</span>
+                <span className="price__cur">EUR</span>
+                {SAVE_EUR > 0 && (
+                  <span className="price__save" aria-label={`Ušteda ${SAVE_EUR} EUR`}>-{SAVE_EUR} EUR</span>
+                )}
+              </span>
+            </div>
+
             <Pill href="#cena" order="cena" light className="price__btn">Započni 9-dnevni protokol</Pill>
           </div>
 

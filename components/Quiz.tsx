@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import { PRICE_EUR } from '@/lib/content';
+import { PRICE_EUR, VALUE_TOTAL_EUR } from '@/lib/content';
 import {
   Q, WHY, TIPS_LIKELY, TIPS_OK, TIPS_DOCTOR,
   evaluate, loadHabits, readableAnswers,
@@ -286,7 +286,7 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
           <p style={{ margin: 0, fontWeight: 600, fontSize: 13, lineHeight: '16px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#C2D3BE' }}>Moja preporuka za tebe</p>
           <h4 style={{ marginTop: 10 }}>9 dana spašavanja jetre</h4>
           <p>Plan ishrane za svih 9 dana, spisak za kupovinu, recepti i kratka video lekcija za svaki dan. Ako zapneš, tu sam na WhatsApp-u.</p>
-          <div className="oq-offer-row"><span className="oq-price">{PRICE_EUR}<small>EUR</small></span><a href="#cena" className="oq-btn oq-light oq-arrow" data-oq="buy" onClick={buy}><span>Započni 9-dnevni protokol</span><Arrow color="#3A5139" /></a></div>
+          <div className="oq-offer-row"><span className="oq-priceWrap"><s className="oq-value"><span className="sr-only">Ukupna vrednost </span>{VALUE_TOTAL_EUR} EUR</s><span className="oq-price">{PRICE_EUR}<small>EUR</small></span></span><a href="#cena" className="oq-btn oq-light oq-arrow" data-oq="buy" onClick={buy}><span>Započni 9-dnevni protokol</span><Arrow color="#3A5139" /></a></div>
         </div>
         <Fine />
         <div className="oq-end"><button type="button" className="oq-link" onClick={restart}>Uradi kviz ponovo</button></div>
