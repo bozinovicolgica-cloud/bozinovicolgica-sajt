@@ -204,7 +204,7 @@ body { overflow-x: clip; }
 .about__stat--3 .about__n { white-space: nowrap; }
 .about__l { margin-top: 8px; font-family: 'Nunito Sans', sans-serif; font-size: 14px; line-height: 20px; color: #DFE8DC; }
 .about__photo { position: absolute; left: 380px; width: 440px; top: 0; bottom: 0; overflow: hidden; z-index: 1; }
-.about__img { position: absolute; width: 867px; height: 1300px; left: -211px; top: -234px; max-width: none; }
+.about__img { position: absolute; width: 867px; height: 1300px; left: -211px; top: -170px; max-width: none; }
 .about__fade1 { position: absolute; inset: 0; background: linear-gradient(to right, #3A5139 0%, rgba(58,81,57,0) 25%, rgba(58,81,57,0) 75%, #3A5139 100%); }
 .about__fade2 { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(58,81,57,0.7) 0%, rgba(58,81,57,0) 16%); }
 .about__right { position: absolute; left: 800px; right: 0; top: 0; bottom: 0; padding: 40px; display: flex; flex-direction: column; justify-content: space-between; z-index: 2; }
@@ -281,7 +281,7 @@ body { overflow-x: clip; }
 .sec--final { position: relative; overflow: hidden; background: #3A5139; }
 .final__media { position: absolute; left: 0; top: 0; bottom: 0; width: calc(50% - 24px); z-index: 0; overflow: hidden; }
 .final__fill { position: absolute; inset: 0; }
-.final__img { object-fit: cover; object-position: 52% 22%; }
+.final__img { object-fit: cover; object-position: 45% 25%; }
 .final__fadeX { position: absolute; inset: 0; background: linear-gradient(to right, rgba(58,81,57,0) 60%, #3A5139 100%); }
 .final__fadeY { position: absolute; inset: 0; background: linear-gradient(to bottom, #3A5139 0%, rgba(58,81,57,0) 15%, rgba(58,81,57,0) 85%, #3A5139 100%); }
 .final__grid { position: relative; z-index: 1; align-items: center; }

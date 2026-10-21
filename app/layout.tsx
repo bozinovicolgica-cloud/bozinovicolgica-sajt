@@ -7,7 +7,7 @@ import { AnalyticsBody, AnalyticsHead } from '@/components/Analytics';
 import { imgT } from '@/lib/images';
 import { DISCLAIMER_HEAD_SCRIPT } from '@/lib/disclaimer';
 
-const OG = imgT('olgica-hero.webp', 'c_fill,g_face,w_1200,h_630,f_jpg,q_85');
+const OG = imgT('olgica-hero.webp', 'c_fill,g_face,w_1200,h_630,b_rgb:FBF8F3,f_jpg,q_85');
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 const DESC = 'Pojednostavljeni 9-dnevni protokol čišćenja jetre. Za svaki dan dobijaš tačan spisak namirnica i recepte.';
