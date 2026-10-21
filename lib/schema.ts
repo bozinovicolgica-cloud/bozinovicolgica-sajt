@@ -75,7 +75,7 @@ export const product = (): Node => ({
   '@id': ID.product,
   name: PRODUCT_NAME,
   description: PRODUCT_DESC,
-  image: [img('olgica-hero.webp'), imgT('olgica-hero.webp', 'c_fill,g_face,w_1200,h_630,f_jpg,q_85')],
+  image: [img('olgica-hero.webp'), imgT('olgica-hero.webp', 'c_fill,g_face,w_1200,h_630,b_rgb:FBF8F3,f_jpg,q_85')],
   category: 'Digitalni program ishrane',
   brand: { '@type': 'Brand', name: SITE_NAME },
   creator: { '@id': ID.person },

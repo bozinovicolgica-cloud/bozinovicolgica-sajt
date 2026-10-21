@@ -5,6 +5,19 @@
 const CDN = 'https://res.cloudinary.com/ozdkiori/image/upload';
 const LOCAL = process.env.NEXT_PUBLIC_IMAGES === 'local';
 
+/**
+ * Nove fotografije (Cloudinary nalog qftxmdqk). Originali su 300x450, pa ih
+ * e_upscale povećava na 1200x1800. Hero slika dodatno ide bez pozadine
+ * (e_background_removal -> providna pozadina, PNG/WebP sa alfa kanalom).
+ * Ključ ostaje stari naziv fajla, pa ostatak koda ne mora da se menja.
+ */
+const CDN2 = 'https://res.cloudinary.com/qftxmdqk/image/upload';
+const NEW: Record<string, { pre: string; path: string }> = {
+  'olgica-hero.webp': { pre: 'e_upscale/e_background_removal', path: 'v1792600712/heroizmena.webp' },
+  'olgica-o-meni.webp': { pre: 'e_upscale', path: 'v1792600703/second.webp' },
+  'olgica-zavrsna.webp': { pre: 'e_upscale', path: 'v1792600710/last.webp' },
+};
+
 const V: Record<string, string> = {
   'olgica-hero.webp': 'v1791666595',
   'olgica-o-meni.webp': 'v1791666596',
@@ -29,12 +42,16 @@ const V: Record<string, string> = {
 
 /** Pun URL slike (original, bez transformacija). */
 export function img(file: string): string {
+  const n = NEW[file];
+  if (n && !LOCAL) return `${CDN2}/${n.pre}/${n.path}`;
   if (LOCAL || !V[file]) return `/images/${file}`;
   return `${CDN}/${V[file]}/${file}`;
 }
 
 /** Cloudinary URL sa transformacijama, npr. za OG sliku 1200x630. */
 export function imgT(file: string, t: string): string {
+  const n = NEW[file];
+  if (n && !LOCAL) return `${CDN2}/${n.pre}/${t}/${n.path}`;
   if (LOCAL || !V[file]) return `/images/${file}`;
   return `${CDN}/${t}/${V[file]}/${file}`;
 }
