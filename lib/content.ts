@@ -58,7 +58,6 @@ export const gets = [
   ['Spisak za kupovinu', 'Sve namirnice na jednom mestu.'],
   ['Recepti', 'Jednostavni, gotovi za desetak minuta.'],
   ['Video lekcije', 'Kratka lekcija svakog dana, na telefonu.'],
-  ['2 meseca podrške na WhatsApp-u', 'Ako zapneš, pišeš mi i zajedno rešavamo.'],
   ['Pristup Viber grupi', 'Zajednica ljudi koji prolaze isti protokol.'],
 ] as const;
 
@@ -101,7 +100,6 @@ export const included: { label: string; value: number }[] = [
   { label: 'Plan ishrane za svih 9 dana, sa spiskom za kupovinu', value: 149 },
   { label: 'Recepti za svako jelo iz plana', value: 29 },
   { label: 'Video lekcija za svaki dan', value: 59 },
-  { label: '2 meseca podrške na WhatsApp-u, direktno sa mnom', value: 399 },
   { label: 'Pristup Viber grupi', value: 39 },
 ];
 
