@@ -4,12 +4,16 @@ import { rv, useSeen } from '@/lib/reveal';
 import { track } from '@/lib/track';
 import { Pill } from './ui';
 
-// VSL (public/video); NEXT_PUBLIC_VIDEO_SRC / _POSTER mogu da ga zamene (npr. YouTube ili Vimeo link)
-const SRC = process.env.NEXT_PUBLIC_VIDEO_SRC || '/video/vsl.mp4';
+// VSL: Wistia link (zbog analitike). Ako je prazan, koristi se NEXT_PUBLIC_VIDEO_SRC ili public/video/vsl.mp4.
+// Primer: 'https://bozinovicolgica.wistia.com/medias/abc123xyz'
+const WISTIA_URL = 'https://bozinovic-olgica.wistia.com/medias/hkx0fsyolf';
+const SRC = WISTIA_URL || process.env.NEXT_PUBLIC_VIDEO_SRC || '/video/vsl.mp4';
 const POSTER = process.env.NEXT_PUBLIC_VIDEO_POSTER || '/video/vsl-poster.webp';
 
-/** YouTube / Vimeo link -> embed URL; .mp4 ostaje null */
+/** Wistia / YouTube / Vimeo link -> embed URL; .mp4 ostaje null */
 function embedUrl(src: string): string | null {
+  const wi = src.match(/(?:wistia\.(?:com|net)\/(?:medias|embed\/iframe|embed\/medias)\/|wi\.st\/medias\/)([a-z0-9]{6,})/i);
+  if (wi) return `https://fast.wistia.net/embed/iframe/${wi[1]}?autoPlay=true&playerColor=3A5139`;
   const yt = src.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,})/);
   if (yt) return `https://www.youtube-nocookie.com/embed/${yt[1]}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
   const vm = src.match(/vimeo\.com\/(?:video\/)?(\d+)/);
