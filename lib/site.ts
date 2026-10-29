@@ -5,6 +5,8 @@
 import { img } from './images';
 
 export const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
+/** Poddomen sa protokolom ishrane (app/(protokol), vidi proxy.ts). */
+export const PROTOKOL_SITE = (process.env.NEXT_PUBLIC_PROTOKOL_URL || 'https://protokol.bozinovicolgica.rs').replace(/\/$/, '');
 export const SITE_NAME = 'Olgica Božinović';
 export const SITE_TAGLINE = 'Programi zdravlja, ishrana i suplementacija';
 

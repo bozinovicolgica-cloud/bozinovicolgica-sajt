@@ -26,6 +26,22 @@ git push -u origin main
 - GitHub Actions (`.github/workflows/ci.yml`) na svaki push proverava tipove i radi build.
 - Vercel: New Project → Import repo → Framework se prepoznaje sam → unesi env promenljive → Deploy. Svaki push na `main` automatski ide u produkciju.
 
+## Dva sajta, jedan projekat
+
+Isti Vercel projekat služi dva poddomena; `proxy.ts` bira sajt po adresi:
+
+| Adresa | Kod | Šta je |
+|---|---|---|
+| `program.bozinovicolgica.rs` | `app/(jetra)` | 9 dana spašavanja jetre (Stripe, kviz, blog) |
+| `protokol.bozinovicolgica.rs` | `app/(protokol)` + `components/protokol` + `lib/protokol` | Protokol ishrane, A/B test pozicije forme (bivši repo `olgica-lp-a-b`) |
+
+- Na `protokol.` poddomenu svaka adresa se interno prepisuje na `/protokol/...`; `/` dobija varijantu A ili B (cookie `lp_ab`, 50/50).
+  Provera: `/?v=a`, `/?v=b`. Rezultati: `/ab-rezultati?key=AB_RESULTS_KEY`. Podešavanja testa: `lib/protokol/ab.ts`.
+- Lokalno: `http://localhost:3000` (jetra) i `http://protokol.localhost:3000` (protokol).
+- Svaki sajt ima svoj root layout i CSS, pa se stilovi ne mešaju. Prelaz između njih je običan link.
+- Protokol prijave i događaji idu u isti Supabase (`lp_leads`, `lp_events`, view `lp_ab_results`), migracija `supabase/migrations/0003_protokol_lp.sql`.
+- Statika protokola: `public/protokol/` (slike, fontovi, logo).
+
 ## Šta radi
 
 | Deo | Kako |
