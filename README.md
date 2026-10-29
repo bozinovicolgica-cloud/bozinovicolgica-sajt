@@ -1,4 +1,4 @@
-# 9 dana spašavanja jetre — Next.js
+# 9 dana spašavanja jetre — Next.js 
 
 Landing stranica za Olgicu Božinović, prebačena iz statičnog HTML dizajna u Next.js 16 (App Router, TypeScript).
 Desktop (≥1081px) je 1:1 sa originalnim dizajnom; tablet i mobilni imaju posebne rasporede (breakpointi 1180 / 1080 / 860 / 640 / 380).
