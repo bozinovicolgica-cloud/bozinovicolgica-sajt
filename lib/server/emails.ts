@@ -3,6 +3,7 @@ import { esc } from './integrations';
 import { siteUrl } from './config';
 import { vocative } from '@/lib/vocative';
 import { PRODUCT_NAME } from '@/lib/content';
+import { LINKS, QUIZ_NOTE, WAIVER_TEXT } from '@/lib/legal';
 import { RESULT_TITLES, TIPS_DOCTOR, TIPS_LIKELY, TIPS_OK, type ResultKey } from '@/lib/quiz-data';
 
 const wrap = (inner: string) => `<!doctype html><html lang="sr"><body style="margin:0;padding:0;background:#F5EFE6">
@@ -20,6 +21,10 @@ const list = (items: string[]) => `<ol style="margin:0 0 16px;padding-left:20px;
 const button = (href: string, label: string) => `<a href="${href}" style="display:inline-block;background:#3A5139;color:#FFFFFF;text-decoration:none;font-weight:bold;font-size:15px;padding:14px 28px;border-radius:999px">${label}</a>`;
 
 /** Kupcu, odmah posle uspešnog plaćanja. */
+/** Potvrda o odricanju od prava na odustanak, uz mejl posle kupovine (trajni zapis za kupca). */
+const WAIVER_NOTE_TEXT = `Pri kupovini si tražila da program počne odmah i potvrdila: „${WAIVER_TEXT}“ Do početka programa možeš da odustaneš i dobiješ ceo iznos, a tokom programa plaćaš samo dane koje si već dobila. Obrazac za odustanak: ${LINKS.withdrawal}`;
+const WAIVER_NOTE = esc(WAIVER_NOTE_TEXT).replace(esc(LINKS.withdrawal), `<a href="${LINKS.withdrawal}" style="color:#3A5139">${esc(LINKS.withdrawal)}</a>`);
+
 export function paidCustomerEmail(name: string, o: { reference: string; amount: string; deliveryNote: string }) {
   const first = esc(vocative(name));
   const html = wrap(
@@ -31,9 +36,10 @@ export function paidCustomerEmail(name: string, o: { reference: string; amount: 
       ].join('')}</table>` +
       p('Dok čekaš materijale: ne kreći još sa ishranom iz protokola. Prvo stiže spisak za kupovinu, pa nabaviš namirnice i počinješ prvog dana.') +
       p('Ako ti nešto nije jasno, samo odgovori na ovaj email.') +
-      p('Olgica')
+      p('Olgica') +
+      `<p style="margin:24px 0 0;font-size:12px;line-height:18px;color:#7A6D5E">${WAIVER_NOTE}</p>`
   );
-  const text = `Hvala! Plaćanje za ${PRODUCT_NAME} je uspelo.\nBroj porudžbine: ${o.reference}\nPlaćeno: ${o.amount}\n${o.deliveryNote}`;
+  const text = `Hvala! Plaćanje za ${PRODUCT_NAME} je uspelo.\nBroj porudžbine: ${o.reference}\nPlaćeno: ${o.amount}\n${o.deliveryNote}\n\n${WAIVER_NOTE_TEXT}`;
   return { subject: `Plaćanje uspelo – ${PRODUCT_NAME} (${o.reference})`, html, text };
 }
 
@@ -61,23 +67,23 @@ export function quizResultEmail(name: string, result: ResultKey) {
   const first = esc(vocative(name));
   const tips = result === 'likely' ? TIPS_LIKELY : result === 'doctor' ? TIPS_DOCTOR : TIPS_OK;
   const intro: Record<ResultKey, string> = {
-    likely: 'Tvoji odgovori se poklapaju sa znakovima koje viđam kod klijenata čija jetra ne stiže da obavi sav posao koji joj dajemo. Evo prvih koraka koje možeš da uradiš već od danas:',
+    likely: 'U odgovorima prepoznaješ više znakova preopterećenja koje viđam kod klijenata. Proveri ih i sa svojim lekarom. Evo prvih koraka koje možeš da uradiš već od danas:',
     ok: 'Po tvojim odgovorima, jetra za sada dobro obavlja svoj posao. Ipak, ona radi bez pauze, pa je pametno da je čuvaš. Evo kako:',
     doctor: 'Neki od znakova koje si označila traže da ih lekar pogleda što pre. Predlažem ti sledeće:',
     pregnant: 'Dok si trudna ili dojiš, ne preporučujem čišćenje jetre. Do tada jetru možeš da čuvaš ovim navikama:',
   };
   const cta = result === 'likely' || result === 'ok'
-    ? `<p style="margin:24px 0">${button(`${siteUrl()}/#cena`, 'Pogledaj 9-dnevni protokol')}</p>`
+    ? `<p style="margin:24px 0">${button(`${siteUrl()}/#cena`, 'Pogledaj devetodnevni protokol')}</p>`
     : '';
   const html = wrap(
     `<p style="margin:0 0 8px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#3A5139;font-weight:bold">Tvoj rezultat kviza</p>` +
       h1(esc(RESULT_TITLES[result])) +
       p(`${first ? 'Zdravo ' + first + ', ' : ''}${intro[result]}`) +
       list(tips) +
-      (result === 'likely' ? p('Ovo su prvi koraci. Da bi jetra stvarno odahnula i da bi se simptomi povukli, potreban je plan: tačno šta jedeš, svakog dana. Upravo to je <b>9 dana spašavanja jetre</b>.') : '') +
+      (result === 'likely' ? p('Ovo su prvi koraci. Ako želiš da ih pretvoriš u naviku, pomaže jasan plan: tačno šta jedeš, svakog dana. Upravo to je <b>9 dana spašavanja jetre</b>, program ishrane i navika.') : '') +
       cta +
       p('Olgica') +
-      `<p style="margin:0;font-size:12px;line-height:18px;color:#7A6D5E">Rezultat kviza je informativan. Ne postavlja dijagnozu i ne zamenjuje pregled kod lekara. Ne želiš više ovakve poruke? Odgovori sa „odjava“.</p>`
+      `<p style="margin:0;font-size:12px;line-height:18px;color:#7A6D5E">${QUIZ_NOTE} Ne želiš više ovakve poruke? Odgovori sa „odjava“.</p>`
   );
   return { subject: `Tvoj rezultat: ${RESULT_TITLES[result]}`, html };
 }

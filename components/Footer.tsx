@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import { FOOTER_DISCLAIMER } from '@/lib/legal';
+import { COMPANY } from '@/lib/site';
+import { CookieSettingsLink } from './CookieConsent';
 import { Brand } from './Header';
 
 export default function Footer() {
@@ -10,12 +13,21 @@ export default function Footer() {
           <nav className="ftr__nav" aria-label="Informacije">
             <Link href="/o-meni">O meni</Link>
             <Link href="/blog">Blog</Link>
-            <Link href="/uslovi-kupovine">Uslovi kupovine</Link>
-            <Link href="/politika-privatnosti">Politika privatnosti</Link>
           </nav>
         </div>
-        <p className="ftr__disclaimer">Usluge su edukativnog karaktera i ne predstavljaju medicinski savet, dijagnozu ili lečenje. Za zdravstvene probleme obratite se lekaru.</p>
-        <p className="ftr__note">Napomena: sadržaj ove stranice i protokol služe u informativne svrhe i ne zamenjuju savet lekara, dijagnozu ni lečenje. Ako piješ lekove, trudna si, dojiš ili imaš dijagnostikovano oboljenje, pre početka razgovaraj sa svojim lekarom. Iskustva klijenata su lična i razlikuju se od osobe do osobe.</p>
+        <nav className="ftr__nav ftr__legal" aria-label="Pravne informacije">
+          <Link href="/uslovi-kupovine">Uslovi korišćenja i kupovine</Link>
+          <Link href="/politika-privatnosti">Politika privatnosti</Link>
+          <Link href="/politika-kolacica">Politika kolačića</Link>
+          <Link href="/odustanak">Obrazac za odustanak</Link>
+          <CookieSettingsLink />
+        </nav>
+        <p className="ftr__disclaimer">{FOOTER_DISCLAIMER}</p>
+        <p className="ftr__note">Iskustva klijenata su lična i razlikuju se od osobe do osobe. Ako piješ lekove, trudna si, dojiš ili imaš dijagnostikovano oboljenje, pre početka razgovaraj sa svojim lekarom.</p>
+        <p className="ftr__seller">
+          Prodavac: {COMPANY.name}, {COMPANY.addressLine}. Upisan u registar: {COMPANY.registry}, broj {COMPANY.registrationNumber}.
+          Email <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>, telefon {COMPANY.phone}.
+        </p>
         <p className="ftr__copy">© 2026 Olgica Božinović. Sva prava zadržana.</p>
       </div>
     </footer>

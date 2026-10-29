@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { PRICE_EUR, PRODUCT_NAME } from '@/lib/content';
-import { contactSchema, detailsSchema, metaSchema } from '@/lib/order-schema';
+import { contactSchema, detailsSchema, metaSchema, noteIfConsented } from '@/lib/order-schema';
 import { newReference, saveOrder } from '@/lib/server/orders';
 import { clientIp, limited } from '@/lib/server/rate-limit';
 
@@ -66,7 +66,8 @@ export async function POST(req: Request) {
     email: d.email,
     phone: d.phone,
     start_when: d.startWhen,
-    note: d.note || null,
+    note: noteIfConsented(d) || null,
+    health_consent_at: noteIfConsented(d) ? new Date().toISOString() : null,
   });
   return NextResponse.json({ ok: true, orderId: d.orderId });
 }

@@ -5,7 +5,7 @@ import { startLabel } from '@/lib/order-schema';
 import { deliveryNote, emailConfig, stripeConfig } from '@/lib/server/config';
 import { paidCustomerEmail, paidOwnerEmail } from '@/lib/server/emails';
 import { sendEmail } from '@/lib/server/integrations';
-import { markPaidOnce, saveOrder } from '@/lib/server/orders';
+import { markPaidOnce, orderPrivateFields, saveOrder } from '@/lib/server/orders';
 import { stripe } from '@/lib/server/stripe';
 
 export const runtime = 'nodejs';
@@ -69,17 +69,17 @@ async function onPaid(session: Stripe.Checkout.Session, livemode: boolean) {
     email,
     phone: m.phone || session.customer_details?.phone || null,
     start_when: m.start_when || null,
-    note: m.note || null,
     amount_eur: (session.amount_total ?? 0) / 100,
     amount_paid: (session.amount_total ?? 0) / 100,
     currency: session.currency,
     source: m.source || null,
-    quiz_result: m.quiz_result || null,
     stripe_session_id: session.id,
     stripe_payment_intent: paymentIntent,
     stripe_customer: customer,
     paid_at: new Date().toISOString(),
     consent_at: new Date((session.created ?? Date.now() / 1000) * 1000).toISOString(),
+    // dokaz da je kupac tražio da program počne odmah (i kad red u bazi ne postoji)
+    ...(m.waiver_at ? { waiver_at: m.waiver_at, waiver_version: m.waiver } : {}),
   };
 
   // Stripe ponekad pošalje isti događaj dvaput: mejlovi idu samo prvi put
@@ -88,13 +88,14 @@ async function onPaid(session: Stripe.Checkout.Session, livemode: boolean) {
 
   await saveOrder('order.paid', id, { ...fields, status: 'paid' });
   const owner = emailConfig().owner;
+  const priv = owner ? await orderPrivateFields(id) : { note: '', quizResult: '' };
   const dash = `https://dashboard.stripe.com/${livemode ? '' : 'test/'}payments/${paymentIntent ?? ''}`;
   const mail = paidCustomerEmail(name, { reference: fields.reference, amount, deliveryNote: deliveryNote() });
   await Promise.all([
     email ? sendEmail(email, mail.subject, mail.html, mail.text) : Promise.resolve(false),
     owner
       ? (() => {
-          const o = paidOwnerEmail({ reference: fields.reference, name, email, phone: fields.phone || '', amount, startWhen: startLabel(m.start_when), note: m.note || '', source: m.source || '', quizResult: m.quiz_result || '', stripeUrl: dash });
+          const o = paidOwnerEmail({ reference: fields.reference, name, email, phone: fields.phone || '', amount, startWhen: startLabel(m.start_when), note: priv.note, source: m.source || '', quizResult: priv.quizResult, stripeUrl: dash });
           return sendEmail(owner, o.subject, o.html);
         })()
       : Promise.resolve(false),

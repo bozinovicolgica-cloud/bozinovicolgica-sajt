@@ -6,6 +6,16 @@
  */
 
 export const PRICE_EUR = 180;
+/**
+ * Cena se ističe u dinarima, uz evro (kurs oko 117,2). Stripe naplaćuje u evrima (PRICE_EUR);
+ * ako se cena u Stripe-u prebaci na RSD, PRICE_RSD postaje i iznos naplate.
+ */
+export const PRICE_RSD = 21100;
+export const thousands = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+export const rsd = (n: number) => `${thousands(n)} RSD`;
+
+/** Kratko o povraćaju, uz cenu i na checkout-u (detalji u Uslovima, #odustanak). */
+export const REFUND_SHORT = '14 dana za odustanak. Ako odustaneš pre početka, vraćamo ceo iznos; tokom programa plaćaš samo dane koje si dobila.';
 export const PRODUCT_NAME = '9 dana spašavanja jetre';
 
 /**
@@ -80,8 +90,8 @@ export const steps = [
 ] as const;
 
 export const fitYes = [
-  'želiš da se rešiš simptoma koji te muče',
-  'popodne te muči nadutost, a ništa do sada nije pomoglo',
+  'želiš da kroz ishranu i navike pomogneš sebi kad te muče nadutost i umor',
+  'popodne te muči nadutost i želiš da probaš drugačiji plan ishrane',
   'želiš jasan plan i da tačno znaš šta te koji dan čeka',
   'možeš da odvojiš 9 dana za sebe',
 ];
@@ -93,19 +103,15 @@ export const fitNo = [
 ];
 
 /**
- * Stavke paketa sa pojedinačnom vrednošću (EUR), za karticu sa cenom.
- * Ukupna vrednost i ušteda se računaju automatski iz ovih brojeva i PRICE_EUR.
+ * Stavke paketa, za karticu sa cenom. Bez pojedinačnih „vrednosti“ i precrtane ukupne cene:
+ * stavke se ne prodaju posebno, pa bi precrtana cena bila izmišljena (Zakon o zaštiti potrošača).
  */
-export const included: { label: string; value: number }[] = [
-  { label: 'Plan ishrane za svih 9 dana, sa spiskom za kupovinu', value: 149 },
-  { label: 'Recepti za svako jelo iz plana', value: 29 },
-  { label: 'Video lekcija za svaki dan', value: 59 },
-  { label: 'Pristup Viber grupi', value: 39 },
+export const included: string[] = [
+  'Plan ishrane za svih 9 dana, sa spiskom za kupovinu',
+  'Recepti za svako jelo iz plana',
+  'Video lekcija za svaki dan',
+  'Pristup Viber grupi',
 ];
-
-/** Zbir vrednosti stavki ("Ukupna vrednost") i ušteda u odnosu na PRICE_EUR. */
-export const VALUE_TOTAL_EUR = included.reduce((sum, i) => sum + i.value, 0);
-export const SAVE_EUR = VALUE_TOTAL_EUR - PRICE_EUR;
 
 export const faqs: [string, string][] = [
   ['Hoće li me mučiti glad?', 'Ne. Protokol nije gladovanje: imaš tri glavna obroka i užine i tačno znaš šta jedeš i kada.'],
@@ -113,6 +119,7 @@ export const faqs: [string, string][] = [
   ['Koliko će koštati namirnice?', 'Zavisi od toga gde kupuješ, ali nema egzotičnih ni skupih namirnica: sve nalaziš u marketu i na pijaci. Spisak za kupovinu dobijaš unapred, pa pre prvog dana tačno znaš šta ti treba i koliko će te koštati.'],
   ['Šta ako pogrešim 4. dana?', 'Ništa strašno i ne kreće se ispočetka. Vratiš se planu već sa sledećim obrokom i nastaviš dalje. Ako ti nešto nije jasno, pišeš mi na WhatsApp i zajedno vidimo šta dalje.'],
   ['Kada ću osetiti razliku?', 'Kod svakog je drugačije. Neki promenu u varenju i energiji primete već u prvim danima, a drugima treba više vremena. Zato tokom protokola beležiš kako se osećaš, pa jasno vidiš šta se menja iz dana u dan.'],
+  ['Mogu li da dobijem novac nazad?', 'Da, u roku od 14 dana od kupovine. Ako odustaneš pre prvog dana, vraćamo ceo iznos. Ako odustaneš tokom programa, plaćaš samo dane koje si već dobila (npr. 4. dan: vraćamo 100 od 180 EUR). Kad završiš svih 9 dana, pravo na odustanak prestaje. Ako nešto obećano ne stigne, to je reklamacija i važi i posle 9. dana. Piši na info@bozinovicolgica.rs ili popuni obrazac za odustanak.'],
   ['Mogu li da radim protokol ako pijem lekove?', 'Zavisi od lekova koje piješ. Pre početka razgovaraj sa svojim lekarom i pokaži mu spisak namirnica i preparata iz protokola. Kada dobiješ zeleno svetlo, piši mi pa zajedno vidimo kako da kreneš.'],
-  ['Zašto se u protokolu govori o teškim metalima?', 'U svom radu polazim od toga da teški metali i toksini opterećuju jetru, a da se njima hrane virusi i bakterije. Zato je protokol usmeren na to da podrži jetru u tom poslu.'],
+  ['Da li protokol čisti jetru od toksina?', 'Protokol je program ishrane i navika, ne medicinski tretman. Ne leči i ne obećava „čišćenje“ u medicinskom smislu. Za 9 dana dobijaš jasan plan sa manje prerađene hrane, više povrća i redovnim obrocima, a kako se osećaš, beležiš sama.'],
 ];

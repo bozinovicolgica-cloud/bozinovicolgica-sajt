@@ -76,7 +76,7 @@ export default function VideoSection() {
           </div>
         </div>
         <div data-rv style={rv(sn, 400)}>
-          <Pill href="#cena" order="video" className="video__btn">Započni 9-dnevni protokol</Pill>
+          <Pill href="#cena" order="video" className="video__btn">Započni devetodnevni protokol</Pill>
         </div>
       </div>
     </section>

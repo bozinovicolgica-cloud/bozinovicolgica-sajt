@@ -8,7 +8,7 @@ export const dynamic = 'force-static';
 /** /llms.txt: sažetak sajta za AI asistente (ChatGPT, Claude, Perplexity...), po predlogu llmstxt.org. */
 export function GET() {
   const posts = getPosts();
-  const items = included.map((i) => i.label);
+  const items = included;
   const body = `# ${SITE_NAME}
 
 > ${person.name} je ${person.jobTitle.toLowerCase()}, inženjer biotehnologije i sertifikovani coach iz Srbije. Na ovom sajtu prodaje digitalni program „${PRODUCT_NAME}“ (${PRICE_EUR} EUR) i piše o zdravlju jetre i ishrani. Sadržaj je na srpskom jeziku i edukativnog je karaktera: ne predstavlja medicinski savet, dijagnozu ni lečenje.
@@ -40,7 +40,9 @@ ${posts.map((p) => `- [${p.title}](${SITE}/blog/${p.slug}): ${p.description}`).j
 
 ## Optional
 
-- [Uslovi kupovine](${SITE}/uslovi-kupovine)
+- [Uslovi korišćenja i kupovine](${SITE}/uslovi-kupovine)
+- [Politika kolačića](${SITE}/politika-kolacica)
+- [Obrazac za odustanak](${SITE}/odustanak)
 - [Politika privatnosti](${SITE}/politika-privatnosti)
 `;
   return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });

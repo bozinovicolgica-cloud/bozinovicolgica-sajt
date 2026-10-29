@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import CookieConsent from "@/components/CookieConsent";
+import { LINKS } from "@/lib/legal";
 import { site } from "@/lib/protokol/content";
 import "./protokol.css";
 
@@ -36,7 +38,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preload" href="/protokol/fonts/nunito-sans-latin.woff2" as="font" type="font/woff2" crossOrigin="" />
         <link rel="preload" href="/protokol/fonts/eb-garamond-latin-ext.woff2" as="font" type="font/woff2" crossOrigin="" />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <CookieConsent policyHref={LINKS.cookies} />
+      </body>
     </html>
   );
 }

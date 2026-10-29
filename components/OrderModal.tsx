@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { PRICE_EUR, PRODUCT_NAME } from '@/lib/content';
+import { PRICE_EUR, PRICE_RSD, PRODUCT_NAME, REFUND_SHORT, rsd, thousands } from '@/lib/content';
+import { HEALTH_CONSENT_TEXT, WAIVER_TEXT } from '@/lib/legal';
 import { DRAFT_KEY, START_OPTIONS, startLabel } from '@/lib/order-schema';
 import { track } from '@/lib/track';
 import ModalShell from './ModalShell';
@@ -13,10 +14,10 @@ export type OrderContext = { source: string; quizResult?: string; quizScore?: nu
  * Nacrt forme se čuva u sessionStorage, da se ništa ne izgubi ako se kupac vrati sa Stripe-a.
  */
 type Step = 1 | 2 | 3;
-type Form = { name: string; email: string; phone: string; startWhen: string; note: string; consent: boolean; company: string };
+type Form = { name: string; email: string; phone: string; startWhen: string; note: string; healthConsent: boolean; consent: boolean; waiver: boolean; company: string };
 type Draft = Form & { step: Step; orderId?: string; reference?: string };
 
-const EMPTY: Form = { name: '', email: '', phone: '', startWhen: '', note: '', consent: false, company: '' };
+const EMPTY: Form = { name: '', email: '', phone: '', startWhen: '', note: '', healthConsent: false, consent: false, waiver: false, company: '' };
 
 const IconX = () => (<svg width="16" height="16" viewBox="0 0 256 256" fill="none" stroke="#3A5139" strokeWidth="20" strokeLinecap="round"><path d="M64,64L192,192 M192,64L64,192" /></svg>);
 const Arrow = ({ color }: { color: string }) => (
@@ -102,8 +103,10 @@ export default function OrderModal({ open, ctx, onClose }: { open: boolean; ctx:
     if (s === 2) {
       if (f.phone.replace(/[^\d]/g, '').length < 8) er.phone = 'Upiši broj telefona (može i WhatsApp).';
       if (!f.startWhen) er.startWhen = 'Izaberi kada planiraš da počneš.';
+      if (f.note.trim() && !f.healthConsent) er.healthConsent = 'Da bih sačuvala napomenu, potreban je tvoj pristanak. Ili obriši napomenu.';
     }
     if (s === 3 && !f.consent) er.consent = 'Potrebno je da prihvatiš uslove kupovine.';
+    if (s === 3 && !f.waiver) er.waiver = 'Potrebno je da potvrdiš da program počinje odmah.';
     setErrors(er);
     if (Object.keys(er).length) {
       setTimeout(() => cardRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus(), 0);
@@ -133,11 +136,11 @@ export default function OrderModal({ open, ctx, onClose }: { open: boolean; ctx:
         track('order_step', { step: 1, source: ctx.source }, 'Lead');
         setStep(2);
       } else if (step === 2) {
-        await post('/api/order', { ...base(), step: 2, orderId: ids.orderId, name: f.name, email: f.email, phone: f.phone, startWhen: f.startWhen, note: f.note });
+        await post('/api/order', { ...base(), step: 2, orderId: ids.orderId, name: f.name, email: f.email, phone: f.phone, startWhen: f.startWhen, note: f.note, healthConsent: f.healthConsent });
         track('order_step', { step: 2, source: ctx.source });
         setStep(3);
       } else {
-        const j = await post('/api/checkout', { ...base(), ...ids, name: f.name, email: f.email, phone: f.phone, startWhen: f.startWhen, note: f.note, consent: f.consent });
+        const j = await post('/api/checkout', { ...base(), ...ids, name: f.name, email: f.email, phone: f.phone, startWhen: f.startWhen, note: f.note, healthConsent: f.healthConsent, consent: f.consent, waiver: f.waiver });
         track('begin_checkout', { value: PRICE_EUR, currency: 'EUR', transaction_id: ids.reference });
         location.assign(j.url);
         return; // dugme ostaje u stanju "Otvaram plaćanje…" dok se Stripe ne učita
@@ -175,7 +178,7 @@ export default function OrderModal({ open, ctx, onClose }: { open: boolean; ctx:
                   <span className="of-sumname">{PRODUCT_NAME}</span>
                   <span className="of-sumdesc">Plan ishrane, spisak za kupovinu, recepti, video lekcije i WhatsApp podrška</span>
                 </div>
-                <span className="of-sumprice">{PRICE_EUR}<small>EUR</small></span>
+                <span className="of-sumprice">{thousands(PRICE_RSD)}<small>RSD</small></span>
               </div>
             </>
           )}
@@ -221,6 +224,15 @@ export default function OrderModal({ open, ctx, onClose }: { open: boolean; ctx:
                   <span className="of-label">Da li piješ lekove ili imaš dijagnozu? <em>(nije obavezno)</em></span>
                   <textarea className="of-input of-textarea" name="note" rows={2} value={f.note} onChange={set('note')} maxLength={600} placeholder="Npr. lekovi za štitnu žlezdu, masna jetra na ultrazvuku…" />
                 </label>
+                {f.note.trim() && (
+                  <>
+                    <label className="of-check">
+                      <input type="checkbox" checked={f.healthConsent} onChange={set('healthConsent')} aria-invalid={!!errors.healthConsent} aria-describedby={errors.healthConsent ? 'of-e-health' : undefined} />
+                      <span>{HEALTH_CONSENT_TEXT} Više u <a href="/politika-privatnosti" target="_blank">Politici privatnosti</a>.</span>
+                    </label>
+                    {errors.healthConsent && <span className="of-error" id="of-e-health">{errors.healthConsent}</span>}
+                  </>
+                )}
               </>
             )}
 
@@ -232,13 +244,19 @@ export default function OrderModal({ open, ctx, onClose }: { open: boolean; ctx:
                   <div><dt>Email</dt><dd>{f.email}</dd><button type="button" className="of-edit" onClick={() => setStep(1)}>Izmeni</button></div>
                   <div><dt>Telefon</dt><dd>{f.phone}</dd><button type="button" className="of-edit" onClick={() => setStep(2)}>Izmeni</button></div>
                   <div><dt>Počinješ</dt><dd>{startLabel(f.startWhen)}</dd><button type="button" className="of-edit" onClick={() => setStep(2)}>Izmeni</button></div>
-                  <div className="of-review__total"><dt>Ukupno</dt><dd>{PRICE_EUR} EUR</dd></div>
+                  <div className="of-review__total"><dt>Ukupno</dt><dd>{rsd(PRICE_RSD)} <small>(naplata {PRICE_EUR} EUR)</small></dd></div>
                 </dl>
                 <label className="of-check">
                   <input type="checkbox" checked={f.consent} onChange={set('consent')} aria-invalid={!!errors.consent} aria-describedby={errors.consent ? 'of-e-consent' : undefined} />
-                  <span>Prihvatam <a href="/uslovi-kupovine" target="_blank">Uslove kupovine</a> i <a href="/politika-privatnosti" target="_blank">Politiku privatnosti</a>. Razumem da protokol ne zamenjuje savet lekara.</span>
+                  <span>Prihvatam <a href="/uslovi-kupovine" target="_blank">Uslove korišćenja i kupovine</a> i <a href="/politika-privatnosti" target="_blank">Politiku privatnosti</a>. Razumem da program ne zamenjuje savet lekara.</span>
                 </label>
                 {errors.consent && <span className="of-error" id="of-e-consent">{errors.consent}</span>}
+                <label className="of-check">
+                  <input type="checkbox" checked={f.waiver} onChange={set('waiver')} aria-invalid={!!errors.waiver} aria-describedby={errors.waiver ? 'of-e-waiver' : undefined} />
+                  <span>{WAIVER_TEXT} <a href="/uslovi-kupovine#odustanak" target="_blank">Šta to znači</a></span>
+                </label>
+                {errors.waiver && <span className="of-error" id="of-e-waiver">{errors.waiver}</span>}
+                <p className="oq-fine of-refund">{REFUND_SHORT} <a href="/uslovi-kupovine#odustanak" target="_blank">Uslovi povraćaja</a></p>
               </>
             )}
 

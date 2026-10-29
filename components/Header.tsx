@@ -78,7 +78,7 @@ export default function Header() {
             </a>
           ))}
         </nav>
-        <Pill href="#cena" className="mmenu__cta" onClick={() => setOpen(false)}>Započni 9-dnevni protokol</Pill>
+        <Pill href="#cena" className="mmenu__cta" onClick={() => setOpen(false)}>Započni devetodnevni protokol</Pill>
       </div>
     </>
   );

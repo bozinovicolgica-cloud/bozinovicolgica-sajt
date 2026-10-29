@@ -21,7 +21,12 @@ export const detailsSchema = z.object({
   phone: z.string().trim().min(6).max(32).regex(/^[+\d\s()\-/.]+$/),
   startWhen: z.enum(startKeys),
   note: z.string().trim().max(600).optional().default(''),
+  /** Napomena o lekovima i dijagnozi je podatak o zdravlju: čuva se samo uz izričit pristanak. */
+  healthConsent: z.boolean().optional().default(false),
 });
+
+/** Napomena bez pristanka se ne čuva. */
+export const noteIfConsented = (d: { note?: string; healthConsent?: boolean }) => (d.healthConsent && d.note ? d.note : '');
 
 export const metaSchema = z.object({
   orderId: z.string().uuid().optional(),

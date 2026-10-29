@@ -113,8 +113,8 @@ export const TIPS_DOCTOR = [
 ];
 
 export const RESULT_TITLES: Record<ResultKey, string> = {
-  likely: 'Velika je verovatnoća da ti je jetra preopterećena',
-  ok: 'Tvoja jetra trenutno ne pokazuje jasne znake preopterećenja',
+  likely: 'Prepoznaješ više znakova preopterećenja jetre',
+  ok: 'Prepoznaješ malo znakova preopterećenja jetre',
   doctor: 'Pre bilo kakvog protokola, javi se lekaru',
   pregnant: 'Protokol sada nije za tebe',
 };

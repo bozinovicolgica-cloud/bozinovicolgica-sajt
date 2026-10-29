@@ -72,3 +72,6 @@
 /* pop-up je u HTML-u od starta; sakriven kad je napomena već prihvaćena */
 .dg-ok .dg-overlay { display: none; }
 html:not(.dg-ok):has(.dg-overlay) { overflow: hidden; }
+.of-review__total dd small { font-family: 'Nunito Sans', sans-serif; font-weight: 400; font-size: 14px; color: #7A6D5E; }
+.of-refund { margin: 0; }
+.of-refund a { color: #3A5139; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }

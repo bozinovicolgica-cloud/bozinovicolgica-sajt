@@ -64,3 +64,11 @@ export async function markPaidOnce(id: string, fields: Record<string, unknown>):
   if (insErr) console.error('[orders] paid insert', insErr);
   return true;
 }
+
+/** Napomena i rezultat kviza za mejl Olgici (nisu u Stripe metadata, jer su podaci o zdravlju). */
+export async function orderPrivateFields(id: string): Promise<{ note: string; quizResult: string }> {
+  const db = supabase();
+  if (!db) return { note: '', quizResult: '' };
+  const { data } = await db.from('orders').select('note, quiz_result').eq('id', id).maybeSingle();
+  return { note: data?.note ?? '', quizResult: data?.quiz_result ?? '' };
+}

@@ -14,12 +14,12 @@ export default function Solution() {
         <div className="sol__left">
           <div data-rv style={rv(sn, 0)}>
             <p className="eyebrow">Rešenje</p>
-            <h2 className="h2 sol__h2">9-dnevni protokol čišćenja jetre</h2>
+            <h2 className="h2 sol__h2">Devetodnevni protokol čišćenja jetre</h2>
             <p className="lead sol__p">Jetra je filter tvog tela: skuplja ono što unosimo iz vode, vazduha, hrane i kozmetike. Za svaki od 9 dana dobijaš tačne namirnice i smernice koje je podržavaju.</p>
           </div>
           <div data-rv style={rv(sn, 640)}>
             <div className="sol__cta">
-              <Pill href="#cena" order="resenje">Započni 9-dnevni protokol</Pill>
+              <Pill href="#cena" order="resenje">Započni devetodnevni protokol</Pill>
             </div>
           </div>
         </div>

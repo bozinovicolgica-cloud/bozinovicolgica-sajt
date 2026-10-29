@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { HEALTH_CONSENT_TEXT, KID_CONSENT_TEXT } from "@/lib/legal";
 import { form as F, responseTime, site } from "@/lib/protokol/content";
 import { safeHref } from "@/lib/protokol/rv";
 import { getUtm, track } from "@/lib/protokol/track";
@@ -22,6 +23,7 @@ type State = {
   phone: string;
   email: string;
   consent: boolean;
+  guardian: boolean;
   website: string; // honeypot
   tried: boolean;
   submitting: boolean;
@@ -31,7 +33,7 @@ type State = {
 
 const initial: State = {
   step: 1, phase: "in", dir: 1, who: null, syms: [], symsFor: null, other: "", has: [],
-  name: "", phone: "", email: "", consent: false, website: "", tried: false, submitting: false,
+  name: "", phone: "", email: "", consent: false, guardian: false, website: "", tried: false, submitting: false,
   serverError: "", serverErrors: {},
 };
 
@@ -41,6 +43,7 @@ function validate(s: State) {
   if (!/^\+?[0-9][0-9 /-]{7,}$/.test(s.phone.trim())) e.phone = "Upiši broj telefona, na primer +381 64 123 4567.";
   if (s.email.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s.email.trim())) e.email = "Proveri email adresu.";
   if (!s.consent) e.consent = "Potrebna je tvoja saglasnost da bih mogla da napravim protokol.";
+  if (s.who === "kid" && !s.guardian) e.guardian = "Potrebna je potvrda roditelja ili zakonskog zastupnika.";
   return e;
 }
 
@@ -96,7 +99,7 @@ export function LeadForm({ size }: { size: Size }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           who: s.who, symptoms: s.syms, other: s.other, has: s.has,
-          name: s.name, phone: s.phone, email: s.email, consent: s.consent,
+          name: s.name, phone: s.phone, email: s.email, consent: s.consent, guardian: s.guardian,
           website: s.website, formLocation: size, utm: getUtm(),
         }),
       });
@@ -294,14 +297,24 @@ export function LeadForm({ size }: { size: Size }) {
                       <label>
                         <input type="checkbox" checked={s.consent} onChange={(e) => set((p) => ({ consent: e.target.checked, serverErrors: { ...p.serverErrors, consent: "" } }))} />
                         <span>
-                          Dajem saglasnost da Olgica Božinović obrađuje moje podatke, uključujući i podatke o zdravlju, radi izrade protokola.{" "}
+                          {HEALTH_CONSENT_TEXT} Više u{" "}
                           <a href={safeHref(site.links.privacy)} target="_blank" rel="noopener">
-                            Politika privatnosti
+                            Politici privatnosti
                           </a>
+                          .
                         </span>
                       </label>
                       {errs.consent && <span className="lf-err">{errs.consent}</span>}
                     </div>
+                    {kid && (
+                      <div className="lf-consent">
+                        <label>
+                          <input type="checkbox" checked={s.guardian} onChange={(e) => set((p) => ({ guardian: e.target.checked, serverErrors: { ...p.serverErrors, guardian: "" } }))} />
+                          <span>{KID_CONSENT_TEXT}</span>
+                        </label>
+                        {errs.guardian && <span className="lf-err">{errs.guardian}</span>}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

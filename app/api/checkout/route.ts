@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 import { z } from 'zod';
 import { PRICE_EUR, PRODUCT_NAME } from '@/lib/content';
-import { contactSchema, detailsSchema, metaSchema } from '@/lib/order-schema';
+import { WAIVER_VERSION } from '@/lib/legal';
+import { contactSchema, detailsSchema, metaSchema, noteIfConsented } from '@/lib/order-schema';
 import { siteUrl, stripeConfig } from '@/lib/server/config';
 import { saveOrder } from '@/lib/server/orders';
 import { stripe } from '@/lib/server/stripe';
@@ -11,11 +12,14 @@ import { clientIp, limited } from '@/lib/server/rate-limit';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-/** 3. korak forme: saglasnost -> pravi Stripe Checkout sesiju i vraća link na koji šaljemo kupca. */
+/**
+ * 3. korak forme: saglasnost sa uslovima + izričit zahtev da program počne odmah (gubitak prava
+ * na odustanak po završetku) -> pravi Stripe Checkout sesiju i vraća link na koji šaljemo kupca.
+ */
 const Body = metaSchema
   .extend(contactSchema.shape)
   .extend(detailsSchema.shape)
-  .extend({ orderId: z.string().uuid(), reference: z.string().regex(/^\d{8}$/), consent: z.literal(true) });
+  .extend({ orderId: z.string().uuid(), reference: z.string().regex(/^\d{8}$/), consent: z.literal(true), waiver: z.literal(true) });
 
 const cut = (s: string | null | undefined, n = 450) => (s || '').slice(0, n);
 
@@ -38,17 +42,18 @@ export async function POST(req: Request) {
   const cfg = stripeConfig();
   const site = siteUrl().replace(/\/$/, '');
   // Stripe metadata: sve što webhook treba da upiše porudžbinu, i kad baza nije podešena
+  // Bez napomene i rezultata kviza: to su podaci o zdravlju, a Stripe ih čuva u SAD.
+  const now = new Date().toISOString();
   const metadata = {
     order_id: d.orderId,
     reference: d.reference,
     name: cut(d.name, 100),
     phone: cut(d.phone, 32),
     start_when: d.startWhen,
-    note: cut(d.note),
     source: cut(d.source, 40),
-    quiz_result: d.quizResult ?? '',
-    quiz_score: d.quizScore != null ? String(d.quizScore) : '',
     utm: cut(JSON.stringify(d.utm), 480),
+    waiver: WAIVER_VERSION,
+    waiver_at: now,
   };
 
   let session: Stripe.Checkout.Session;
@@ -88,14 +93,17 @@ export async function POST(req: Request) {
     email: d.email,
     phone: d.phone,
     start_when: d.startWhen,
-    note: d.note || null,
+    note: noteIfConsented(d) || null,
+    health_consent_at: noteIfConsented(d) ? now : null,
     amount_eur: PRICE_EUR,
     source: d.source,
     quiz_result: d.quizResult ?? null,
     quiz_score: d.quizScore ?? null,
     utm: d.utm,
-    consent_at: new Date().toISOString(),
-    checkout_at: new Date().toISOString(),
+    consent_at: now,
+    waiver_at: now,
+    waiver_version: WAIVER_VERSION,
+    checkout_at: now,
     stripe_session_id: session.id,
   }, { insert: true });
 

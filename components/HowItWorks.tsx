@@ -68,7 +68,7 @@ export default function HowItWorks() {
           </ol>
         </div>
         <div data-rv style={rv(tl >= 1, 200)}>
-          <Pill href="#cena" order="timeline" className="how__btn">Započni 9-dnevni protokol</Pill>
+          <Pill href="#cena" order="timeline" className="how__btn">Započni devetodnevni protokol</Pill>
         </div>
       </div>
     </section>
