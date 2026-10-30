@@ -30,7 +30,7 @@ export default function CookieConsent({ policyHref }: { policyHref: string }) {
   return (
     <div className="cc" role="region" aria-label="Kolačići">
       <p className="cc__text">
-        Sajt koristi neophodne kolačiće da bi radio. Uz tvoj pristanak koristimo i Google Analytics i Meta Pixel, da merimo posete i oglase.{' '}
+        Sajt koristi neophodne kolačiće da bi radio. Uz tvoj pristanak koristimo i Google Analytics, DataFast i Meta Pixel, da merimo posete i oglase.{' '}
         <a href={policyHref}>Politika kolačića</a>
       </p>
       <div className="cc__actions">

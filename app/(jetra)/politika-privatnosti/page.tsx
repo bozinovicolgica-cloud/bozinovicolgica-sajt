@@ -28,7 +28,7 @@ export default function Page() {
         <li><b>Podaci o detetu:</b> unosi ih samo roditelj ili zakonski zastupnik, uz izričit pristanak u ime deteta.</li>
         <li><b>Poruke:</b> email, WhatsApp, Viber i Instagram poruke koje nam pošalješ. Svrha: podrška i odgovor na pitanja.</li>
         <li><b>Utisci:</b> objavljujemo ih anonimno (npr. „M., 42“), bez imena i fotografije, samo uz tvoj poseban pristanak, koji možeš da povučeš u svakom trenutku.</li>
-        <li><b>Analitika i oglašavanje:</b> Google Analytics / Google Tag Manager i Meta Pixel, samo ako u baneru klikneš „Prihvati“. Ne šaljemo im odgovore iz kviza ni upitnika. Više u <Link href="/politika-kolacica">Politici kolačića</Link>.</li>
+        <li><b>Analitika i oglašavanje:</b> Google Analytics / Google Tag Manager, DataFast i Meta Pixel, samo ako u baneru klikneš „Prihvati“. Ne šaljemo im odgovore iz kviza ni upitnika. Više u <Link href="/politika-kolacica">Politici kolačića</Link>.</li>
       </ul>
 
       <h2>Ko još vidi podatke</h2>
@@ -40,6 +40,7 @@ export default function Page() {
         <li>Resend (slanje emailova, SAD; slanje iz EU)</li>
         <li>Airtable (evidencija klijenata, SAD): samo ime, kontakt i status porudžbine, bez podataka o zdravlju</li>
         <li>Meta (Meta Pixel uz pristanak; WhatsApp i Instagram poruke) i Google (analitika uz pristanak)</li>
+        <li>DataFast (analitika poseta, uz pristanak)</li>
         <li>[Tally, ManyChat i alat za newsletter, ako se koriste: navesti šta tačno vide]</li>
       </ul>
       <p>Podatke ne prodajemo i ne ustupamo trećim licima u druge svrhe.</p>

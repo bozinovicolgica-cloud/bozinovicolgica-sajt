@@ -5,6 +5,7 @@ import './quiz.css';
 import './order.css';
 import Analytics from '@/components/Analytics';
 import CookieConsent from '@/components/CookieConsent';
+import DataFast from '@/components/DataFast';
 import { imgT } from '@/lib/images';
 import { DISCLAIMER_HEAD_SCRIPT } from '@/lib/disclaimer';
 import { CUR_HEAD_SCRIPT } from '@/lib/currency';
@@ -59,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <Analytics />
+        <DataFast />
         <CookieConsent policyHref="/politika-kolacica" />
       </body>
     </html>

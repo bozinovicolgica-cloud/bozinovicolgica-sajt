@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import CookieConsent from "@/components/CookieConsent";
+import DataFast from "@/components/DataFast";
 import { LINKS } from "@/lib/legal";
 import { site } from "@/lib/protokol/content";
 import { CUR_HEAD_SCRIPT } from "@/lib/currency";
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {children}
+        <DataFast />
         <CookieConsent policyHref={LINKS.cookies} />
       </body>
     </html>

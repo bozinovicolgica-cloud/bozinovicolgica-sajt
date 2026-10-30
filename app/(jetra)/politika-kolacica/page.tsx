@@ -18,6 +18,7 @@ const NECESSARY: [string, string, string][] = [
 
 const OPTIONAL: [string, string, string][] = [
   ['Google Analytics / Tag Manager (_ga, _ga_*)', 'Merenje poseta i toga koje delove stranice ljudi koriste.', 'do 2 godine'],
+  ['DataFast (datafast_visitor_id, datafast_session_id, datafast_visitor_session_count)', 'Merenje poseta na oba poddomena: odakle ljudi dolaze i koje stranice gledaju.', '1 godina (datafast_session_id 30 minuta)'],
   ['Meta Pixel (_fbp, fr)', 'Merenje oglasa na Facebook-u i Instagram-u i prikaz oglasa ljudima koji su posetili sajt.', 'do 3 meseca'],
 ];
 
