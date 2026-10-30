@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { marqueeLeft, marqueeRight, testimonials } from '@/lib/content';
+import { TESTIMONIAL_NOTE } from '@/lib/legal';
 import { prefersReducedMotion, rv, useSeen } from '@/lib/reveal';
 import { img } from '@/lib/images';
 
@@ -107,6 +108,9 @@ export default function Results() {
       <div ref={mqRef} className="mq">
         {row(marqueeLeft, 'left')}
         {row(marqueeRight, 'right')}
+      </div>
+      <div className="container">
+        <p className="res__note">{TESTIMONIAL_NOTE}</p>
       </div>
     </section>
   );

@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import CookieConsent from "@/components/CookieConsent";
+import { LINKS } from "@/lib/legal";
 import { site } from "@/lib/protokol/content";
+import { CUR_HEAD_SCRIPT } from "@/lib/currency";
 import "./protokol.css";
 
 const SITE_URL = process.env.NEXT_PUBLIC_PROTOKOL_URL || "https://protokol.bozinovicolgica.rs";
@@ -32,11 +35,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* Klasa "js" uključuje animacije pojavljivanja; bez JS-a sadržaj je odmah vidljiv. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        <script dangerouslySetInnerHTML={{ __html: CUR_HEAD_SCRIPT }} />
         <link rel="preload" href="/protokol/fonts/eb-garamond-latin.woff2" as="font" type="font/woff2" crossOrigin="" />
         <link rel="preload" href="/protokol/fonts/nunito-sans-latin.woff2" as="font" type="font/woff2" crossOrigin="" />
         <link rel="preload" href="/protokol/fonts/eb-garamond-latin-ext.woff2" as="font" type="font/woff2" crossOrigin="" />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <CookieConsent policyHref={LINKS.cookies} />
+      </body>
     </html>
   );
 }

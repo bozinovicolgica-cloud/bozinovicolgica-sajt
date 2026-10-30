@@ -256,6 +256,11 @@ body { overflow-x: clip; }
 .price__cur { font-family: 'Nunito Sans', sans-serif; font-weight: 600; font-size: 22px; line-height: 28px; color: #DFE8DC; }
 .price__save { position: absolute; top: -6px; left: 100%; margin-left: 4px; padding: 4px 8px; border-radius: 6px; background: #B8895A; color: #FFFFFF; font-family: 'Nunito Sans', sans-serif; font-weight: 600; font-size: 12px; line-height: 14px; letter-spacing: 0.02em; white-space: nowrap; transform: rotate(-4deg); pointer-events: none; user-select: none; }
 .price__btn { margin-top: 24px; display: inline-flex; width: max-content; }
+.res__note { margin: 32px 0 0; font-family: 'Nunito Sans', sans-serif; max-width: 800px; font-size: 14px; line-height: 20px; color: #7A6D5E; text-wrap: pretty; }
+.price__rsd { margin: 8px 0 0; font-family: 'Nunito Sans', sans-serif; font-size: 14px; line-height: 20px; color: #DFE8DC; }
+.price__note a { color: #FFFFFF; text-decoration: underline; text-underline-offset: 3px; }
+.price__note + .price__note { margin-top: 8px; }
+.price__note { margin: 16px 0 0; font-family: 'Nunito Sans', sans-serif; font-size: 14px; line-height: 20px; color: #DFE8DC; text-wrap: pretty; }
 .price__quiz { grid-column: 8 / span 5; padding: 40px; border-radius: 32px; background: #FFFFFF; border: 1px solid #EDE5D8; box-shadow: 0 2px 8px rgba(31,43,32,0.04); display: flex; flex-direction: column; }
 .price__qIcon { width: 48px; height: 48px; border-radius: 999px; background: #F1F5F0; display: flex; align-items: center; justify-content: center; }
 .price__qH3 { margin: 24px 0 0; font-family: 'EB Garamond', serif; font-weight: 600; font-size: 24px; line-height: 32px; color: #24211D; }
@@ -290,6 +295,7 @@ body { overflow-x: clip; }
 .final__p { margin: 24px 0 0; color: #DFE8DC; }
 .final__row { margin-top: 40px; display: flex; align-items: center; flex-wrap: wrap; gap: 24px; }
 .final__price { font-family: 'EB Garamond', serif; font-weight: 600; font-size: 32px; line-height: 40px; color: #FFFFFF; }
+.final__price small { font-family: 'Nunito Sans', sans-serif; font-weight: 400; font-size: 15px; color: #DFE8DC; }
 .final__quiz { display: inline-block; margin-top: 16px; font-family: 'Nunito Sans', sans-serif; font-weight: 600; font-size: 16px; line-height: 24px; color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
 .final__quiz:hover { color: #DFE8DC; }
 
@@ -303,6 +309,9 @@ body { overflow-x: clip; }
 .ftr__disclaimer { margin: 32px 0 0; max-width: 800px; font-weight: 600; color: #FFFFFF; text-wrap: pretty; }
 .ftr__note { margin: 12px 0 0; max-width: 800px; color: #DFE8DC; text-wrap: pretty; }
 .ftr__copy { margin: 24px 0 0; color: #C2D3BE; }
+.ftr__legal { margin-top: 32px; flex-wrap: wrap; gap: 12px 24px; color: #FFFFFF; }
+.ftr__seller { margin: 12px 0 0; max-width: 800px; color: #C2D3BE; text-wrap: pretty; }
+.ftr__seller a { color: #FFFFFF; text-decoration: underline; text-underline-offset: 4px; }
 
 /* ==========================================================================
    RESPONSIVE
@@ -615,6 +624,14 @@ body { overflow-x: clip; }
 .legal__body ul { padding-left: 22px; }
 .legal__body li { margin-bottom: 6px; }
 .legal__body a { color: #3A5139; text-decoration: underline; text-underline-offset: 3px; }
+.legal__body table { width: 100%; margin: 0 0 16px; border-collapse: collapse; font-size: 15px; line-height: 22px; }
+.legal__body th, .legal__body td { padding: 10px 12px; border-bottom: 1px solid #E4DCCF; text-align: left; vertical-align: top; }
+.legal__body th { font-weight: 700; color: #24211D; }
+.legal__body .cc-link { color: #3A5139; font-weight: 600; }
+.wd { display: flex; flex-direction: column; gap: 16px; max-width: 560px; }
+.wd__btn { align-self: flex-start; }
+.wd__fine { margin: 0; font-size: 14px; line-height: 20px; color: #7A6D5E; }
+.wd__pre { margin: 0; padding: 16px; border-radius: 16px; background: #F5EFE6; font-family: inherit; font-size: 15px; line-height: 22px; white-space: pre-wrap; }
 @media (max-width: 640px) {
   .legal__top { padding: 16px 0; }
   .legal__back { font-size: 14px; }
@@ -679,3 +696,6 @@ body { overflow-x: clip; }
   .price__cur { font-size: 20px; line-height: 26px; }
   .price__totalV { font-size: 26px; line-height: 32px; }
 }
+
+/* Cena u dinarima (Srbija) ili evrima (ostali), vidi lib/currency.ts */
+html[data-cur="eur"] .cur-rsd, html:not([data-cur="eur"]) .cur-eur { display: none !important; }

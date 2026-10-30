@@ -26,6 +26,12 @@ export const COMPANY = {
   zip: '82801',
   country: 'US',
   addressLine: '30 N Gould St, Ste N, Sheridan, WY 82801, SAD',
+  /** Registar u kome je LLC upisan i broj (Zakon o elektronskoj trgovini). */
+  registry: 'Wyoming Secretary of State, SAD',
+  registrationNumber: '[broj registracije LLC-a]',
+  phone: '[telefon za kupce]',
+  /** Predstavnik u Srbiji po čl. 44 ZZPL (pismeno određen). */
+  representative: '[naziv i adresa predstavnika u Srbiji]',
 };
 
 export const SOCIAL = {

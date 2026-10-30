@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     if (error) console.error('[quiz] supabase', error);
   }
   await postWebhook('quiz', row);
-  if (hasContact) after(() => syncQuizLeadToAirtable({ name: row.name, email: d.email, result: d.result, score: d.score }));
+  if (hasContact) after(() => syncQuizLeadToAirtable({ name: row.name, email: d.email }));
 
   let emailed = false;
   if (hasContact) {

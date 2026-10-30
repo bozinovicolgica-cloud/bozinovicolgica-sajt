@@ -49,14 +49,14 @@ export default function Hero() {
             9 dana<br />spašavanja <em>jetre</em>
           </h1>
 
-          <p className="hero__sub">Pojednostavljeni protokol čišćenja</p>
+          <p className="hero__sub">Program ishrane i navika za 9 dana</p>
 
           <p className="hero__p">
             Ako te muče nadutost, zatvor, problemi sa kožom ili spavanjem, ovaj plan je za tebe. Za svaki od 9 dana dobijaš tačan spisak namirnica i recepte, pa samo pratiš plan.
           </p>
 
           <div className="hero__ctas">
-            <Pill href="#cena">Započni 9-dnevni protokol</Pill>
+            <Pill href="#cena">Započni devetodnevni protokol</Pill>
             <Ghost href="#kviz">Proveri da li je protokol za tebe</Ghost>
           </div>
         </div>

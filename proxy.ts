@@ -9,6 +9,7 @@ import {
   isVariant,
   type Variant,
 } from '@/lib/protokol/ab';
+import { CUR_COOKIE, currencyFor, isCurrency } from '@/lib/currency';
 
 // Jedan projekat, dva sajta po poddomenu:
 //   program.bozinovicolgica.rs   -> app/(jetra)     9 dana spašavanja jetre
@@ -19,6 +20,10 @@ import {
 const PROTOKOL_URL = process.env.NEXT_PUBLIC_PROTOKOL_URL || 'https://protokol.bozinovicolgica.rs';
 
 export function proxy(req: NextRequest) {
+  return withCurrency(req, route(req));
+}
+
+function route(req: NextRequest) {
   const url = req.nextUrl;
   const host = req.headers.get('host') ?? '';
 
@@ -89,6 +94,15 @@ function abSplit(req: NextRequest) {
   // CDN ne sme da kešira odgovor zajedno sa cookie-jem jednog posetioca.
   res.headers.set('Cache-Control', 'private, no-store');
   res.headers.set('x-lp-variant', variant);
+  return res;
+}
+
+// Cena u dinarima za Srbiju, u evrima za ostale (lib/currency.ts). Računa se pri svakoj poseti,
+// pa se menja i kad posetilac otputuje. ?cur=eur / ?cur=rsd za proveru.
+function withCurrency(req: NextRequest, res: NextResponse) {
+  const forced = req.nextUrl.searchParams.get('cur');
+  const cur = isCurrency(forced) ? forced : currencyFor(req.headers.get('x-vercel-ip-country'));
+  if (req.cookies.get(CUR_COOKIE)?.value !== cur) res.cookies.set(CUR_COOKIE, cur, { path: '/', sameSite: 'lax' });
   return res;
 }
 

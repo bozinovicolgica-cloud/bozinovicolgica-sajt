@@ -1,6 +1,8 @@
 'use client';
 import { useRef } from 'react';
-import { included, PRICE_EUR, SAVE_EUR, VALUE_TOTAL_EUR } from '@/lib/content';
+import { included, PRICE_EUR, PRICE_RSD, REFUND_SHORT, thousands } from '@/lib/content';
+import Price from './Price';
+import { BUY_NOTE } from '@/lib/legal';
 import { Q } from '@/lib/quiz-data';
 import { EASE, rv, useSeen } from '@/lib/reveal';
 import { Ghost, Pill } from './ui';
@@ -39,31 +41,25 @@ export default function Pricing() {
             <p className="price__incH">Šta dobijaš</p>
             <ul className="price__inc">
               {included.map((inc) => (
-                <li key={inc.label}>
+                <li key={inc}>
                   <svg className="price__chk" width="20" height="20" viewBox="0 0 256 256" fill="none" stroke="#9DB799" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M40,144l56,56L224,72" /></svg>
-                  <span className="price__lbl">{inc.label}</span>
-                  <span className="price__val">{inc.value} EUR</span>
+                  <span className="price__lbl">{inc}</span>
                 </li>
               ))}
             </ul>
 
-            <div className="price__total">
-              <span className="price__totalL">Ukupna vrednost</span>
-              <s className="price__totalV">{VALUE_TOTAL_EUR} EUR</s>
-            </div>
-
             <div className="price__box">
               <p className="price__boxH">Tvoja cena</p>
               <span className="price__amount">
-                <span className="price__num">{PRICE_EUR}</span>
-                <span className="price__cur">EUR</span>
-                {SAVE_EUR > 0 && (
-                  <span className="price__save" aria-label={`Ušteda ${SAVE_EUR} EUR`}>-{SAVE_EUR} EUR</span>
-                )}
+                <span className="price__num"><Price rsd={thousands(PRICE_RSD)} eur={PRICE_EUR} /></span>
+                <span className="price__cur"><Price rsd="RSD" eur="EUR" /></span>
               </span>
+              <p className="price__rsd"><Price rsd={`oko ${PRICE_EUR} EUR, jednokratno. Naplata ide u evrima; banka preračunava po svom kursu.`} eur="Jednokratno." /></p>
             </div>
 
-            <Pill href="#cena" order="cena" light className="price__btn">Započni 9-dnevni protokol</Pill>
+            <Pill href="#cena" order="cena" light className="price__btn">Započni devetodnevni protokol</Pill>
+            <p className="price__note">{BUY_NOTE}</p>
+            <p className="price__note">{REFUND_SHORT} <a href="/uslovi-kupovine#odustanak">Uslovi povraćaja</a></p>
           </div>
 
           <div data-rv className="price__quiz" style={rv(pOn, 270, 16, 700)}>

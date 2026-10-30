@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
   if (!phone || !/^\+?[0-9][0-9 /-]{7,}$/.test(phone)) errors.phone = "Upiši broj telefona, na primer +381 64 123 4567.";
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.email = "Proveri email adresu.";
   if (b.consent !== true) errors.consent = "Potrebna je tvoja saglasnost da bih mogla da napravim protokol.";
+  if (who === "kid" && b.guardian !== true) errors.guardian = "Potrebna je potvrda roditelja ili zakonskog zastupnika.";
   if (Object.keys(errors).length) return NextResponse.json({ ok: false, errors }, { status: 422 });
 
   const ctx = abContext(req);
@@ -57,6 +58,8 @@ export async function POST(req: NextRequest) {
     email,
     consent: true,
     consent_at: new Date().toISOString(),
+    // upitnik za dete: roditelj/staratelj je potvrdio da je zakonski zastupnik (kolone iz 0004_compliance.sql)
+    ...(who === "kid" ? { guardian_consent: true, guardian_consent_at: new Date().toISOString() } : {}),
     utm_source: clip(u.utm_source, 200),
     utm_medium: clip(u.utm_medium, 200),
     utm_campaign: clip(u.utm_campaign, 200),

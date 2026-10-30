@@ -9,6 +9,8 @@ import type { OrderEvent } from './orders';
  *   Porudžbine          jedan red po pokušaju kupovine, povezan sa klijentom i proizvodom
  *   Programi i Proizvodi  postojeći katalog; porudžbina se vezuje za AIRTABLE_PRODUCT
  * Polja pravi `scripts/airtable-setup.mjs`. Greške se samo loguju: Airtable nikad ne sme da obori formu ili webhook.
+ * Podaci o zdravlju (napomena o lekovima/dijagnozi, rezultat i skor kviza) ne idu u Airtable:
+ * on čuva podatke u SAD, pa tu ostaju samo ime, kontakt i status (compliance dokument, 15. 10. 2026).
  */
 export const F = {
   client: {
@@ -54,13 +56,6 @@ export const STATUS: Record<string, string> = {
   paid: 'Plaćeno',
   expired: 'Istekla',
   failed: 'Neuspelo plaćanje',
-};
-
-export const QUIZ: Record<string, string> = {
-  likely: 'Preopterećena jetra',
-  ok: 'Jetra u redu',
-  doctor: 'Prvo lekar',
-  pregnant: 'Trudnoća / dojenje',
 };
 
 type Fields = Record<string, unknown>;
@@ -180,7 +175,6 @@ export async function syncOrderToAirtable(event: OrderEvent, id: string, f: Fiel
             [F.client.source]: f.source,
             [F.client.utm]: utmText(f.utm),
           },
-          set: { [F.client.quizResult]: QUIZ[f.quiz_result as string], [F.client.quizScore]: f.quiz_score },
         },
         newlyPaid ? { amount: Number(f.amount_paid ?? f.amount_eur) || 0, date: String(f.paid_at || new Date().toISOString()) } : undefined,
       );
@@ -204,7 +198,6 @@ export async function syncOrderToAirtable(event: OrderEvent, id: string, f: Fiel
       [o.startedAt]: existing ? undefined : new Date().toISOString(),
       [o.paidAt]: f.status === 'paid' ? f.paid_at : undefined,
       [o.startWhen]: startLabel(f.start_when as string) || undefined,
-      [o.note]: f.note,
       [o.source]: f.source,
       [o.stripe]: pi ? `https://dashboard.stripe.com/payments/${pi}` : undefined,
     });
@@ -214,12 +207,11 @@ export async function syncOrderToAirtable(event: OrderEvent, id: string, f: Fiel
 }
 
 /** Kviz sa ostavljenim emailom (i saglasnošću) postaje klijent u fazi „Kviz lead“. */
-export async function syncQuizLeadToAirtable(lead: { name: string | null; email: string; result: string; score: number }): Promise<void> {
+export async function syncQuizLeadToAirtable(lead: { name: string | null; email: string }): Promise<void> {
   if (!airtableConfig().enabled) return;
   try {
     await upsertClient(lead.email, STAGES.quiz, {
       fill: { [F.client.name]: lead.name, [F.client.source]: 'kviz' },
-      set: { [F.client.quizResult]: QUIZ[lead.result], [F.client.quizScore]: lead.score },
     });
   } catch (e) {
     console.error('[airtable] quiz', e);

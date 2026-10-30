@@ -1,12 +1,15 @@
 'use client';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import { PRICE_EUR, VALUE_TOTAL_EUR } from '@/lib/content';
+import { PRICE_EUR, PRICE_RSD, thousands } from '@/lib/content';
+import Price from './Price';
 import {
-  Q, WHY, TIPS_LIKELY, TIPS_OK, TIPS_DOCTOR,
+  Q, WHY, RESULT_TITLES, TIPS_LIKELY, TIPS_OK, TIPS_DOCTOR,
   evaluate, loadHabits, readableAnswers,
   type Answers, type Evaluation, type WhyKey,
 } from '@/lib/quiz-data';
+import { QUIZ_NOTE } from '@/lib/legal';
+import { COMPANY, EMAIL } from '@/lib/site';
 import { track } from '@/lib/track';
 import ModalShell from './ModalShell';
 import { img } from '@/lib/images';
@@ -63,7 +66,7 @@ function WhyList({ keys, ans }: { keys: WhyKey[]; ans: Answers }) {
   return <ul className="oq-why">{items}</ul>;
 }
 
-const Fine = () => <p className="oq-fine">Rezultat kviza je informativan. Ne postavlja dijagnozu i ne zamenjuje pregled kod lekara.</p>;
+const Fine = () => <p className="oq-fine">{QUIZ_NOTE}</p>;
 
 export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose: () => void; onBuy: (r: Evaluation) => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -97,7 +100,7 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
     setTimeout(() => {
       setStep('result');
       const r = evaluate(ans);
-      track('liver_quiz_complete', { result: r.result, score: r.score });
+      track('liver_quiz_complete');
     }, 1400);
   };
 
@@ -150,9 +153,9 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
     e.preventDefault();
     const email = lead.email.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setLeadErr('Upiši ispravnu email adresu.'); return; }
-    if (!lead.consent) { setLeadErr('Potvrdi da želiš da ti pošaljem rezultat na email.'); return; }
+    if (!lead.consent) { setLeadErr('Potrebna je tvoja saglasnost da bih ti poslala rezultat na email. Ili preskoči ovaj korak.'); return; }
     setLeadErr('');
-    track('liver_quiz_lead', { result: evaluate(ans).result }, 'Lead');
+    track('liver_quiz_lead', {}, 'Lead');
     save(true);
     showResult();
   };
@@ -253,7 +256,7 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
           </label>
           <label className="of-check">
             <input type="checkbox" checked={lead.consent} onChange={(e) => setLead({ ...lead, consent: e.target.checked })} />
-            <span>Želim da mi Olgica pošalje rezultat i savete za zdravlje jetre na email. Odjava je moguća u svakom trenutku. <a href="/politika-privatnosti" target="_blank">Politika privatnosti</a></span>
+            <span>Izričito pristajem da Olgica Božinović i {COMPANY.name} uz moje ime i email čuvaju odgovore iz kviza, koji su podaci o zdravlju, i da mi pošalju rezultat i savete za ishranu na email. Pristanak mogu da povučem i da se odjavim u svakom trenutku na {EMAIL}. <a href="/politika-privatnosti" target="_blank">Politika privatnosti</a></span>
           </label>
           {leadErr && <p className="of-error" role="alert">{leadErr}</p>}
           <div className="oq-nav">
@@ -274,19 +277,19 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
     if (r.result === 'likely') {
       h = (<>
         <p className="oq-eyebrow">Tvoj rezultat</p>
-        <h2 className="oq-h" id="oq-title">Velika je verovatnoća da ti je jetra preopterećena</h2>
-        <p className="oq-p">Tvoji odgovori se poklapaju sa znakovima koje viđam kod klijenata čija jetra ne stiže da obavi sav posao koji joj dajemo.</p>
+        <h2 className="oq-h" id="oq-title">{RESULT_TITLES.likely}</h2>
+        <p className="oq-p">U odgovorima prepoznaješ više znakova koje viđam kod klijenata sa preopterećenom jetrom. Ovo nije dijagnoza: proveri ih i sa svojim lekarom.</p>
         {sent}
         <Meter pos={r.pos} />
         {r.tags.length > 0 && <div className="oq-sec"><h3 className="oq-sec-h">Tvoji simptomi</h3><Chips list={r.tags} /></div>}
         <div className="oq-sec"><h3 className="oq-sec-h">Šta obično stoji iza toga</h3><WhyList keys={r.whys} ans={ans} /></div>
         <div className="oq-sec"><h3 className="oq-sec-h">Šta da uradiš već od danas</h3><StepsList list={TIPS_LIKELY} />
-          <p className="oq-p" style={{ fontSize: 17, lineHeight: '26px' }}>Ovo su prvi koraci. Da bi jetra stvarno odahnula i da bi se simptomi povukli, potreban je plan: tačno šta jedeš, svakog dana.</p></div>
+          <p className="oq-p" style={{ fontSize: 17, lineHeight: '26px' }}>Ovo su prvi koraci. Ako želiš da ih pretvoriš u naviku, pomaže jasan plan: tačno šta jedeš, svakog dana.</p></div>
         <div className="oq-offer">
           <p style={{ margin: 0, fontWeight: 600, fontSize: 13, lineHeight: '16px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#C2D3BE' }}>Moja preporuka za tebe</p>
           <h4 style={{ marginTop: 10 }}>9 dana spašavanja jetre</h4>
           <p>Plan ishrane za svih 9 dana, spisak za kupovinu, recepti i kratka video lekcija za svaki dan. Ako zapneš, tu sam na WhatsApp-u.</p>
-          <div className="oq-offer-row"><span className="oq-priceWrap"><s className="oq-value"><span className="sr-only">Ukupna vrednost </span>{VALUE_TOTAL_EUR} EUR</s><span className="oq-price">{PRICE_EUR}<small>EUR</small></span></span><a href="#cena" className="oq-btn oq-light oq-arrow" data-oq="buy" onClick={buy}><span>Započni 9-dnevni protokol</span><Arrow color="#3A5139" /></a></div>
+          <div className="oq-offer-row"><span className="oq-priceWrap"><span className="oq-price"><Price rsd={<>{thousands(PRICE_RSD)}<small>RSD</small></>} eur={<>{PRICE_EUR}<small>EUR</small></>} /></span></span><a href="#cena" className="oq-btn oq-light oq-arrow" data-oq="buy" onClick={buy}><span>Započni devetodnevni protokol</span><Arrow color="#3A5139" /></a></div>
         </div>
         <Fine />
         <div className="oq-end"><button type="button" className="oq-link" onClick={restart}>Uradi kviz ponovo</button></div>
@@ -294,13 +297,13 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
     } else if (r.result === 'ok') {
       h = (<>
         <p className="oq-eyebrow">Tvoj rezultat</p>
-        <h2 className="oq-h" id="oq-title">Tvoja jetra trenutno ne pokazuje jasne znake preopterećenja</h2>
-        <p className="oq-p">Dobre vesti. Po tvojim odgovorima, jetra za sada dobro obavlja svoj posao. Ipak, ona radi bez pauze, pa je pametno da je čuvaš pre nego što se pojave simptomi.</p>
+        <h2 className="oq-h" id="oq-title">{RESULT_TITLES.ok}</h2>
+        <p className="oq-p">U odgovorima prepoznaješ malo znakova preopterećenja. Jetra ipak radi bez pauze, pa je pametno da je čuvaš dobrim navikama.</p>
         {sent}
         <Meter pos={r.pos} />
         {r.tags.length > 0 && <div className="oq-sec"><h3 className="oq-sec-h">Na ovo obrati pažnju</h3><Chips list={r.tags} /><p className="oq-p" style={{ fontSize: 17, lineHeight: '26px' }}>Ako ovi simptomi postanu češći, uradi kviz ponovo.</p></div>}
         <div className="oq-sec"><h3 className="oq-sec-h">Kako da jetru održiš u dobrom stanju</h3><StepsList list={TIPS_OK} check /></div>
-        <div className="oq-alert"><h3 className="oq-sec-h" style={{ fontSize: 22, lineHeight: '28px' }}>Želiš da je očistiš preventivno?</h3><p className="oq-p" style={{ marginTop: 8, fontSize: 17, lineHeight: '26px' }}>9-dnevni protokol možeš da uradiš i preventivno, da jetra ostane rasterećena i pre nego što se jave tegobe.</p>
+        <div className="oq-alert"><h3 className="oq-sec-h" style={{ fontSize: 22, lineHeight: '28px' }}>Želiš da je očistiš preventivno?</h3><p className="oq-p" style={{ marginTop: 8, fontSize: 17, lineHeight: '26px' }}>Devetodnevni protokol možeš da uradiš i preventivno, da jetra ostane rasterećena i pre nego što se jave tegobe.</p>
           <div style={{ marginTop: 20 }}><a href="#resenje" className="oq-btn oq-ghost" data-oq="see" onClick={see}>Pogledaj kako izgleda protokol</a></div></div>
         <Fine />
         <div className="oq-end"><button type="button" className="oq-link" onClick={restart}>Uradi kviz ponovo</button></div>

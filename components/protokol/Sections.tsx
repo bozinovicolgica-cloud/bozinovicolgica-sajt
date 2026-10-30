@@ -2,7 +2,11 @@ import {
   about, bento, bentoHighlight, comparison, faqs, finalCta, fit, flowInputs, footer, hero, messageRows,
   nav, parents, pricing, proof, responseTime, site, steps, symptoms, testimonials,
 } from "@/lib/protokol/content";
+import { CookieSettingsLink } from "@/components/CookieConsent";
+import Price from "@/components/Price";
+import { BUY_NOTE, TESTIMONIAL_NOTE } from "@/lib/legal";
 import { rv, safeHref } from "@/lib/protokol/rv";
+import { COMPANY } from "@/lib/site";
 import { CountUp, Faq, Timeline, VideoBlock } from "./client-bits";
 import { CtaLink } from "./CtaLink";
 import { CHECK, CROSS, Ico, LEAF, WhatsAppIcon } from "./icons";
@@ -422,6 +426,9 @@ export function Testimonials() {
           </div>
         ))}
       </div>
+      <div className="container">
+        <p className="testi-note">{TESTIMONIAL_NOTE}</p>
+      </div>
     </section>
   );
 }
@@ -603,30 +610,25 @@ function PriceCard({ withCta }: { withCta: boolean }) {
         <Ico d={LEAF} size={20} color="#FFFFFF" />
       </span>
       <h3>Protokol ishrane</h3>
-      <p className="price-sub">Antiupalni i antivirusni protokol, napravljen za tebe.</p>
+      <p className="price-sub">Program ishrane i navika, napravljen za tebe.</p>
       <p className="eyebrow">Šta dobijaš</p>
       <ul className="price-rows">
-        {pricing.rows.map(([item, val], i) => (
+        {pricing.rows.map((item, i) => (
           <li key={item} className="rv" style={rv(520 + i * 60, 8, 500)}>
             <span className="item">
               <Ico d={CHECK} size={16} color="#FFFFFF" />
               <span>{item}</span>
             </span>
-            <span className="val">{val}</span>
           </li>
         ))}
       </ul>
-      <div className="price-total rv" style={rv(900)}>
-        <span>Ukupna vrednost</span>
-        <s>{pricing.total}</s>
-      </div>
       <div className="price-box rv" style={rv(980, 16, 700)}>
         <p className="eyebrow">Tvoja cena</p>
         <div className="price-amount">
-          <span className="num">{pricing.price}</span>
-          <span className="cur">EUR</span>
-          <span className="price-badge">{pricing.saving}</span>
+          <span className="num"><Price rsd={pricing.priceRsd} eur={pricing.price} /></span>
+          <span className="cur"><Price rsd="RSD" eur="EUR" /></span>
         </div>
+        <p className="price-rsd"><Price rsd={`oko ${pricing.price} EUR`} eur="jednokratno" /></p>
       </div>
       {withCta && (
         <div className="price-cta rv" style={rv(1100)}>
@@ -635,6 +637,10 @@ function PriceCard({ withCta }: { withCta: boolean }) {
           </CtaLink>
         </div>
       )}
+      <p className="price-note">{BUY_NOTE}</p>
+      <p className="price-note">
+        14 dana za odustanak, uz povraćaj srazmerno onome što nisi dobila. <a href={safeHref(site.links.terms)}>Uslovi povraćaja</a>
+      </p>
     </div>
   );
 }
@@ -706,7 +712,7 @@ export function Final() {
           <p className="final-sig">{finalCta.signature}</p>
           <div className="rv" style={rv(700)}>
             <div className="final-buy">
-              <span>{site.price} EUR</span>
+              <span><Price rsd={`${pricing.priceRsd} RSD`} eur={`${pricing.price} EUR`} /></span>
               <CtaLink tone="light" location="zavrsna">
                 Prijavi se za protokol
               </CtaLink>
@@ -737,13 +743,22 @@ export function Footer() {
           <nav className="footer-nav" aria-label="Linkovi u podnožju">
             <a href="#o-meni">O meni</a>
             <a href={safeHref(site.links.blog)}>Blog</a>
-            <a href={safeHref(site.links.terms)}>Uslovi kupovine</a>
-            <a href={safeHref(site.links.privacy)}>Politika privatnosti</a>
           </nav>
         </div>
+        <nav className="footer-nav footer-legal" aria-label="Pravne informacije">
+          <a href={safeHref(site.links.terms)}>Uslovi korišćenja i kupovine</a>
+          <a href={safeHref(site.links.privacy)}>Politika privatnosti</a>
+          <a href={safeHref(site.links.cookies)}>Politika kolačića</a>
+          <a href={safeHref(site.links.withdrawal)}>Obrazac za odustanak</a>
+          <CookieSettingsLink />
+        </nav>
         <div className="footer-text">
           <p>{footer.disclaimer}</p>
           <p>{footer.note}</p>
+          <p>
+            Prodavac: {COMPANY.name}, {COMPANY.addressLine}. Upisan u registar: {COMPANY.registry}, broj {COMPANY.registrationNumber}. Email{" "}
+            <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>, telefon {COMPANY.phone}.
+          </p>
           <p className="copy">© {new Date().getFullYear()} Olgica Božinović. Sva prava zadržana.</p>
         </div>
       </div>

@@ -4,6 +4,8 @@
 // Sve što je u [uglastim zagradama] je placeholder iz dizajna i Olgica treba da ga popuni
 // pre puštanja reklama.
 
+import { FOOTER_DISCLAIMER, LINKS } from "@/lib/legal";
+
 export const site = {
   name: "Olgica Božinović",
   role: "HEALTH COACH",
@@ -17,8 +19,11 @@ export const site = {
   price: "350",
   links: {
     blog: "[link ka blogu na sajtu]",
-    terms: "[link]",
-    privacy: "[link]",
+    // Pravne stranice su na glavnom sajtu (program.bozinovicolgica.rs) i važe za oba poddomena.
+    terms: LINKS.terms,
+    privacy: LINKS.privacy,
+    cookies: LINKS.cookies,
+    withdrawal: LINKS.withdrawal,
   },
 };
 
@@ -32,7 +37,7 @@ export const nav = [
 ];
 
 export const hero = {
-  eyebrow: "Antiupalni i antivirusni protokol",
+  eyebrow: "Program ishrane i navika",
   lead: "Na osnovu tvojih analiza, izveštaja lekara i terapije pravim plan ishrane po obrocima i suplementaciju za tvoj organizam. Dva meseca te pratim kroz WhatsApp poruke.",
 };
 
@@ -60,7 +65,7 @@ export const comparison = [
   ["Suplementi", "Biraju se po reklamama", "Suplementacija prilagođena stanju tvog organizma"],
   ["Šira slika", "Samo hrana", "Biljne tinkture i preporuke za kozmetiku, posuđe i limfu"],
   ["Podrška", "Kad zapneš, nemaš koga da pitaš", "Dva meseca praćenja kroz WhatsApp poruke"],
-  ["Cilj", "Smirivanje simptoma", "Bavimo se uzrokom zdravstvenog problema"],
+  ["Cilj", "Brzo rešenje", "Nove navike u ishrani koje možeš da održiš"],
 ] as const;
 
 export const flowInputs = [
@@ -119,7 +124,7 @@ export const parents = {
   bullets: [
     "Plan po obrocima prilagođen uzrastu deteta",
     "Bez namirnica koje dete ne voli ili ne podnosi",
-    "Uz terapiju i savete pedijatra",
+    "Uz terapiju i savete pedijatra, koji treba da zna za plan",
     "Dva meseca praćenja na WhatsApp-u za sva pitanja roditelja",
   ],
 };
@@ -152,8 +157,8 @@ export const fit = {
     "Problemi sa krajnicima",
   ],
   yes: [
-    "želiš da se rešiš simptoma koji te muče",
-    "popodne te muči nadutost, a ništa do sada nije pomoglo",
+    "želiš da kroz ishranu i navike pomogneš sebi uz terapiju koju već imaš",
+    "želiš plan ishrane napravljen za tebe, a ne isti jelovnik za sve",
     "želiš jasan plan i da tačno znaš šta da jedeš za svaki obrok",
     "možeš da odvojiš dva meseca za sebe",
   ],
@@ -164,18 +169,20 @@ export const fit = {
   ],
 };
 
+// Bez pojedinačnih "vrednosti" i precrtane ukupne cene: stavke se ne prodaju posebno,
+// pa bi precrtana cena bila izmišljena (Zakon o zaštiti potrošača).
 export const pricing = {
   rows: [
-    ["Online poziv pre izrade protokola", "99 EUR"],
-    ["Plan ishrane po obrocima", "149 EUR"],
-    ["Suplementacija prilagođena tvom organizmu", "69 EUR"],
-    ["Biljne tinkture", "49 EUR"],
-    ["Preporuke za kozmetiku, posuđe i limfu", "39 EUR"],
-    ["Dva meseca praćenja na WhatsApp-u, direktno sa mnom", "399 EUR"],
-  ] as const,
-  total: "804 EUR",
+    "Online poziv pre izrade protokola",
+    "Plan ishrane po obrocima",
+    "Suplementacija prilagođena tebi",
+    "Biljne tinkture",
+    "Preporuke za kozmetiku, posuđe i limfu",
+    "Dva meseca praćenja na WhatsApp-u, direktno sa mnom",
+  ],
   price: "350",
-  saving: "-454 EUR",
+  // Cena se ističe u dinarima, uz evro (kurs oko 117,2).
+  priceRsd: "41.000",
 };
 
 export const responseTime = "[rok]";
@@ -184,26 +191,26 @@ export const faqs: [string, string][] = [
   ["Šta treba da ti pošaljem?", "Idealno je da pošalješ poslednje analize krvi i izveštaj lekara specijaliste, uz informaciju koju terapiju piješ. Na osnovu toga pravim plan ishrane po obrocima i suplementaciju za tvoj organizam."],
   ["Šta ako nemam skorije analize?", "[Odgovor Olgice]"],
   ["Da li protokol zamenjuje terapiju koju mi je dao lekar?", "Ne. Protokol ide uz terapiju koju piješ i ne zamenjuje lečenje ni savet lekara. Zato mi je važno da znam koju terapiju piješ."],
-  ["Zašto u protokolu pričaš o teškim metalima, jetri i patogenima?", "U svom radu polazim od toga da iza mnogih zdravstvenih problema stoje teški metali u organizmu, troma jetra i patogeni: virusi, bakterije i gljivice. Menjajući ishranu čistimo organizam, a suplementacijom nadoknađujemo minerale i vitamine koji su telu potrebni za normalno funkcionisanje."],
+  ["Da li protokol leči neku bolest?", "Ne. Protokol je plan ishrane, navika i suplementacije koji ide uz terapiju koju ti je odredio lekar. Ne postavljam dijagnoze, ne propisujem lekove i ne obećavam izlečenje. Preporučujem samo registrovane dijetetske suplemente."],
   ["Šta ako ne volim neku namirnicu ili imam alergiju na hranu?", "Kad uzimam anamnezu, uvek pitam za alergije na hranu i za namirnice koje izrazito ne voliš. Te namirnice isključujem iz jelovnika."],
   ["Kako izgleda praćenje na WhatsApp-u?", "Dva meseca smo u kontaktu kroz WhatsApp poruke. Pišeš mi kad te nešto buni ili kad imaš pitanje u vezi sa protokolom."],
   ["Koliko čekam na protokol?", "Protokol dobijaš [rok] posle online poziva i poslatih nalaza."],
   ["Da li su suplementi i tinkture uključeni u cenu?", "[Odgovor Olgice]"],
   ["Da li protokol može i za dete?", "Može. Protokol pravim i za decu od [uzrast] godina. Plan prilagođavam uzrastu deteta, a sve ide uz terapiju i savete pedijatra."],
+  ["Mogu li da odustanem i dobijem novac nazad?", "Da, u roku od 14 dana od uplate. Ako odustaneš pre online poziva i izrade protokola, vraćamo ceo iznos. Ako odustaneš kasnije, plaćaš samo ono što si već dobila, a ostatak ti vraćamo. Ako nešto obećano ne stigne, to je reklamacija i važi i posle 14 dana. Detalji su u Uslovima korišćenja i kupovine."],
   ["Kada ću osetiti razliku?", "[Odgovor Olgice, bez obećanja rezultata] Iskustva su lična i razlikuju se od osobe do osobe."],
 ];
 
 export const finalCta = {
   eyebrow: "Protokol ishrane",
   title: "Sledeća dva meseca ne moraš da razmišljaš šta ćeš da jedeš",
-  text: "Protokol ishrane donosi osećaj lakoće u telu. Nadutost se smanjuje, kosa počinje da raste, imaš više energije i simptomi se povlače. Ti pratiš plan po obrocima, a ja sam tu na WhatsApp-u kad te nešto buni.",
+  text: "Dva meseca vođenja i novih navika u ishrani. Ti pratiš plan po obrocima, a ja sam tu na WhatsApp-u kad te nešto buni. Iskustva su lična i razlikuju se od osobe do osobe.",
   signature: "Olgica",
 };
 
 export const footer = {
-  disclaimer:
-    "Usluge su edukativnog karaktera i ne predstavljaju medicinski savet, dijagnozu ili lečenje. Za zdravstvene probleme obratite se lekaru.",
-  note: "Napomena: sadržaj ove stranice i protokol ishrane služe u informativne svrhe i ne zamenjuju savet lekara, dijagnozu ni lečenje. Protokol ide uz terapiju koju ti je prepisao lekar. Ako si trudna ili dojiš, ili ako je protokol za dete, pre početka razgovaraj sa svojim lekarom ili pedijatrom. Iskustva klijenata su lična i razlikuju se od osobe do osobe.",
+  disclaimer: FOOTER_DISCLAIMER,
+  note: "Protokol ishrane ide uz terapiju koju ti je prepisao lekar i ne zamenjuje je. Ako si trudna ili dojiš, ili ako je protokol za dete, pre početka razgovaraj sa svojim lekarom ili pedijatrom. Iskustva klijenata su lična i razlikuju se od osobe do osobe.",
 };
 
 // Forma

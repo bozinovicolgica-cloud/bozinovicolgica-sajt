@@ -58,7 +58,7 @@ export default function DisclaimerGate() {
             <button ref={btnRef} type="button" className="oq-btn dg-btn" onClick={accept}>Razumem</button>
           </div>
           <p className="oq-fine dg-fine">
-            Više u <a href="/uslovi-kupovine">Uslovima kupovine</a> i <a href="/politika-privatnosti">Politici privatnosti</a>.
+            Više u <a href="/uslovi-kupovine">Uslovima korišćenja i kupovine</a> i <a href="/politika-privatnosti">Politici privatnosti</a>.
           </p>
         </div>
       </div>

@@ -1,6 +1,6 @@
 ---
 title: "Protokol čišćenja jetre, pojednostavljen: šta se dešava od 1. do 9. dana"
-description: "Kako izgleda 9-dnevni protokol čišćenja jetre: zašto ujutru hidratacija i bez masnoća do podne, zašto nema ulja i soli i šta se dešava 3., 6. i 9. dana."
+description: "Kako izgleda devetodnevni protokol čišćenja jetre: zašto ujutru hidratacija i bez masnoća do podne, zašto nema ulja i soli i šta se dešava 3., 6. i 9. dana."
 date: "2025-04-07T17:32:46+02:00"
 modified: "2025-04-07T17:35:36+02:00"
 image: "/images/blog/protokol-jetra.webp"

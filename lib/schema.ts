@@ -9,7 +9,7 @@ import type { Post } from './blog';
 
 type Node = Record<string, unknown>;
 
-export const PRODUCT_DESC = 'Pojednostavljeni 9-dnevni protokol čišćenja jetre: plan ishrane za svih 9 dana, spisak za kupovinu, recepti, video lekcije i podrška na WhatsApp-u.';
+export const PRODUCT_DESC = 'Pojednostavljeni devetodnevni protokol čišćenja jetre: plan ishrane za svih 9 dana, spisak za kupovinu, recepti, video lekcije i podrška na WhatsApp-u.';
 
 export function graph(...nodes: Node[]) {
   return { '@context': 'https://schema.org', '@graph': nodes };
