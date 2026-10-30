@@ -1,4 +1,4 @@
-// Jednokratno: dodaje polja u Klijenti i pravi tabelu Porudžbine u Airtable bazi „Client Tracking“.
+// Jednokratno: dodaje polja u Klijenti i pravi tabele Porudžbine i Protokol prijave u Airtable bazi „Client Tracking“.
 // Pokreće se više puta bez štete: postojeća polja i tabele preskače.
 //   node scripts/airtable-setup.mjs
 // Čita AIRTABLE_TOKEN i AIRTABLE_BASE_ID iz .env.local (token treba schema.bases:read + schema.bases:write).
@@ -20,6 +20,7 @@ if (!token) {
 const CLIENTS = env.AIRTABLE_CLIENTS_TABLE || 'Klijenti';
 const ORDERS = env.AIRTABLE_ORDERS_TABLE || 'Porudžbine';
 const PRODUCTS = env.AIRTABLE_PRODUCTS_TABLE || 'Programi i Proizvodi';
+const LEADS = env.AIRTABLE_LEADS_TABLE || 'Protokol prijave';
 
 async function meta(path, body) {
   const res = await fetch(`https://api.airtable.com/v0/meta/bases/${baseId}/${path}`, {
@@ -59,6 +60,19 @@ const orderFields = {
   'Order ID': text,
 };
 
+// Prijave sa protokol.bozinovicolgica.rs; Status menja Olgica ručno. Tegobe i nalazi ostaju samo u Supabase-u.
+const leadFields = {
+  Telefon: { type: 'phoneNumber' },
+  Email: { type: 'email' },
+  'Za koga': select(['Za mene', 'blueLight2'], ['Za dete', 'purpleLight2']),
+  Status: select(['Nova prijava', 'yellowLight2'], ['Javljeno', 'blueLight2'], ['Zakazan poziv', 'cyanLight2'], ['Kupila', 'greenLight2'], ['Odustala', 'redLight2'], ['Test', 'grayLight2']),
+  Prijavljeno: dateTime,
+  Varijanta: select(['A', 'grayLight2'], ['B', 'grayLight2']),
+  Izvor: text,
+  UTM: longText,
+  'Lead ID': text,
+};
+
 const { tables } = await meta('tables');
 const byName = (n) => tables.find((t) => t.name === n);
 const clients = byName(CLIENTS);
@@ -86,4 +100,15 @@ await addMissing(orders, {
   Proizvod: { type: 'multipleRecordLinks', options: { linkedTableId: products.id } },
   ...orderFields,
 });
+let leads = byName(LEADS);
+if (!leads) {
+  leads = await meta('tables', { name: LEADS, description: 'Prijave za Protokol ishrane (protokol.bozinovicolgica.rs); jedan red po prijavi.', fields: [{ name: 'Ime', ...text }] });
+  console.log(`+ tabela ${LEADS}`);
+} else console.log(LEADS);
+await addMissing(leads, {
+  Klijent: { type: 'multipleRecordLinks', options: { linkedTableId: clients.id } },
+  ...leadFields,
+});
+
+// Opcija „Protokol lead“ u polju Faza nastaje sama pri prvom upisu (typecast); API ne menja opcije postojećeg polja.
 console.log('Gotovo.');

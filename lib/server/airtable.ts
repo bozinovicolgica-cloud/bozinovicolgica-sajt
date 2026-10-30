@@ -8,6 +8,7 @@ import type { OrderEvent } from './orders';
  *   Klijenti            jedan red po emailu; faza (lead -> kupac) i, kad plati, postojeća polja o kupovini
  *   Porudžbine          jedan red po pokušaju kupovine, povezan sa klijentom i proizvodom
  *   Programi i Proizvodi  postojeći katalog; porudžbina se vezuje za AIRTABLE_PRODUCT
+ *   Protokol prijave    jedan red po prijavi sa protokol.bozinovicolgica.rs, povezan sa klijentom
  * Polja pravi `scripts/airtable-setup.mjs`. Greške se samo loguju: Airtable nikad ne sme da obori formu ili webhook.
  * Podaci o zdravlju (napomena o lekovima/dijagnozi, rezultat i skor kviza) ne idu u Airtable:
  * on čuva podatke u SAD, pa tu ostaju samo ime, kontakt i status (compliance dokument, 15. 10. 2026).
@@ -44,11 +45,24 @@ export const F = {
     orderId: 'Order ID',
   },
   product: { name: 'Ime Programa / Proizvoda' },
+  lead: {
+    name: 'Ime',
+    client: 'Klijent',
+    phone: 'Telefon',
+    email: 'Email',
+    who: 'Za koga',
+    status: 'Status',
+    at: 'Prijavljeno',
+    variant: 'Varijanta',
+    source: 'Izvor',
+    utm: 'UTM',
+    leadId: 'Lead ID',
+  },
 } as const;
 
 /** Faze klijenta; faza nikad ne ide unazad (kupac ostaje kupac i kad posle uradi kviz). */
-export const STAGES = { quiz: 'Kviz lead', started: 'Započela porudžbinu', abandoned: 'Napustila checkout', buyer: 'Kupac' } as const;
-const RANK: Record<string, number> = { [STAGES.quiz]: 1, [STAGES.started]: 2, [STAGES.abandoned]: 2, [STAGES.buyer]: 3 };
+export const STAGES = { quiz: 'Kviz lead', protokol: 'Protokol lead', started: 'Započela porudžbinu', abandoned: 'Napustila checkout', buyer: 'Kupac' } as const;
+const RANK: Record<string, number> = { [STAGES.quiz]: 1, [STAGES.protokol]: 1, [STAGES.started]: 2, [STAGES.abandoned]: 2, [STAGES.buyer]: 3 };
 
 export const STATUS: Record<string, string> = {
   started: 'Započeta',
@@ -103,19 +117,26 @@ async function findProduct(): Promise<string | null> {
 
 const later = (current: string | undefined, stage: string) => !current || (RANK[current] ?? 0) <= (RANK[stage] ?? 0);
 
+/** Poslednjih 8 cifara telefona: isti broj upisan kao +381 64…, 064… ili 381 64… */
+const phoneKey = (phone: string) => phone.replace(/\D/g, '').slice(-8);
+
 /**
- * Nalazi klijenta po emailu (ili pravi novog) i upisuje polja.
+ * Nalazi klijenta po emailu, pa po telefonu (ako je dat), ili pravi novog i upisuje polja.
  * `fill` se upisuje samo u prazna polja (ne gazimo ono što je ručno uneto u CRM), `set` uvek.
  */
 async function upsertClient(
-  email: string,
+  { email, phone }: { email?: string | null; phone?: string | null },
   stage: string,
   { fill = {}, set = {} }: { fill?: Fields; set?: Fields },
   purchase?: { amount: number; date: string },
 ): Promise<string> {
   const { clients } = airtableConfig();
   const c = F.client;
-  const existing = await findOne(clients, `LOWER({${c.email}})=${quote(email.toLowerCase())}`);
+  const byPhone = phone && phoneKey(phone).length === 8 ? `RIGHT(REGEX_REPLACE({${c.phone}}&'', '[^0-9]', ''), 8)=${quote(phoneKey(phone))}` : null;
+  // po telefonu samo klijent bez emaila, da se ne spoje dve osobe sa različitim emailom
+  const existing =
+    (email ? await findOne(clients, `LOWER({${c.email}})=${quote(email.toLowerCase())}`) : null) ??
+    (byPhone ? await findOne(clients, email ? `AND(${byPhone}, {${c.email}}='')` : byPhone) : null);
   const now = new Date().toISOString();
   const empty = Object.fromEntries(Object.entries(fill).filter(([k]) => existing?.fields[k] == null || existing.fields[k] === ''));
   const extra: Fields = {};
@@ -131,7 +152,7 @@ async function upsertClient(
     ...empty,
     ...set,
     ...extra,
-    [c.email]: email,
+    [c.email]: email ?? undefined,
     [c.stage]: later(existing?.fields[c.stage] as string | undefined, stage) ? stage : undefined,
     [c.lastSeen]: now,
   });
@@ -166,7 +187,7 @@ export async function syncOrderToAirtable(event: OrderEvent, id: string, f: Fiel
     let clientId = (existing?.fields[o.client] as string[] | undefined)?.[0] ?? null;
     if (email) {
       clientId = await upsertClient(
-        email,
+        { email },
         stage,
         {
           fill: {
@@ -210,10 +231,57 @@ export async function syncOrderToAirtable(event: OrderEvent, id: string, f: Fiel
 export async function syncQuizLeadToAirtable(lead: { name: string | null; email: string }): Promise<void> {
   if (!airtableConfig().enabled) return;
   try {
-    await upsertClient(lead.email, STAGES.quiz, {
+    await upsertClient({ email: lead.email }, STAGES.quiz, {
       fill: { [F.client.name]: lead.name, [F.client.source]: 'kviz' },
     });
   } catch (e) {
     console.error('[airtable] quiz', e);
+  }
+}
+
+export const LEAD_STATUS = { new: 'Nova prijava', test: 'Test' } as const;
+
+/**
+ * Prijava sa protokol.bozinovicolgica.rs: klijent u fazi „Protokol lead“ (po emailu, a bez njega po telefonu)
+ * i red u „Protokol prijave“ sa statusom koji Olgica dalje menja ručno. Tegobe i nalazi ne idu u Airtable.
+ */
+export async function syncProtokolLeadToAirtable(lead: {
+  id: string;
+  name: string;
+  phone: string;
+  email: string | null;
+  who: 'me' | 'kid';
+  variant: string | null;
+  isQa: boolean;
+  utm: Record<string, string | null>;
+}): Promise<void> {
+  if (!airtableConfig().enabled) return;
+  try {
+    const utm = Object.fromEntries(Object.entries(lead.utm).filter(([, v]) => v)) as Record<string, string>;
+    const source = utm.utm_source ? [utm.utm_source, utm.utm_campaign].filter(Boolean).join(' / ') : 'protokol';
+    const clientId = await upsertClient({ email: lead.email, phone: lead.phone }, STAGES.protokol, {
+      fill: {
+        [F.client.name]: lead.name,
+        [F.client.phone]: lead.phone,
+        [F.client.source]: source,
+        [F.client.utm]: utmText(utm),
+      },
+    });
+    const l = F.lead;
+    await save(airtableConfig().leads, null, {
+      [l.name]: lead.name,
+      [l.client]: [clientId],
+      [l.phone]: lead.phone,
+      [l.email]: lead.email,
+      [l.who]: lead.who === 'kid' ? 'Za dete' : 'Za mene',
+      [l.status]: lead.isQa ? LEAD_STATUS.test : LEAD_STATUS.new,
+      [l.at]: new Date().toISOString(),
+      [l.variant]: lead.variant?.toUpperCase(),
+      [l.source]: source,
+      [l.utm]: utmText(utm),
+      [l.leadId]: lead.id,
+    });
+  } catch (e) {
+    console.error('[airtable] protokol lead', e);
   }
 }
