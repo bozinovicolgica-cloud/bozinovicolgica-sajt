@@ -681,3 +681,6 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
   .draw { stroke-dashoffset: 0; }
   .flow-svg .dots { display: none; }
 }
+
+/* Cena u dinarima (Srbija) ili evrima (ostali), vidi lib/currency.ts */
+html[data-cur="eur"] .cur-rsd, html:not([data-cur="eur"]) .cur-eur { display: none !important; }

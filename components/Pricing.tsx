@@ -1,6 +1,7 @@
 'use client';
 import { useRef } from 'react';
 import { included, PRICE_EUR, PRICE_RSD, REFUND_SHORT, thousands } from '@/lib/content';
+import Price from './Price';
 import { BUY_NOTE } from '@/lib/legal';
 import { Q } from '@/lib/quiz-data';
 import { EASE, rv, useSeen } from '@/lib/reveal';
@@ -50,10 +51,10 @@ export default function Pricing() {
             <div className="price__box">
               <p className="price__boxH">Tvoja cena</p>
               <span className="price__amount">
-                <span className="price__num">{thousands(PRICE_RSD)}</span>
-                <span className="price__cur">RSD</span>
+                <span className="price__num"><Price rsd={thousands(PRICE_RSD)} eur={PRICE_EUR} /></span>
+                <span className="price__cur"><Price rsd="RSD" eur="EUR" /></span>
               </span>
-              <p className="price__rsd">oko {PRICE_EUR} EUR, jednokratno. Naplata ide u evrima; banka preračunava po svom kursu.</p>
+              <p className="price__rsd"><Price rsd={`oko ${PRICE_EUR} EUR, jednokratno. Naplata ide u evrima; banka preračunava po svom kursu.`} eur="Jednokratno." /></p>
             </div>
 
             <Pill href="#cena" order="cena" light className="price__btn">Započni devetodnevni protokol</Pill>

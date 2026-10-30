@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import { useRef } from 'react';
 import { PRICE_EUR, PRICE_RSD, rsd } from '@/lib/content';
+import Price from './Price';
 import { rv, useSeen } from '@/lib/reveal';
 import { img } from '@/lib/images';
 import { Pill } from './ui';
@@ -39,7 +40,7 @@ export default function Final() {
           <div data-rv style={rv(sn, 700)}>
             <div className="final__row">
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span className="final__price">{rsd(PRICE_RSD)} <small>(oko {PRICE_EUR} EUR)</small></span>
+                <span className="final__price"><Price rsd={<>{rsd(PRICE_RSD)} <small>(oko {PRICE_EUR} EUR)</small></>} eur={`${PRICE_EUR} EUR`} /></span>
               </div>
               <Pill href="#cena" order="zavrsna" light className="final__btn">Započni devetodnevni protokol</Pill>
             </div>

@@ -696,3 +696,6 @@ body { overflow-x: clip; }
   .price__cur { font-size: 20px; line-height: 26px; }
   .price__totalV { font-size: 26px; line-height: 32px; }
 }
+
+/* Cena u dinarima (Srbija) ili evrima (ostali), vidi lib/currency.ts */
+html[data-cur="eur"] .cur-rsd, html:not([data-cur="eur"]) .cur-eur { display: none !important; }

@@ -3,6 +3,7 @@ import {
   nav, parents, pricing, proof, responseTime, site, steps, symptoms, testimonials,
 } from "@/lib/protokol/content";
 import { CookieSettingsLink } from "@/components/CookieConsent";
+import Price from "@/components/Price";
 import { BUY_NOTE, TESTIMONIAL_NOTE } from "@/lib/legal";
 import { rv, safeHref } from "@/lib/protokol/rv";
 import { COMPANY } from "@/lib/site";
@@ -624,10 +625,10 @@ function PriceCard({ withCta }: { withCta: boolean }) {
       <div className="price-box rv" style={rv(980, 16, 700)}>
         <p className="eyebrow">Tvoja cena</p>
         <div className="price-amount">
-          <span className="num">{pricing.priceRsd}</span>
-          <span className="cur">RSD</span>
+          <span className="num"><Price rsd={pricing.priceRsd} eur={pricing.price} /></span>
+          <span className="cur"><Price rsd="RSD" eur="EUR" /></span>
         </div>
-        <p className="price-rsd">oko {pricing.price} EUR</p>
+        <p className="price-rsd"><Price rsd={`oko ${pricing.price} EUR`} eur="jednokratno" /></p>
       </div>
       {withCta && (
         <div className="price-cta rv" style={rv(1100)}>
@@ -711,7 +712,7 @@ export function Final() {
           <p className="final-sig">{finalCta.signature}</p>
           <div className="rv" style={rv(700)}>
             <div className="final-buy">
-              <span>{pricing.priceRsd} RSD</span>
+              <span><Price rsd={`${pricing.priceRsd} RSD`} eur={`${pricing.price} EUR`} /></span>
               <CtaLink tone="light" location="zavrsna">
                 Prijavi se za protokol
               </CtaLink>

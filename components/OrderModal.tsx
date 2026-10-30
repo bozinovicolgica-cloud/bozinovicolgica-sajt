@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { PRICE_EUR, PRICE_RSD, PRODUCT_NAME, REFUND_SHORT, rsd, thousands } from '@/lib/content';
+import Price from './Price';
 import { HEALTH_CONSENT_TEXT, WAIVER_TEXT } from '@/lib/legal';
 import { DRAFT_KEY, START_OPTIONS, startLabel } from '@/lib/order-schema';
 import { track } from '@/lib/track';
@@ -178,7 +179,7 @@ export default function OrderModal({ open, ctx, onClose }: { open: boolean; ctx:
                   <span className="of-sumname">{PRODUCT_NAME}</span>
                   <span className="of-sumdesc">Plan ishrane, spisak za kupovinu, recepti, video lekcije i WhatsApp podrška</span>
                 </div>
-                <span className="of-sumprice">{thousands(PRICE_RSD)}<small>RSD</small></span>
+                <span className="of-sumprice"><Price rsd={<>{thousands(PRICE_RSD)}<small>RSD</small></>} eur={<>{PRICE_EUR}<small>EUR</small></>} /></span>
               </div>
             </>
           )}
@@ -244,7 +245,7 @@ export default function OrderModal({ open, ctx, onClose }: { open: boolean; ctx:
                   <div><dt>Email</dt><dd>{f.email}</dd><button type="button" className="of-edit" onClick={() => setStep(1)}>Izmeni</button></div>
                   <div><dt>Telefon</dt><dd>{f.phone}</dd><button type="button" className="of-edit" onClick={() => setStep(2)}>Izmeni</button></div>
                   <div><dt>Počinješ</dt><dd>{startLabel(f.startWhen)}</dd><button type="button" className="of-edit" onClick={() => setStep(2)}>Izmeni</button></div>
-                  <div className="of-review__total"><dt>Ukupno</dt><dd>{rsd(PRICE_RSD)} <small>(naplata {PRICE_EUR} EUR)</small></dd></div>
+                  <div className="of-review__total"><dt>Ukupno</dt><dd><Price rsd={<>{rsd(PRICE_RSD)} <small>(naplata {PRICE_EUR} EUR)</small></>} eur={`${PRICE_EUR} EUR`} /></dd></div>
                 </dl>
                 <label className="of-check">
                   <input type="checkbox" checked={f.consent} onChange={set('consent')} aria-invalid={!!errors.consent} aria-describedby={errors.consent ? 'of-e-consent' : undefined} />
