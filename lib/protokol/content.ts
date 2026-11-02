@@ -185,7 +185,7 @@ export const pricing = {
   priceRsd: "41.000",
 };
 
-export const responseTime = "[rok]";
+export const responseTime = "za najviše 24h";
 
 export const faqs: [string, string][] = [
   ["Šta treba da ti pošaljem?", "Idealno je da pošalješ poslednje analize krvi i izveštaj lekara specijaliste, uz informaciju koju terapiju piješ. Na osnovu toga pravim plan ishrane po obrocima i suplementaciju za tvoj organizam."],
