@@ -45,3 +45,6 @@ export const airtableConfig = () => {
     product: env('AIRTABLE_PRODUCT') || 'Protokol čišćenja jetre',
   };
 };
+
+/** Telegram bot koji Olgici javlja nove prijave (token od @BotFather, chat_id iz scripts/telegram-chat-id.mjs). */
+export const telegramConfig = () => ({ token: env('TELEGRAM_BOT_TOKEN'), chatId: env('TELEGRAM_CHAT_ID') });

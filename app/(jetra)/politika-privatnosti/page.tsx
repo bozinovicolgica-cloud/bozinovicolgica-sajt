@@ -41,6 +41,7 @@ export default function Page() {
         <li>Airtable (evidencija klijenata, SAD): samo ime, kontakt i status porudžbine, bez podataka o zdravlju</li>
         <li>Meta (Meta Pixel uz pristanak; WhatsApp i Instagram poruke) i Google (analitika uz pristanak)</li>
         <li>DataFast (analitika poseta, uz pristanak)</li>
+        <li>Telegram (obaveštenje Olgici o novoj prijavi: samo ime i kontakt, bez podataka o zdravlju)</li>
         <li>[Tally, ManyChat i alat za newsletter, ako se koriste: navesti šta tačno vide]</li>
       </ul>
       <p>Podatke ne prodajemo i ne ustupamo trećim licima u druge svrhe.</p>

@@ -4,6 +4,7 @@ import { form } from "@/lib/protokol/content";
 import { abContext, clip } from "@/lib/protokol/server-context";
 import { insertRow, supabaseConfigured } from "@/lib/protokol/supabase";
 import { syncProtokolLeadToAirtable } from "@/lib/server/airtable";
+import { notifyProtokolLead } from "@/lib/server/telegram";
 
 export const runtime = "nodejs";
 
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Prijava nije poslata. Pokušaj ponovo za par minuta." }, { status: 502 });
   }
 
-  // Posle odgovora korisniku: događaj za A/B rezultate, Airtable CRM i opcioni webhook.
+  // Posle odgovora korisniku: događaj za A/B rezultate, Telegram Olgici, Airtable CRM i opcioni webhook.
   // Greška ovde ne sme da obori prijavu.
   after(async () => {
     if (ctx.variant && ctx.visitorId) {
@@ -102,6 +103,15 @@ export async function POST(req: NextRequest) {
         is_qa: ctx.isQa,
       }).catch((e) => console.error(e));
     }
+    await notifyProtokolLead({
+      name: name!,
+      phone: phone!,
+      email,
+      who: who!,
+      variant: ctx.variant,
+      source: [lead.utm_source, lead.utm_campaign].filter(Boolean).join(" / ") || null,
+      isQa: ctx.isQa,
+    });
     await syncProtokolLeadToAirtable({
       id: lead.id,
       name: name!,
