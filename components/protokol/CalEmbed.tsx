@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { goal } from "@/lib/datafast";
 
 /**
  * Cal.com kalendar za zakazivanje poziva, prikazan tek posle poslate prijave.
@@ -63,6 +64,8 @@ export function CalEmbed({ calLink, prefill }: { calLink: string; prefill?: CalP
     // Zaglavlje sa opisom događaja se preskače: čovek je upravo poslao prijavu i
     // zna šta zakazuje, a taj blok gura kalendar ~500px niže.
     Cal("ui", { hideEventTypeDetails: true, layout: "month_view" });
+    // Poslednji korak funnela "Protokol: prijava → poziv" u DataFast-u.
+    Cal("on", { action: "bookingSuccessfulV2", callback: () => goal("protokol_booking", { variant: window.__lpVariant }) });
   }, [calLink, prefill]);
 
   return <div ref={box} className="lf-cal" aria-label="Izbor termina za online poziv" />;
