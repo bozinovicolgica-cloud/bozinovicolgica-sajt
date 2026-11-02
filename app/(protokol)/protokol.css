@@ -49,8 +49,6 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes spinLoop { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@keyframes marqueeRev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 
 .container { width: 1200px; max-width: calc(100% - 2 * var(--gutter)); margin: 0 auto; }
 .section { padding: var(--section-y) 0; position: relative; }
@@ -236,9 +234,7 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 .testi-r { grid-column: 7 / span 6; padding-top: 96px; }
 .marquee { margin-top: 96px; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 160px, #000 calc(100% - 160px), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 160px, #000 calc(100% - 160px), transparent 100%); }
 .marquee + .marquee { margin-top: 24px; }
-.marquee-track { display: flex; width: max-content; animation: marquee 70s linear infinite; }
-.marquee--rev .marquee-track { animation-name: marqueeRev; }
-.marquees:hover .marquee-track { animation-play-state: paused; }
+.marquee-track { display: flex; width: max-content; will-change: transform; }
 .msg { flex: none; margin-right: 24px; height: 400px; padding: 12px; border-radius: 24px; background: #fff; border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(31, 43, 32, 0.06); }
 .msg img { display: block; height: 376px; object-fit: contain; object-position: top center; border-radius: 12px; }
 
@@ -645,6 +641,12 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
   .price-amount .num { font-size: 64px; line-height: 64px; }
 
   .lf-card { padding: 24px 20px; border-radius: 24px; }
+  .lf-card, .lf--hero { height: auto; min-height: 0; }
+  .lf-steps { flex: none; }
+  .lf-view:not(.active) { height: 0; overflow: hidden; }
+  .lf-foot { margin-top: 20px; padding-top: 0; }
+  .lf-main.hidden { display: none; }
+  .lf-done { position: static; }
   .lf-view h3, .lf--hero .lf-view h3 { font-size: 26px; line-height: 32px; }
   .lf-opt { height: 56px; padding-left: 8px; }
   .lf-chip, .lf--hero .lf-chip { height: 42px; padding: 0 14px; font-size: 15px; }
