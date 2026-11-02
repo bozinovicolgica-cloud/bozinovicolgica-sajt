@@ -638,7 +638,9 @@ export function Pricing({ withForm }: { withForm: boolean }) {
           <h2 className="h2">Prijavi se za protokol</h2>
           <p className="lead" style={{ margin: "24px auto 0", maxWidth: 720 }}>
             {withForm
-              ? `Odgovori na četiri kratka pitanja. Javiću ti se na WhatsApp ${responseTime} da dogovorimo online poziv.`
+              ? process.env.NEXT_PUBLIC_CAL_LINK
+                ? "Odgovori na četiri kratka pitanja i odmah izaberi termin za online poziv."
+                : `Odgovori na četiri kratka pitanja. Javiću ti se na WhatsApp ${responseTime} da dogovorimo online poziv.`
               : "Cena i sve što je uključeno, na jednom mestu."}
           </p>
         </div>

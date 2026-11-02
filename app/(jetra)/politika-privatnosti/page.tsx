@@ -38,6 +38,7 @@ export default function Page() {
         <li>Supabase (baza porudžbina i prijava, [region])</li>
         <li>Stripe (plaćanje, SAD i Irska)</li>
         <li>Resend (slanje emailova, SAD; slanje iz EU)</li>
+        <li>Cal.com (zakazivanje online poziva, SAD): ime, kontakt i izabrani termin, bez podataka o zdravlju</li>
         <li>Airtable (evidencija klijenata, SAD): samo ime, kontakt i status porudžbine, bez podataka o zdravlju</li>
         <li>Meta (Meta Pixel uz pristanak; WhatsApp i Instagram poruke) i Google (analitika uz pristanak)</li>
         <li>DataFast (analitika poseta, uz pristanak)</li>

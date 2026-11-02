@@ -343,7 +343,7 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 .lf--hero { min-height: 440px; }
 .lf-body { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .lf-main { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-.lf-main.hidden { visibility: hidden; }
+.lf-main.hidden { display: none; }
 .lf-progress { display: flex; align-items: center; gap: 24px; }
 .lf-progress > span { flex: none; font-weight: 600; font-size: 14px; line-height: 20px; color: var(--text); }
 .lf-bars { flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
@@ -414,10 +414,12 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 .lf-next[aria-disabled="true"]:hover { background: var(--green); }
 .lf-next[aria-disabled="true"]:hover .btn-ico svg { transform: none; }
 .lf-server-err { margin-top: 12px; font-size: 14px; line-height: 20px; color: var(--red); }
-.lf-done { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; }
+.lf-done { display: flex; flex-direction: column; justify-content: center; }
 .lf-done .ok { width: 64px; height: 64px; border-radius: 999px; background: var(--green); display: flex; align-items: center; justify-content: center; }
 .lf-done h3 { margin-top: 24px; font-family: var(--serif); font-weight: 600; font-size: 32px; line-height: 40px; color: var(--ink); }
 .lf-done p { margin-top: 12px; font-size: 18px; line-height: 28px; color: var(--text); text-wrap: pretty; }
+.lf-cal { margin-top: 24px; min-height: 480px; width: 100%; overflow: hidden; border-radius: 16px; }
+.lf-cal > * { width: 100%; }
 .lf-meta { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
 .lf-meta div { display: flex; align-items: flex-start; gap: 12px; font-size: 16px; line-height: 24px; color: var(--text); }
 .lf-meta svg { flex: none; margin-top: 2px; }
@@ -652,8 +654,6 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
   .lf-steps { flex: none; }
   .lf-view:not(.active) { height: 0; overflow: hidden; }
   .lf-foot { margin-top: 20px; padding-top: 0; }
-  .lf-main.hidden { display: none; }
-  .lf-done { position: static; }
   .lf-view h3, .lf--hero .lf-view h3 { font-size: 26px; line-height: 32px; }
   .lf-opt { height: 56px; padding-left: 8px; }
   .lf-chip, .lf--hero .lf-chip { height: 42px; padding: 0 14px; font-size: 15px; }

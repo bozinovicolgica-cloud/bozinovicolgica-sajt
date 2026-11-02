@@ -6,7 +6,11 @@ import { form as F, responseTime, site } from "@/lib/protokol/content";
 import { CTRY_COOKIE, DEFAULT_ISO, OTHER_COUNTRIES, TOP_COUNTRIES, dialForCountry, fullPhone } from "@/lib/phone";
 import { safeHref } from "@/lib/protokol/rv";
 import { getUtm, track } from "@/lib/protokol/track";
+import { CalEmbed } from "./CalEmbed";
 import { ArrowUpRight, CHECK, Ico, WHATSAPP_A, WHATSAPP_B } from "./icons";
+
+// Kalendar za zakazivanje. Dok adresa nije podešena, forma radi po starom.
+const CAL_LINK = process.env.NEXT_PUBLIC_CAL_LINK;
 
 type Who = "me" | "kid";
 type Size = "hero" | "section";
@@ -399,9 +403,17 @@ export function LeadForm({ size }: { size: Size }) {
                 </span>
                 <h3>Prijava je stigla</h3>
                 <p>
-                  Javiću ti se na WhatsApp {responseTime} da dogovorimo online poziv. Do tada pripremi poslednje analize krvi, izveštaj lekara specijaliste i spisak terapije.
+                  {CAL_LINK
+                    ? "Izaberi termin za online poziv koji ti odgovara. Za poziv pripremi poslednje analize krvi, izveštaj lekara specijaliste i spisak terapije."
+                    : `Javiću ti se na WhatsApp ${responseTime} da dogovorimo online poziv. Do tada pripremi poslednje analize krvi, izveštaj lekara specijaliste i spisak terapije.`}
                 </p>
               </div>
+              {CAL_LINK && (
+                <CalEmbed
+                  calLink={CAL_LINK}
+                  prefill={{ name: s.name.trim(), email: s.email.trim(), phone: fullPhone(dialForCountry(s.ctry), s.phone) }}
+                />
+              )}
             </div>
           </div>
         )}
