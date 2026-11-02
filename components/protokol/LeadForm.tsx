@@ -2,15 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { HEALTH_CONSENT_TEXT, KID_CONSENT_TEXT } from "@/lib/legal";
-import { form as F, responseTime, site } from "@/lib/protokol/content";
+import { calLink as CAL_LINK, form as F, responseTime, site } from "@/lib/protokol/content";
 import { CTRY_COOKIE, DEFAULT_ISO, OTHER_COUNTRIES, TOP_COUNTRIES, dialForCountry, fullPhone } from "@/lib/phone";
 import { safeHref } from "@/lib/protokol/rv";
 import { getUtm, track } from "@/lib/protokol/track";
 import { CalEmbed } from "./CalEmbed";
 import { ArrowUpRight, CHECK, Ico, WHATSAPP_A, WHATSAPP_B } from "./icons";
-
-// Kalendar za zakazivanje. Dok adresa nije podešena, forma radi po starom.
-const CAL_LINK = process.env.NEXT_PUBLIC_CAL_LINK;
 
 type Who = "me" | "kid";
 type Size = "hero" | "section";

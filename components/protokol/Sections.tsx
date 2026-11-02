@@ -1,6 +1,6 @@
 import {
   about, bento, bentoHighlight, comparison, faqs, finalCta, fit, flowInputs, footer, hero, messageRows,
-  nav, parents, pricing, proof, responseTime, site, steps, symptoms, testimonials,
+  calLink, nav, parents, pricing, proof, responseTime, site, steps, symptoms, testimonials,
 } from "@/lib/protokol/content";
 import { CookieSettingsLink } from "@/components/CookieConsent";
 import Price from "@/components/Price";
@@ -638,7 +638,7 @@ export function Pricing({ withForm }: { withForm: boolean }) {
           <h2 className="h2">Prijavi se za protokol</h2>
           <p className="lead" style={{ margin: "24px auto 0", maxWidth: 720 }}>
             {withForm
-              ? process.env.NEXT_PUBLIC_CAL_LINK
+              ? calLink
                 ? "Odgovori na četiri kratka pitanja i odmah izaberi termin za online poziv."
                 : `Odgovori na četiri kratka pitanja. Javiću ti se na WhatsApp ${responseTime} da dogovorimo online poziv.`
               : "Cena i sve što je uključeno, na jednom mestu."}

@@ -187,6 +187,12 @@ export const pricing = {
 
 export const responseTime = "za najviše 24h";
 
+/**
+ * Cal.com kalendar koji se pojavi posle poslate prijave (vidi CalEmbed.tsx).
+ * Prazno = bez kalendara, forma se završava porukom sa rokom (responseTime).
+ */
+export const calLink = process.env.NEXT_PUBLIC_CAL_LINK || "olgica-bozinovic-om1hve/10minsaolgicom";
+
 export const faqs: [string, string][] = [
   ["Šta treba da ti pošaljem?", "Idealno je da pošalješ poslednje analize krvi i izveštaj lekara specijaliste, uz informaciju koju terapiju piješ. Na osnovu toga pravim plan ishrane po obrocima i suplementaciju za tvoj organizam."],
   ["Šta ako nemam skorije analize?", "[Odgovor Olgice]"],
