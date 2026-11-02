@@ -228,3 +228,12 @@ export const form = {
     { key: "kid" as const, label: "Za moje dete", d: "M128,224a96,96,0,1,1,96-96A96,96,0,0,1,128,224Z M100,108v8 M156,108v8 M100,156c16,16,40,16,56,0 M128,32c-16,0-20,20-4,24" },
   ],
 };
+
+// Stranica /zakazi: posle prijave posetilac bira termin za online poziv (Cal.com).
+export const booking = {
+  eyebrow: "Prijava je stigla",
+  title: "Izaberi termin za online poziv",
+  text: "Na pozivu prolazimo kroz tvoje nalaze i terapiju i dogovaramo protokol. Izaberi termin koji ti odgovara.",
+  noSlot: "Ako ti nijedan termin ne odgovara, javiću ti se na WhatsApp da se dogovorimo.",
+  done: "Termin je zakazan. Potvrda ti stiže na email. Do poziva pripremi poslednje analize krvi, izveštaj lekara specijaliste i spisak terapije.",
+};

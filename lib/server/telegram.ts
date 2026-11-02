@@ -27,26 +27,47 @@ async function send(text: string): Promise<boolean> {
   }
 }
 
-/**
- * Poruka Olgici za novu prijavu sa protokol.bozinovicolgica.rs.
- * Samo ime i kontakt: tegobe i nalazi (podaci o zdravlju) ne idu u Telegram, ostaju u Supabase-u.
- */
-export function notifyProtokolLead(l: {
+export type LeadContact = {
   name: string;
-  phone: string;
+  phone: string | null;
   email: string | null;
-  who: 'me' | 'kid';
-  variant: string | null;
-  source: string | null;
-  isQa: boolean;
-}): Promise<boolean> {
-  const lines = [
-    `${l.isQa ? '🧪 TEST: ' : ''}🌿 <b>Nova prijava: Protokol ishrane</b>`,
-    '',
-    `<b>${esc(l.name)}</b> (${l.who === 'kid' ? 'za dete' : 'za sebe'})`,
-    `📞 ${esc(l.phone)}  ·  <a href="https://wa.me/${waNumber(l.phone)}">WhatsApp</a>`,
+  who?: 'me' | 'kid' | null;
+  source?: string | null;
+  isQa?: boolean;
+};
+
+/** Termin u beogradskom vremenu, npr. „pon 3. 11. u 14:30“. */
+export const when = (iso: string) => {
+  const d = new Date(iso);
+  const day = new Intl.DateTimeFormat('sr-Latn-RS', { weekday: 'short', timeZone: 'Europe/Belgrade' }).format(d);
+  const date = new Intl.DateTimeFormat('sr-Latn-RS', { day: 'numeric', month: 'numeric', timeZone: 'Europe/Belgrade' }).format(d);
+  const time = new Intl.DateTimeFormat('sr-Latn-RS', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Belgrade' }).format(d);
+  return `${day} ${date} u ${time}`;
+};
+
+/** Ime, telefon sa WhatsApp linkom, email. Tegobe i nalazi (podaci o zdravlju) ne idu u Telegram. */
+const contact = (l: LeadContact) =>
+  [
+    `<b>${esc(l.name)}</b>${l.who ? ` (${l.who === 'kid' ? 'za dete' : 'za sebe'})` : ''}`,
+    l.phone ? `📞 ${esc(l.phone)}  ·  <a href="https://wa.me/${waNumber(l.phone)}">WhatsApp</a>` : '',
     l.email ? `✉️ ${esc(l.email)}` : '',
-    `Izvor: ${esc(l.source || 'direktno')}${l.variant ? `  ·  varijanta ${l.variant.toUpperCase()}` : ''}`,
-  ];
-  return send(lines.filter((x, i) => x || i === 1).join('\n'));
-}
+    l.source ? `Izvor: ${esc(l.source)}` : '',
+  ].filter(Boolean);
+
+const message = (title: string, l: LeadContact, extra: string[] = []) =>
+  send([`${l.isQa ? '🧪 TEST: ' : ''}${title}`, '', ...contact(l), ...extra].join('\n'));
+
+/** Prijava sa protokol. bez zakazanog poziva posle LEAD_FOLLOWUP_MINUTES: Olgica treba da pozove. */
+export const notifyNoBooking = (l: LeadContact, minutes: number) =>
+  message('📞 <b>Pozovi: prijavila se, a nije zakazala poziv</b>', l, [``, `Prijava pre ${minutes}+ min, Protokol ishrane.`]);
+
+/** Cal.com: zakazan, pomeren ili otkazan poziv. */
+export const notifyBooking = (kind: 'created' | 'rescheduled' | 'cancelled', start: string | null, l: LeadContact) =>
+  message(
+    kind === 'created'
+      ? `✅ <b>Zakazan poziv</b>${start ? `: ${when(start)}` : ''}`
+      : kind === 'rescheduled'
+        ? `🔁 <b>Pomeren poziv</b>${start ? `: ${when(start)}` : ''}`
+        : '❌ <b>Otkazan poziv</b>: pozovi je da dogovorite novi termin',
+    l,
+  );

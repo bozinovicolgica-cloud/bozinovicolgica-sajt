@@ -11,6 +11,7 @@ type Row = {
   zapoceli_formu: number;
   stigli_do_kontakta: number;
   prijave: number;
+  zakazali?: number;
   konverzija_pct: number | null;
   zapoceli_pct: number | null;
 };
@@ -83,6 +84,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ k
               <th style={th}>Započeli formu</th>
               <th style={th}>Stigli do kontakta</th>
               <th style={th}>Prijave</th>
+              <th style={th}>Zakazali poziv</th>
               <th style={th}>Konverzija</th>
             </tr>
           </thead>
@@ -96,6 +98,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ k
                   <td style={td}>{r?.zapoceli_formu ?? 0} {r?.zapoceli_pct != null && <span style={{ color: "var(--muted)" }}>({r.zapoceli_pct}%)</span>}</td>
                   <td style={td}>{r?.stigli_do_kontakta ?? 0}</td>
                   <td style={td}>{r?.prijave ?? 0}</td>
+                  <td style={td}>{r?.zakazali ?? 0}</td>
                   <td style={{ ...td, fontWeight: 600 }}>{r?.konverzija_pct ?? 0}%</td>
                 </tr>
               );

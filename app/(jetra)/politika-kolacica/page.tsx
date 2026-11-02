@@ -13,6 +13,7 @@ const NECESSARY: [string, string, string][] = [
   ['ob_order_draft, ob_utm, lp_utm', 'Čuvaju nacrt porudžbine i izvor posete dok je prozor otvoren (sessionStorage).', 'do zatvaranja prozora'],
   ['cur', 'Prikaz cene u dinarima (Srbija) ili evrima (ostale zemlje), prema zemlji iz koje pristupaš.', 'do zatvaranja pregledača'],
   ['lp_ab, lp_vid, lp_qa', 'Protokol ishrane: koju verziju stranice vidiš, da bi pri svakoj poseti video istu.', '90 dana (lp_qa 7 dana)'],
+  ['Cal.com', 'Kalendar za zakazivanje poziva (stranica /zakazi na protokol. poddomenu) postavlja svoje kolačiće, potrebne da zakazivanje radi.', 'po pravilima Cal.com-a'],
   ['Stripe', 'Stripe postavlja svoje kolačiće na stranici za plaćanje, radi bezbednosti i sprečavanja prevara.', 'po pravilima Stripe-a'],
 ];
 

@@ -4,7 +4,6 @@ import { form } from "@/lib/protokol/content";
 import { abContext, clip } from "@/lib/protokol/server-context";
 import { insertRow, supabaseConfigured } from "@/lib/protokol/supabase";
 import { syncProtokolLeadToAirtable } from "@/lib/server/airtable";
-import { notifyProtokolLead } from "@/lib/server/telegram";
 
 export const runtime = "nodejs";
 
@@ -80,7 +79,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, error: "Trenutno ne možemo da primimo prijavu. Pokušaj ponovo za par minuta." }, { status: 503 });
     }
     console.log("[lead:dev]", lead);
-    return NextResponse.json({ ok: true, dev: true });
+    return NextResponse.json({ ok: true, dev: true, id: lead.id });
   }
 
   try {
@@ -90,7 +89,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Prijava nije poslata. Pokušaj ponovo za par minuta." }, { status: 502 });
   }
 
-  // Posle odgovora korisniku: događaj za A/B rezultate, Telegram Olgici, Airtable CRM i opcioni webhook.
+  // Posle odgovora korisniku: događaj za A/B rezultate, Airtable CRM i opcioni webhook.
+  // Telegram Olgici ide tek kad zakaže poziv (api/cal/webhook) ili ako ne zakaže (api/lp/followup).
   // Greška ovde ne sme da obori prijavu.
   after(async () => {
     if (ctx.variant && ctx.visitorId) {
@@ -103,15 +103,6 @@ export async function POST(req: NextRequest) {
         is_qa: ctx.isQa,
       }).catch((e) => console.error(e));
     }
-    await notifyProtokolLead({
-      name: name!,
-      phone: phone!,
-      email,
-      who: who!,
-      variant: ctx.variant,
-      source: [lead.utm_source, lead.utm_campaign].filter(Boolean).join(" / ") || null,
-      isQa: ctx.isQa,
-    });
     await syncProtokolLeadToAirtable({
       id: lead.id,
       name: name!,
@@ -133,5 +124,6 @@ export async function POST(req: NextRequest) {
     }
   });
 
-  return NextResponse.json({ ok: true });
+  // id ide na stranicu /zakazi, pa u Cal.com (metadata[leadId]), da webhook nađe ovu prijavu
+  return NextResponse.json({ ok: true, id: lead.id });
 }

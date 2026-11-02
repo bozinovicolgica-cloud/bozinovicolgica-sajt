@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { HEALTH_CONSENT_TEXT, KID_CONSENT_TEXT } from "@/lib/legal";
-import { form as F, responseTime, site } from "@/lib/protokol/content";
+import { form as F, site } from "@/lib/protokol/content";
 import { safeHref } from "@/lib/protokol/rv";
 import { getUtm, track } from "@/lib/protokol/track";
+import { LEAD_KEY, type StoredLead } from "./Booking";
 import { ArrowUpRight, CHECK, Ico, WHATSAPP_A, WHATSAPP_B } from "./icons";
 
 type Who = "me" | "kid";
@@ -108,6 +109,14 @@ export function LeadForm({ size }: { size: Size }) {
         set({ submitting: false });
         track("lead", { form: size });
         go(5);
+        // sledeći korak: termin za online poziv (Cal.com), sa već upisanim imenom, emailom i telefonom
+        try {
+          const lead: StoredLead = { id: String(data.id ?? ""), name: s.name.trim(), email: s.email.trim(), phone: s.phone.trim() };
+          sessionStorage.setItem(LEAD_KEY, JSON.stringify(lead));
+        } catch {
+          /* private mode: kalendar bez popunjenih polja */
+        }
+        window.setTimeout(() => window.location.assign("/zakazi"), 900);
         return;
       }
       set({
@@ -356,9 +365,7 @@ export function LeadForm({ size }: { size: Size }) {
                   <Ico d={CHECK} size={30} color="#FFFFFF" sw={16} />
                 </span>
                 <h3>Prijava je stigla</h3>
-                <p>
-                  Javiću ti se na WhatsApp {responseTime} da dogovorimo online poziv. Do tada pripremi poslednje analize krvi, izveštaj lekara specijaliste i spisak terapije.
-                </p>
+                <p>Otvaram kalendar da izabereš termin za online poziv…</p>
               </div>
             </div>
           </div>

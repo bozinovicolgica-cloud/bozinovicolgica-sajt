@@ -57,6 +57,7 @@ export const F = {
     source: 'Izvor',
     utm: 'UTM',
     leadId: 'Lead ID',
+    slot: 'Termin poziva',
   },
 } as const;
 
@@ -239,7 +240,13 @@ export async function syncQuizLeadToAirtable(lead: { name: string | null; email:
   }
 }
 
-export const LEAD_STATUS = { new: 'Nova prijava', test: 'Test' } as const;
+export const LEAD_STATUS = {
+  new: 'Nova prijava',
+  test: 'Test',
+  call: 'Pozvati',
+  booked: 'Zakazan poziv',
+  cancelled: 'Otkazan poziv',
+} as const;
 
 /**
  * Prijava sa protokol.bozinovicolgica.rs: klijent u fazi „Protokol lead“ (po emailu, a bez njega po telefonu)
@@ -283,5 +290,20 @@ export async function syncProtokolLeadToAirtable(lead: {
     });
   } catch (e) {
     console.error('[airtable] protokol lead', e);
+  }
+}
+
+/** Menja Status (i termin) prijave u „Protokol prijave“; red se nalazi po Lead ID-ju (= lp_leads.id). */
+export async function setProtokolLeadStatus(leadId: string, status: string, slot?: string | null): Promise<void> {
+  if (!airtableConfig().enabled) return;
+  try {
+    const { leads } = airtableConfig();
+    const row = await findOne(leads, `{${F.lead.leadId}}=${quote(leadId)}`, [F.lead.status]);
+    if (!row) return;
+    // test prijave ostaju „Test“, da se ne mešaju sa pravim
+    const keep = row.fields[F.lead.status] === LEAD_STATUS.test;
+    await save(leads, row.id, { [F.lead.status]: keep ? undefined : status, [F.lead.slot]: slot });
+  } catch (e) {
+    console.error('[airtable] protokol status', e);
   }
 }

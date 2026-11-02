@@ -684,3 +684,15 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 
 /* Cena u dinarima (Srbija) ili evrima (ostali), vidi lib/currency.ts */
 html[data-cur="eur"] .cur-rsd, html:not([data-cur="eur"]) .cur-eur { display: none !important; }
+
+/* Stranica /zakazi (Cal.com kalendar posle prijave) */
+.booking-top { padding: 32px 0 0; }
+.booking { padding: 48px 0 96px; }
+.booking .h2 { margin-top: 16px; }
+.booking .lead { margin-top: 16px; max-width: 720px; }
+.booking-note { font-size: 16px; line-height: 24px; }
+.booking-cal { margin-top: 32px; min-height: 680px; border-radius: 24px; background: #FFFFFF; border: 1px solid var(--line); overflow: hidden; }
+@media (max-width: 640px) {
+  .booking { padding: 32px 0 64px; }
+  .booking-cal { min-height: 760px; border-radius: 16px; }
+}
