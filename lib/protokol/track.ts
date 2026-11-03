@@ -1,6 +1,7 @@
 "use client";
 
 import type { EventName, Variant } from "@/lib/protokol/ab";
+import { goal } from "@/lib/datafast";
 
 type Fbq = (...args: unknown[]) => void;
 type Gtag = (...args: unknown[]) => void;
@@ -58,6 +59,7 @@ export function getUtm(): Record<string, string> {
 /** Šalje događaj u našu bazu (i Meta Pixel / GA4 ako su podešeni). Nikad ne baca grešku. */
 export function track(event: EventName, props: Record<string, string | number | boolean> = {}) {
   const variant = window.__lpVariant;
+  goal(`protokol_${event}${event === "form_step" ? `_${props.step}` : ""}`, { variant, ...props });
   // "lead" u bazu upisuje server posle uspešne prijave; ovde ide samo u Pixel/GA4.
   if (event !== "lead") try {
     const body = JSON.stringify({ event, props, path: window.location.pathname });
