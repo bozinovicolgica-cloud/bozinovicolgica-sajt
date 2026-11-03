@@ -185,7 +185,13 @@ export const pricing = {
   priceRsd: "41.000",
 };
 
-export const responseTime = "[rok]";
+export const responseTime = "za najviše 24h";
+
+/**
+ * Cal.com kalendar koji se pojavi posle poslate prijave (vidi CalEmbed.tsx).
+ * Prazno = bez kalendara, forma se završava porukom sa rokom (responseTime).
+ */
+export const calLink = process.env.NEXT_PUBLIC_CAL_LINK || "olgica-bozinovic-om1hve/10minsaolgicom";
 
 export const faqs: [string, string][] = [
   ["Šta treba da ti pošaljem?", "Idealno je da pošalješ poslednje analize krvi i izveštaj lekara specijaliste, uz informaciju koju terapiju piješ. Na osnovu toga pravim plan ishrane po obrocima i suplementaciju za tvoj organizam."],
@@ -227,13 +233,4 @@ export const form = {
     { key: "me" as const, label: "Za mene", d: "M128,160a64,64,0,1,0-64-64A64,64,0,0,0,128,160Z M32,216c19.37-33.47,54.55-56,96-56s76.63,22.53,96,56" },
     { key: "kid" as const, label: "Za moje dete", d: "M128,224a96,96,0,1,1,96-96A96,96,0,0,1,128,224Z M100,108v8 M156,108v8 M100,156c16,16,40,16,56,0 M128,32c-16,0-20,20-4,24" },
   ],
-};
-
-// Stranica /zakazi: posle prijave posetilac bira termin za online poziv (Cal.com).
-export const booking = {
-  eyebrow: "Prijava je stigla",
-  title: "Izaberi termin za online poziv",
-  text: "Na pozivu prolazimo kroz tvoje nalaze i terapiju i dogovaramo protokol. Izaberi termin koji ti odgovara.",
-  noSlot: "Ako ti nijedan termin ne odgovara, javiću ti se na WhatsApp da se dogovorimo.",
-  done: "Termin je zakazan. Potvrda ti stiže na email. Do poziva pripremi poslednje analize krvi, izveštaj lekara specijaliste i spisak terapije.",
 };

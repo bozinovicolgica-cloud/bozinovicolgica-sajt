@@ -49,8 +49,6 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes spinLoop { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@keyframes marqueeRev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 
 .container { width: 1200px; max-width: calc(100% - 2 * var(--gutter)); margin: 0 auto; }
 .section { padding: var(--section-y) 0; position: relative; }
@@ -236,9 +234,7 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 .testi-r { grid-column: 7 / span 6; padding-top: 96px; }
 .marquee { margin-top: 96px; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 160px, #000 calc(100% - 160px), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 160px, #000 calc(100% - 160px), transparent 100%); }
 .marquee + .marquee { margin-top: 24px; }
-.marquee-track { display: flex; width: max-content; animation: marquee 70s linear infinite; }
-.marquee--rev .marquee-track { animation-name: marqueeRev; }
-.marquees:hover .marquee-track { animation-play-state: paused; }
+.marquee-track { display: flex; width: max-content; will-change: transform; }
 .msg { flex: none; margin-right: 24px; height: 400px; padding: 12px; border-radius: 24px; background: #fff; border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(31, 43, 32, 0.06); }
 .msg img { display: block; height: 376px; object-fit: contain; object-position: top center; border-radius: 12px; }
 
@@ -347,7 +343,7 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 .lf--hero { min-height: 440px; }
 .lf-body { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .lf-main { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-.lf-main.hidden { visibility: hidden; }
+.lf-main.hidden { display: none; }
 .lf-progress { display: flex; align-items: center; gap: 24px; }
 .lf-progress > span { flex: none; font-weight: 600; font-size: 14px; line-height: 20px; color: var(--text); }
 .lf-bars { flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
@@ -386,7 +382,6 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 .lf-chip[aria-pressed="true"] .chk { display: flex; }
 .lf-fields { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
 .lf--hero .lf-fields { margin-top: 20px; gap: 12px; }
-.lf-row2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
 .lf-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .lf--hero .lf-field { gap: 6px; }
 .lf-field > span:first-child { font-weight: 600; font-size: 14px; line-height: 20px; color: var(--text); }
@@ -394,6 +389,14 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 .lf-field input { width: 100%; min-width: 0; height: 48px; padding: 0 24px; border-radius: 999px; border: 1px solid var(--line-2); background: #fff; font-family: var(--sans); font-size: 18px; line-height: 28px; color: var(--ink); outline: none; transition: border-color 160ms ease, box-shadow 160ms ease; }
 .lf--hero .lf-field input { padding: 0 20px; font-size: 16px; line-height: 24px; }
 .lf-field input:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--mint); }
+.lf-phone { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
+.lf-phone input { flex: 1; min-width: 0; }
+.lf-cc { position: relative; flex: none; display: flex; }
+.lf-cc-val { display: flex; align-items: center; gap: 6px; height: 48px; padding: 0 14px 0 20px; border-radius: 999px; border: 1px solid var(--line-2); background: #fff; font-size: 18px; line-height: 28px; color: var(--ink); white-space: nowrap; transition: border-color 160ms ease, box-shadow 160ms ease; }
+.lf--hero .lf-cc-val { padding: 0 12px 0 16px; font-size: 16px; line-height: 24px; }
+.lf-cc-val svg { flex: none; color: var(--text); }
+.lf-cc-sel { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; font-size: 16px; cursor: pointer; }
+.lf-cc:focus-within .lf-cc-val { border-color: var(--green); box-shadow: 0 0 0 3px var(--mint); }
 .lf-field input[aria-invalid="true"] { border-color: var(--red); }
 .lf-err { font-size: 14px; line-height: 20px; color: var(--red); }
 .lf-consent { display: flex; flex-direction: column; gap: 4px; }
@@ -411,10 +414,12 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 .lf-next[aria-disabled="true"]:hover { background: var(--green); }
 .lf-next[aria-disabled="true"]:hover .btn-ico svg { transform: none; }
 .lf-server-err { margin-top: 12px; font-size: 14px; line-height: 20px; color: var(--red); }
-.lf-done { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; }
+.lf-done { display: flex; flex-direction: column; justify-content: center; }
 .lf-done .ok { width: 64px; height: 64px; border-radius: 999px; background: var(--green); display: flex; align-items: center; justify-content: center; }
 .lf-done h3 { margin-top: 24px; font-family: var(--serif); font-weight: 600; font-size: 32px; line-height: 40px; color: var(--ink); }
 .lf-done p { margin-top: 12px; font-size: 18px; line-height: 28px; color: var(--text); text-wrap: pretty; }
+.lf-cal { margin-top: 24px; height: 400px; width: 100%; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: 16px; }
+.lf-cal > * { width: 100%; }
 .lf-meta { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
 .lf-meta div { display: flex; align-items: flex-start; gap: 12px; font-size: 16px; line-height: 24px; color: var(--text); }
 .lf-meta svg { flex: none; margin-top: 2px; }
@@ -645,12 +650,17 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
   .price-amount .num { font-size: 64px; line-height: 64px; }
 
   .lf-card { padding: 24px 20px; border-radius: 24px; }
+  .lf-card, .lf--hero { height: auto; min-height: 0; }
+  .lf-steps { flex: none; }
+  .lf-view:not(.active) { height: 0; overflow: hidden; }
+  .lf-foot { margin-top: 20px; padding-top: 0; }
   .lf-view h3, .lf--hero .lf-view h3 { font-size: 26px; line-height: 32px; }
   .lf-opt { height: 56px; padding-left: 8px; }
   .lf-chip, .lf--hero .lf-chip { height: 42px; padding: 0 14px; font-size: 15px; }
   .lf-chips { gap: 8px; }
-  .lf-row2 { grid-template-columns: 1fr; }
   .lf-field input, .lf--hero .lf-field input { font-size: 16px; padding: 0 18px; }
+  .lf-cc-val, .lf--hero .lf-cc-val { font-size: 16px; padding: 0 12px 0 16px; }
+  .lf-phone { gap: 6px; }
   .lf-consent label { font-size: 14px; line-height: 20px; }
   .lf-progress { gap: 16px; }
   .lf-foot .btn { padding-left: 24px; }
@@ -685,14 +695,3 @@ section[id], [id="prijava"] { scroll-margin-top: 120px; }
 /* Cena u dinarima (Srbija) ili evrima (ostali), vidi lib/currency.ts */
 html[data-cur="eur"] .cur-rsd, html:not([data-cur="eur"]) .cur-eur { display: none !important; }
 
-/* Stranica /zakazi (Cal.com kalendar posle prijave) */
-.booking-top { padding: 32px 0 0; }
-.booking { padding: 48px 0 96px; }
-.booking .h2 { margin-top: 16px; }
-.booking .lead { margin-top: 16px; max-width: 720px; }
-.booking-note { font-size: 16px; line-height: 24px; }
-.booking-cal { margin-top: 32px; min-height: 680px; border-radius: 24px; background: #FFFFFF; border: 1px solid var(--line); overflow: hidden; }
-@media (max-width: 640px) {
-  .booking { padding: 32px 0 64px; }
-  .booking-cal { min-height: 760px; border-radius: 16px; }
-}

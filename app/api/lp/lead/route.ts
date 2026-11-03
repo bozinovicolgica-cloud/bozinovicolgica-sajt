@@ -124,6 +124,6 @@ export async function POST(req: NextRequest) {
     }
   });
 
-  // id ide na stranicu /zakazi, pa u Cal.com (metadata[leadId]), da webhook nađe ovu prijavu
+  // id ide u kalendar posle prijave (CalEmbed), pa u Cal.com (metadata[leadId]), da webhook nađe ovu prijavu
   return NextResponse.json({ ok: true, id: lead.id });
 }

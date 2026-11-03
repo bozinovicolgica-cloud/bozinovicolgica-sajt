@@ -1,13 +1,13 @@
 import {
   about, bento, bentoHighlight, comparison, faqs, finalCta, fit, flowInputs, footer, hero, messageRows,
-  nav, parents, pricing, proof, responseTime, site, steps, symptoms, testimonials,
+  calLink, nav, parents, pricing, proof, responseTime, site, steps, symptoms, testimonials,
 } from "@/lib/protokol/content";
 import { CookieSettingsLink } from "@/components/CookieConsent";
 import Price from "@/components/Price";
 import { BUY_NOTE, TESTIMONIAL_NOTE } from "@/lib/legal";
 import { rv, safeHref } from "@/lib/protokol/rv";
 import { COMPANY } from "@/lib/site";
-import { CountUp, Faq, Timeline, VideoBlock } from "./client-bits";
+import { CountUp, Faq, Marquees, Timeline, VideoBlock } from "./client-bits";
 import { CtaLink } from "./CtaLink";
 import { CHECK, CROSS, Ico, LEAF, WhatsAppIcon } from "./icons";
 import { LeadForm } from "./LeadForm";
@@ -59,9 +59,6 @@ function HeroButtons() {
   return (
     <div className="hero-ctas fade-up" style={{ animationDelay: "390ms" }}>
       <CtaLink location="hero">Prijavi se za protokol</CtaLink>
-      <a href="#kako-funkcionise" className="btn btn-outline">
-        Pogledaj kako funkcioniše
-      </a>
     </div>
   );
 }
@@ -412,20 +409,7 @@ export function Testimonials() {
           </figure>
         </Reveal>
       </div>
-      <div className="marquees">
-        {messageRows.map((row, r) => (
-          <div key={r} className={`marquee ${r === 1 ? "marquee--rev" : ""}`}>
-            <div className="marquee-track">
-              {[...row, ...row].map((m, i) => (
-                <div key={i} className="msg" aria-hidden={i >= row.length ? true : undefined}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={m.src} alt={i < row.length ? "Poruka klijenta" : ""} loading="lazy" decoding="async" width={m.w} height={376} style={{ width: m.w }} />
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <Marquees rows={messageRows} />
       <div className="container">
         <p className="testi-note">{TESTIMONIAL_NOTE}</p>
       </div>
@@ -654,7 +638,9 @@ export function Pricing({ withForm }: { withForm: boolean }) {
           <h2 className="h2">Prijavi se za protokol</h2>
           <p className="lead" style={{ margin: "24px auto 0", maxWidth: 720 }}>
             {withForm
-              ? `Odgovori na četiri kratka pitanja. Javiću ti se na WhatsApp ${responseTime} da dogovorimo online poziv.`
+              ? calLink
+                ? "Odgovori na četiri kratka pitanja i odmah izaberi termin za online poziv."
+                : `Odgovori na četiri kratka pitanja. Javiću ti se na WhatsApp ${responseTime} da dogovorimo online poziv.`
               : "Cena i sve što je uključeno, na jednom mestu."}
           </p>
         </div>

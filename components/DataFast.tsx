@@ -1,11 +1,10 @@
 'use client';
 import Script from 'next/script';
+import { useEffect } from 'react';
 import { useConsent } from '@/lib/consent';
+import { TRACKED_HOST, goal } from '@/lib/datafast';
 
 const ID = process.env.NEXT_PUBLIC_DATAFAST_ID || 'dfid_pi3w2JPqca5aKjm9ltkQD';
-
-/** Meri se samo na poddomenima; glavni domen (bozinovicolgica.rs, www.) se ne meri. */
-const TRACKED_HOST = /^(program|protokol)\.bozinovicolgica\.rs$/;
 
 /**
  * DataFast analitika za program. i protokol. poddomen. data-domain je glavni domen,
@@ -14,6 +13,10 @@ const TRACKED_HOST = /^(program|protokol)\.bozinovicolgica\.rs$/;
  */
 export default function DataFast() {
   const consent = useConsent();
+  // Prvi korak funnela za jetru (protokol ima svoj "view" u lib/protokol/track).
+  useEffect(() => {
+    if (window.location.hostname.startsWith('program.') && window.location.pathname === '/') goal('jetra_view');
+  }, []);
   if (consent !== 'all' || !TRACKED_HOST.test(window.location.hostname)) return null;
   return (
     <>

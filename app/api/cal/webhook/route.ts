@@ -26,7 +26,7 @@ type Lead = {
 /**
  * Cal.com webhook (Settings → Developer → Webhooks, URL https://protokol.bozinovicolgica.rs/api/cal/webhook,
  * događaji Booking Created / Rescheduled / Cancelled, secret = CAL_WEBHOOK_SECRET).
- * Prijavu nalazi po metadata.leadId (stranica /zakazi), a bez njega po emailu; javlja Olgici na Telegram.
+ * Prijavu nalazi po metadata.leadId (CalEmbed u formi), a bez njega po emailu; javlja Olgici na Telegram.
  */
 export async function POST(req: Request) {
   const secret = process.env.CAL_WEBHOOK_SECRET?.trim();

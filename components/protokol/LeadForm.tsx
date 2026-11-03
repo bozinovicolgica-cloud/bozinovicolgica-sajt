@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { HEALTH_CONSENT_TEXT, KID_CONSENT_TEXT } from "@/lib/legal";
-import { form as F, site } from "@/lib/protokol/content";
+import { calLink as CAL_LINK, form as F, responseTime, site } from "@/lib/protokol/content";
+import { CTRY_COOKIE, DEFAULT_ISO, OTHER_COUNTRIES, TOP_COUNTRIES, dialForCountry, fullPhone } from "@/lib/phone";
 import { safeHref } from "@/lib/protokol/rv";
 import { getUtm, track } from "@/lib/protokol/track";
-import { LEAD_KEY, type StoredLead } from "./Booking";
+import { CalEmbed } from "./CalEmbed";
 import { ArrowUpRight, CHECK, Ico, WHATSAPP_A, WHATSAPP_B } from "./icons";
 
 type Who = "me" | "kid";
@@ -21,7 +22,8 @@ type State = {
   other: string;
   has: number[];
   name: string;
-  phone: string;
+  ctry: string; // ISO oznaka države za pozivni broj
+  phone: string; // broj bez pozivnog broja
   email: string;
   consent: boolean;
   guardian: boolean;
@@ -30,18 +32,20 @@ type State = {
   submitting: boolean;
   serverError: string;
   serverErrors: Record<string, string>;
+  leadId: string; // id poslate prijave (api/lp/lead)
 };
 
 const initial: State = {
   step: 1, phase: "in", dir: 1, who: null, syms: [], symsFor: null, other: "", has: [],
-  name: "", phone: "", email: "", consent: false, guardian: false, website: "", tried: false, submitting: false,
-  serverError: "", serverErrors: {},
+  name: "", ctry: DEFAULT_ISO, phone: "", email: "", consent: false, guardian: false, website: "", tried: false, submitting: false,
+  serverError: "", serverErrors: {}, leadId: "",
 };
 
 function validate(s: State) {
   const e: Record<string, string> = {};
   if (!s.name.trim()) e.name = "Upiši ime.";
-  if (!/^\+?[0-9][0-9 /-]{7,}$/.test(s.phone.trim())) e.phone = "Upiši broj telefona, na primer +381 64 123 4567.";
+  // Ista provera kao na serveru, ali nad spojenim brojem (pozivni + ukucano).
+  if (!/^\+?[0-9][0-9 /-]{7,}$/.test(fullPhone(dialForCountry(s.ctry), s.phone))) e.phone = "Upiši broj telefona, na primer 64 123 4567.";
   if (s.email.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s.email.trim())) e.email = "Proveri email adresu.";
   if (!s.consent) e.consent = "Potrebna je tvoja saglasnost da bih mogla da napravim protokol.";
   if (s.who === "kid" && !s.guardian) e.guardian = "Potrebna je potvrda roditelja ili zakonskog zastupnika.";
@@ -59,6 +63,10 @@ export function LeadForm({ size }: { size: Size }) {
 
   useEffect(() => {
     reduced.current = !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    // Država posetioca iz kolačića koji upisuje proxy.ts, da dijaspora ne bira pozivni broj ručno.
+    // Čita se tek ovde (ne pri prvom iscrtavanju) jer su stranice statične — inače se SSR i klijent ne poklope.
+    const iso = document.cookie.match(new RegExp(`(?:^|; )${CTRY_COOKIE}=([A-Za-z]{2})`))?.[1];
+    if (iso && iso.toUpperCase() !== DEFAULT_ISO) set({ ctry: iso.toUpperCase() });
     const onPrefill = (e: Event) => {
       const who = (e as CustomEvent<{ who: Who }>).detail?.who;
       if (who) set({ who, step: 1, phase: "in", syms: [], symsFor: who, other: "" });
@@ -100,23 +108,16 @@ export function LeadForm({ size }: { size: Size }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           who: s.who, symptoms: s.syms, other: s.other, has: s.has,
-          name: s.name, phone: s.phone, email: s.email, consent: s.consent, guardian: s.guardian,
+          name: s.name, phone: fullPhone(dialForCountry(s.ctry), s.phone), email: s.email, consent: s.consent, guardian: s.guardian,
           website: s.website, formLocation: size, utm: getUtm(),
         }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.ok) {
-        set({ submitting: false });
+        // id prijave ide u Cal.com (metadata), da webhook zna čija je rezervacija
+        set({ submitting: false, leadId: String(data.id ?? "") });
         track("lead", { form: size });
         go(5);
-        // sledeći korak: termin za online poziv (Cal.com), sa već upisanim imenom, emailom i telefonom
-        try {
-          const lead: StoredLead = { id: String(data.id ?? ""), name: s.name.trim(), email: s.email.trim(), phone: s.phone.trim() };
-          sessionStorage.setItem(LEAD_KEY, JSON.stringify(lead));
-        } catch {
-          /* private mode: kalendar bez popunjenih polja */
-        }
-        window.setTimeout(() => window.location.assign("/zakazi"), 900);
         return;
       }
       set({
@@ -165,10 +166,51 @@ export function LeadForm({ size }: { size: Size }) {
       {errs.name && <span className="lf-err">{errs.name}</span>}
     </label>
   );
+  // Pozivni broj je poseban izbornik: na telefonu otvara sistemski birač, pa je
+  // izbor države brz i na malom ekranu. Vidljivo je samo "+381"; pun spisak imena
+  // je u <select>-u koji stoji providan preko njega.
   const phoneField = (
     <label className="lf-field">
       <span>Broj telefona za WhatsApp</span>
-      <input type="tel" name="phone" autoComplete="tel" inputMode="tel" placeholder="+381 6x xxx xxxx" {...field("phone")} />
+      <div className="lf-phone">
+        <span className="lf-cc">
+          <span className="lf-cc-val" aria-hidden="true">
+            {dialForCountry(s.ctry)}
+            <svg width="12" height="12" viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth="24" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="80 104 128 152 176 104" />
+            </svg>
+          </span>
+          <select
+            className="lf-cc-sel"
+            name="country"
+            autoComplete="tel-country-code"
+            aria-label="Država i pozivni broj"
+            value={s.ctry}
+            onChange={(e) => set({ ctry: e.target.value })}
+          >
+            {[
+              ["Najčešće", TOP_COUNTRIES] as const,
+              ["Sve države", OTHER_COUNTRIES] as const,
+            ].map(([label, list]) => (
+              <optgroup key={label} label={label}>
+                {list.map((c) => (
+                  <option key={c.iso} value={c.iso}>
+                    {c.name} {c.dial}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </span>
+        <input
+          type="tel"
+          name="phone"
+          autoComplete="tel-national"
+          inputMode="tel"
+          placeholder={s.ctry === "RS" ? "64 123 4567" : ""}
+          {...field("phone")}
+        />
+      </div>
       {errs.phone && <span className="lf-err">{errs.phone}</span>}
     </label>
   );
@@ -280,17 +322,11 @@ export function LeadForm({ size }: { size: Size }) {
                 <div className={`lf-view ${s.step === 4 ? "active" : ""}`} aria-hidden={s.step !== 4}>
                   <h3>Gde da ti se javim?</h3>
                   <div className="lf-fields">
-                    {hero ? (
-                      <div className="lf-row2">
-                        {nameField}
-                        {phoneField}
-                      </div>
-                    ) : (
-                      <>
-                        {nameField}
-                        {phoneField}
-                      </>
-                    )}
+                    {/* Ime i telefon su nekad u herou stajali jedno pored drugog, ali
+                        otkad telefon ima i pozivni broj, u tom redu ostane premalo
+                        mesta za sam broj (~110px), pa svako ide u svoj red. */}
+                    {nameField}
+                    {phoneField}
                     <label className="lf-field">
                       <span>Email (nije obavezno)</span>
                       <input type="email" name="email" autoComplete="email" {...field("email")} />
@@ -365,8 +401,19 @@ export function LeadForm({ size }: { size: Size }) {
                   <Ico d={CHECK} size={30} color="#FFFFFF" sw={16} />
                 </span>
                 <h3>Prijava je stigla</h3>
-                <p>Otvaram kalendar da izabereš termin za online poziv…</p>
+                <p>
+                  {CAL_LINK
+                    ? "Izaberi termin za online poziv koji ti odgovara. Za poziv pripremi poslednje analize krvi, izveštaj lekara specijaliste i spisak terapije."
+                    : `Javiću ti se na WhatsApp ${responseTime} da dogovorimo online poziv. Do tada pripremi poslednje analize krvi, izveštaj lekara specijaliste i spisak terapije.`}
+                </p>
               </div>
+              {CAL_LINK && (
+                <CalEmbed
+                  calLink={CAL_LINK}
+                  leadId={s.leadId}
+                  prefill={{ name: s.name.trim(), email: s.email.trim(), phone: fullPhone(dialForCountry(s.ctry), s.phone) }}
+                />
+              )}
             </div>
           </div>
         )}

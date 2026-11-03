@@ -41,7 +41,7 @@ export default function Page() {
         <li>Airtable (evidencija klijenata, SAD): samo ime, kontakt i status porudžbine, bez podataka o zdravlju</li>
         <li>Meta (Meta Pixel uz pristanak; WhatsApp i Instagram poruke) i Google (analitika uz pristanak)</li>
         <li>DataFast (analitika poseta, uz pristanak)</li>
-        <li>Cal.com (zakazivanje online poziva posle prijave za Protokol ishrane: ime, email, telefon i termin)</li>
+        <li>Cal.com (zakazivanje online poziva posle prijave za Protokol ishrane, SAD): ime, email, telefon i termin, bez podataka o zdravlju</li>
         <li>Telegram (obaveštenje Olgici o zakazanom pozivu ili prijavi bez termina: samo ime i kontakt, bez podataka o zdravlju)</li>
         <li>[Tally, ManyChat i alat za newsletter, ako se koriste: navesti šta tačno vide]</li>
       </ul>

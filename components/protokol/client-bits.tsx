@@ -197,3 +197,68 @@ export function Faq({ items }: { items: [string, string][] }) {
     </div>
   );
 }
+
+/**
+ * Trake sa porukama klijenata. Ista animacija kao na program.bozinovicolgica.rs
+ * (vidi components/Results.tsx): osnovno klizanje koje se ubrzava na skrol i
+ * postepeno smiruje. Haver NE zaustavlja traku.
+ */
+export function Marquees({ rows }: { rows: { src: string; w: number }[][] }) {
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) { setReduced(true); return; }
+    const box = boxRef.current; if (!box) return;
+    const tracks = Array.from(box.querySelectorAll<HTMLElement>("[data-mq-row]"));
+    // širine se mere samo pri promeni veličine, ne u svakom frejmu (bez forced reflow)
+    let widths = tracks.map((t) => t.scrollWidth / 2);
+    const ro = new ResizeObserver(() => { widths = tracks.map((t) => t.scrollWidth / 2); });
+    tracks.forEach((t) => ro.observe(t));
+    let off = 0, boost = 0, lastY = window.scrollY, lastT = 0, raf = 0, visible = false;
+    const tick = (now: number) => {
+      if (!visible) { raf = 0; lastT = 0; return; }
+      raf = requestAnimationFrame(tick);
+      const dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 0;
+      lastT = now;
+      // osnovno klizanje + ubrzanje na skrol koje se postepeno smiruje
+      boost *= Math.pow(0.04, dt);
+      off += (32 + boost) * dt;
+      tracks.forEach((track, i) => {
+        const W = widths[i]; if (!W) return;
+        const rev = track.dataset.mqRow === "rev";
+        const o = (off * (rev ? 0.8 : 1)) % W;
+        track.style.transform = `translate3d(${(rev ? -W + o : -o).toFixed(1)}px,0,0)`;
+      });
+    };
+    // animacija radi samo dok je traka (približno) na ekranu
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (visible && !raf) raf = requestAnimationFrame(tick);
+    }, { rootMargin: "200px 0px" });
+    io.observe(box);
+    const onScroll = () => {
+      const y = window.scrollY, d = Math.abs(y - lastY); lastY = y;
+      if (visible) boost = Math.min(900, boost + d * 6);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { io.disconnect(); ro.disconnect(); window.removeEventListener("scroll", onScroll); cancelAnimationFrame(raf); };
+  }, []);
+
+  return (
+    <div ref={boxRef} className="marquees">
+      {rows.map((row, r) => (
+        <div key={r} className="marquee" style={{ overflowX: reduced ? "auto" : "hidden" }}>
+          <div data-mq-row={r === 1 ? "rev" : "fwd"} className="marquee-track">
+            {(reduced ? row : [...row, ...row]).map((m, i) => (
+              <div key={i} className="msg" aria-hidden={i >= row.length ? true : undefined}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={m.src} alt={i < row.length ? "Poruka klijenta" : ""} loading="lazy" decoding="async" width={m.w} height={376} style={{ width: m.w }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

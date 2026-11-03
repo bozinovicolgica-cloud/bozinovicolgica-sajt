@@ -53,4 +53,4 @@ export const KID_CONSENT_TEXT =
   'Ja sam roditelj ili zakonski zastupnik deteta čije podatke unosim i dajem pristanak u njegovo ime. Znam da program ne zamenjuje pregled kod pedijatra i da ću se kod temperature duže od 3 dana, otežanog disanja ili gutanja odmah obratiti lekaru.';
 
 /** Alati van Srbije koji vide podatke (Politika privatnosti). */
-export const US_TOOLS = 'Stripe, Vercel, Supabase, Resend, Airtable, Meta i Google';
+export const US_TOOLS = 'Stripe, Vercel, Supabase, Resend, Airtable, Cal.com, Meta i Google';

@@ -10,6 +10,7 @@ import {
   type Variant,
 } from '@/lib/protokol/ab';
 import { CUR_COOKIE, currencyFor, isCurrency } from '@/lib/currency';
+import { CTRY_COOKIE } from '@/lib/phone';
 
 // Jedan projekat, dva sajta po poddomenu:
 //   program.bozinovicolgica.rs   -> app/(jetra)     9 dana spašavanja jetre
@@ -20,7 +21,7 @@ import { CUR_COOKIE, currencyFor, isCurrency } from '@/lib/currency';
 const PROTOKOL_URL = process.env.NEXT_PUBLIC_PROTOKOL_URL || 'https://protokol.bozinovicolgica.rs';
 
 export function proxy(req: NextRequest) {
-  return withCurrency(req, route(req));
+  return withGeo(req, route(req));
 }
 
 function route(req: NextRequest) {
@@ -99,10 +100,17 @@ function abSplit(req: NextRequest) {
 
 // Cena u dinarima za Srbiju, u evrima za ostale (lib/currency.ts). Računa se pri svakoj poseti,
 // pa se menja i kad posetilac otputuje. ?cur=eur / ?cur=rsd za proveru.
-function withCurrency(req: NextRequest, res: NextResponse) {
+// Uz to se upisuje i sama država, da polje telefona u formi odmah ponudi njen
+// pozivni broj (lib/phone.ts). ?ctry=DE za proveru.
+function withGeo(req: NextRequest, res: NextResponse) {
+  const country = req.headers.get('x-vercel-ip-country');
   const forced = req.nextUrl.searchParams.get('cur');
-  const cur = isCurrency(forced) ? forced : currencyFor(req.headers.get('x-vercel-ip-country'));
+  const cur = isCurrency(forced) ? forced : currencyFor(country);
   if (req.cookies.get(CUR_COOKIE)?.value !== cur) res.cookies.set(CUR_COOKIE, cur, { path: '/', sameSite: 'lax' });
+
+  const forcedCtry = req.nextUrl.searchParams.get('ctry');
+  const ctry = (/^[A-Za-z]{2}$/.test(forcedCtry ?? '') ? forcedCtry! : country)?.toUpperCase();
+  if (ctry && req.cookies.get(CTRY_COOKIE)?.value !== ctry) res.cookies.set(CTRY_COOKIE, ctry, { path: '/', sameSite: 'lax' });
   return res;
 }
 
