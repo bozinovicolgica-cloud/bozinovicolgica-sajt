@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
   }
 
   const event = body.event as EventName;
-  if (!EVENT_NAMES.includes(event) || event === "lead") {
-    // "lead" upisuje isključivo /api/lead, posle uspešne prijave.
+  if (!EVENT_NAMES.includes(event) || event === "lead" || event === "booking") {
+    // "lead" upisuje isključivo /api/lp/lead, a "booking" Cal.com webhook.
     return NextResponse.json({ ok: false }, { status: 400 });
   }
 

@@ -60,8 +60,8 @@ export function getUtm(): Record<string, string> {
 export function track(event: EventName, props: Record<string, string | number | boolean> = {}) {
   const variant = window.__lpVariant;
   goal(`protokol_${event}${event === "form_step" ? `_${props.step}` : ""}`, { variant, ...props });
-  // "lead" u bazu upisuje server posle uspešne prijave; ovde ide samo u Pixel/GA4.
-  if (event !== "lead") try {
+  // "lead" i "booking" u bazu upisuje server (prijava, Cal.com webhook); ovde idu samo u Pixel/GA4.
+  if (event !== "lead" && event !== "booking") try {
     const body = JSON.stringify({ event, props, path: window.location.pathname });
     const ok = navigator.sendBeacon?.("/api/lp/event", new Blob([body], { type: "application/json" }));
     if (!ok) {
@@ -74,6 +74,7 @@ export function track(event: EventName, props: Record<string, string | number | 
   try {
     if (window.fbq) {
       if (event === "lead") window.fbq("track", "Lead", { ab_variant: variant, content_name: "Protokol ishrane" });
+      else if (event === "booking") window.fbq("track", "Schedule", { ab_variant: variant, content_name: "Protokol ishrane" });
       else if (event === "form_start") window.fbq("trackCustom", "FormStart", { ab_variant: variant });
     }
     if (window.gtag) {

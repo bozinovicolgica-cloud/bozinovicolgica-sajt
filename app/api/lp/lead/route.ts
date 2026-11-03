@@ -3,6 +3,7 @@ import { VARIANT_LABELS } from "@/lib/protokol/ab";
 import { form } from "@/lib/protokol/content";
 import { abContext, clip } from "@/lib/protokol/server-context";
 import { insertRow, supabaseConfigured } from "@/lib/protokol/supabase";
+import { syncProtokolLeadToAirtable } from "@/lib/server/airtable";
 
 export const runtime = "nodejs";
 
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
   const u = utm as Record<string, unknown>;
 
   const lead = {
+    id: crypto.randomUUID(),
     experiment: ctx.experiment,
     variant: ctx.variant,
     visitor_id: ctx.visitorId,
@@ -77,7 +79,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, error: "Trenutno ne možemo da primimo prijavu. Pokušaj ponovo za par minuta." }, { status: 503 });
     }
     console.log("[lead:dev]", lead);
-    return NextResponse.json({ ok: true, dev: true });
+    return NextResponse.json({ ok: true, dev: true, id: lead.id });
   }
 
   try {
@@ -87,7 +89,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Prijava nije poslata. Pokušaj ponovo za par minuta." }, { status: 502 });
   }
 
-  // Posle odgovora korisniku: događaj za A/B rezultate i opcioni webhook.
+  // Posle odgovora korisniku: događaj za A/B rezultate, Airtable CRM i opcioni webhook.
+  // Telegram Olgici ide tek kad zakaže poziv (api/cal/webhook) ili ako ne zakaže (api/lp/followup).
   // Greška ovde ne sme da obori prijavu.
   after(async () => {
     if (ctx.variant && ctx.visitorId) {
@@ -100,6 +103,16 @@ export async function POST(req: NextRequest) {
         is_qa: ctx.isQa,
       }).catch((e) => console.error(e));
     }
+    await syncProtokolLeadToAirtable({
+      id: lead.id,
+      name: name!,
+      phone: phone!,
+      email,
+      who: who!,
+      variant: ctx.variant,
+      isQa: ctx.isQa,
+      utm: { utm_source: lead.utm_source, utm_medium: lead.utm_medium, utm_campaign: lead.utm_campaign, utm_content: lead.utm_content, utm_term: lead.utm_term },
+    });
     // Npr. n8n webhook koji Olgici šalje obaveštenje na WhatsApp ili Telegram.
     const hook = process.env.LEAD_WEBHOOK_URL;
     if (hook) {
@@ -111,5 +124,6 @@ export async function POST(req: NextRequest) {
     }
   });
 
-  return NextResponse.json({ ok: true });
+  // id ide u kalendar posle prijave (CalEmbed), pa u Cal.com (metadata[leadId]), da webhook nađe ovu prijavu
+  return NextResponse.json({ ok: true, id: lead.id });
 }

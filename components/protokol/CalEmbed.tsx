@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { goal } from "@/lib/datafast";
+import { track } from "@/lib/protokol/track";
 
 /**
  * Cal.com kalendar za zakazivanje poziva, prikazan tek posle poslate prijave.
@@ -40,7 +40,7 @@ function calApi(): CalFn {
 
 export type CalPrefill = { name?: string; email?: string; phone?: string };
 
-export function CalEmbed({ calLink, prefill }: { calLink: string; prefill?: CalPrefill }) {
+export function CalEmbed({ calLink, prefill, leadId }: { calLink: string; prefill?: CalPrefill; leadId?: string }) {
   const box = useRef<HTMLDivElement>(null);
   const started = useRef(false);
 
@@ -58,15 +58,17 @@ export function CalEmbed({ calLink, prefill }: { calLink: string; prefill?: CalP
         layout: "month_view",
         ...(prefill?.name ? { name: prefill.name } : {}),
         ...(prefill?.email ? { email: prefill.email } : {}),
-        ...(prefill?.phone ? { smsReminderNumber: prefill.phone } : {}),
+        ...(prefill?.phone ? { smsReminderNumber: prefill.phone, attendeePhoneNumber: prefill.phone } : {}),
+        // Cal.com vraća metadata u webhook (app/api/cal/webhook): po njemu se nalazi prijava.
+        ...(leadId ? { "metadata[leadId]": leadId } : {}),
       },
     });
     // Zaglavlje sa opisom događaja se preskače: čovek je upravo poslao prijavu i
     // zna šta zakazuje, a taj blok gura kalendar ~500px niže.
     Cal("ui", { hideEventTypeDetails: true, layout: "month_view" });
-    // Poslednji korak funnela "Protokol: prijava → poziv" u DataFast-u.
-    Cal("on", { action: "bookingSuccessfulV2", callback: () => goal("protokol_booking", { variant: window.__lpVariant }) });
-  }, [calLink, prefill]);
+    // Meta Pixel "Schedule" i DataFast protokol_booking (poslednji korak funnela); u bazu upisuje webhook.
+    Cal("on", { action: "bookingSuccessfulV2", callback: () => track("booking") });
+  }, [calLink, prefill, leadId]);
 
   return <div ref={box} className="lf-cal" aria-label="Izbor termina za online poziv" />;
 }

@@ -38,8 +38,13 @@ export const airtableConfig = () => {
     enabled: !!(token && baseId),
     clients: env('AIRTABLE_CLIENTS_TABLE') || 'Klijenti',
     orders: env('AIRTABLE_ORDERS_TABLE') || 'Porudžbine',
+    // prijave sa protokol.bozinovicolgica.rs (Protokol ishrane)
+    leads: env('AIRTABLE_LEADS_TABLE') || 'Protokol prijave',
     products: env('AIRTABLE_PRODUCTS_TABLE') || 'Programi i Proizvodi',
     // red u „Programi i Proizvodi“ za koji se vezuje kupovina sa ovog sajta
     product: env('AIRTABLE_PRODUCT') || 'Protokol čišćenja jetre',
   };
 };
+
+/** Telegram bot koji Olgici javlja nove prijave (token od @BotFather, chat_id iz scripts/telegram-chat-id.mjs). */
+export const telegramConfig = () => ({ token: env('TELEGRAM_BOT_TOKEN'), chatId: env('TELEGRAM_CHAT_ID') });

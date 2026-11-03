@@ -32,12 +32,13 @@ type State = {
   submitting: boolean;
   serverError: string;
   serverErrors: Record<string, string>;
+  leadId: string; // id poslate prijave (api/lp/lead)
 };
 
 const initial: State = {
   step: 1, phase: "in", dir: 1, who: null, syms: [], symsFor: null, other: "", has: [],
   name: "", ctry: DEFAULT_ISO, phone: "", email: "", consent: false, guardian: false, website: "", tried: false, submitting: false,
-  serverError: "", serverErrors: {},
+  serverError: "", serverErrors: {}, leadId: "",
 };
 
 function validate(s: State) {
@@ -113,7 +114,8 @@ export function LeadForm({ size }: { size: Size }) {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.ok) {
-        set({ submitting: false });
+        // id prijave ide u Cal.com (metadata), da webhook zna čija je rezervacija
+        set({ submitting: false, leadId: String(data.id ?? "") });
         track("lead", { form: size });
         go(5);
         return;
@@ -408,6 +410,7 @@ export function LeadForm({ size }: { size: Size }) {
               {CAL_LINK && (
                 <CalEmbed
                   calLink={CAL_LINK}
+                  leadId={s.leadId}
                   prefill={{ name: s.name.trim(), email: s.email.trim(), phone: fullPhone(dialForCountry(s.ctry), s.phone) }}
                 />
               )}
