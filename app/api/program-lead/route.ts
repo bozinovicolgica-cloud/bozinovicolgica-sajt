@@ -1,12 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import { NextResponse, after, type NextRequest } from 'next/server';
 import { apply } from '@/lib/content';
-import { startLabel, START_OPTIONS } from '@/lib/order-schema';
 import { supabase } from '@/lib/server/integrations';
 
 /**
- * Prijava sa programske stranice (pop-up ApplyModal): kvalifikaciona pitanja +
- * kontakt, posle čega posetilac bira termin na Cal.com-u.
+ * Prijava sa programske stranice (pop-up ApplyModal): šta te muči + kontakt,
+ * posle čega posetilac bira termin na Cal.com-u.
  *
  * Čuva se u istu tabelu kao prijave sa protokol poddomena (`lp_leads`), samo pod
  * drugim eksperimentom, da Olgica ima sve prijave na jednom mestu.
@@ -30,8 +29,6 @@ export async function POST(req: NextRequest) {
   if (typeof b.website === 'string' && b.website.trim()) return NextResponse.json({ ok: true });
 
   const symptoms = Array.isArray(b.symptoms) ? b.symptoms.filter((s): s is string => typeof s === 'string' && apply.symptoms.includes(s)) : [];
-  const has = Array.isArray(b.has) ? b.has.filter((s): s is string => typeof s === 'string' && apply.has.includes(s)) : [];
-  const startWhen = START_OPTIONS.some(([k]) => k === b.startWhen) ? String(b.startWhen) : '';
   const name = clip(b.name, 120);
   const phone = clip(b.phone, 40);
   const email = clip(b.email, 200);
@@ -39,8 +36,6 @@ export async function POST(req: NextRequest) {
 
   const errors: Record<string, string> = {};
   if (!symptoms.length) errors.syms = 'Izaberi bar jedno.';
-  if (!has.length) errors.has = 'Izaberi bar jedno.';
-  if (!startWhen) errors.startWhen = 'Izaberi kada planiraš da počneš.';
   if (!name) errors.name = 'Upiši ime.';
   if (!phone || !/^\+?[0-9][0-9 /-]{7,}$/.test(phone)) errors.phone = 'Upiši broj telefona, na primer +381 64 123 4567.';
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) errors.email = 'Upiši email, da ti stigne potvrda termina.';
@@ -56,9 +51,9 @@ export async function POST(req: NextRequest) {
     form_location: clip(b.source, 20) ?? 'stranica',
     who: 'me',
     symptoms,
-    // Kada planira da počne ide uz slobodan tekst: `lp_leads` nema svoju kolonu za to.
-    symptoms_other: [other, `Počinje: ${startLabel(startWhen)}`].filter(Boolean).join(' | '),
-    has_documents: has,
+    symptoms_other: other,
+    // Forma više ne pita za nalaze; kolona ostaje u tabeli zbog prijava sa protokola.
+    has_documents: [],
     name,
     phone,
     email,
@@ -99,7 +94,7 @@ export async function POST(req: NextRequest) {
     await fetch(hook, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...lead, program: '9 dana spašavanja jetre', start_when: startLabel(startWhen) }),
+      body: JSON.stringify({ ...lead, program: '9 dana spašavanja jetre' }),
     }).catch((e) => console.error('Webhook nije uspeo', e));
   });
 

@@ -11,11 +11,7 @@
 .ap-chk { display: none; }
 .ap-chip[aria-pressed="true"] .ap-chk { display: flex; }
 
-/* Koraci 2 i 3: ponuđeni odgovori (okvir iz .oq-opt) */
-.ap-ico { width: 40px; height: 40px; flex: none; border-radius: 999px; background: #F1F5F0; display: flex; align-items: center; justify-content: center; }
-.ap-opt-lbl { flex: 1; min-width: 0; text-wrap: pretty; }
-
-/* Korak 4: telefon sa pozivnim brojem (isti izgled kao ostala polja) */
+/* Korak 2: telefon sa pozivnim brojem (isti izgled kao ostala polja) */
 .ap-phone { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
 .ap-phone .of-input { flex: 1; min-width: 0; }
 .ap-cc { position: relative; flex: none; display: flex; }
@@ -25,7 +21,7 @@
 .ap-cc:focus-within .ap-cc-val { border-color: #3A5139; box-shadow: 0 0 0 3px rgba(58,81,57,0.12); }
 .ap-note { margin: 4px 0 0; padding: 16px 18px; border-radius: 16px; background: #F5EFE6; border: 1px solid #EAE0D2; font-size: 15px; line-height: 22px; color: #4A453F; text-wrap: pretty; }
 
-/* Korak 5: prijava je stigla + izbor termina */
+/* Korak 3: prijava je stigla + izbor termina */
 .ap-done { display: flex; flex-direction: column; padding-top: 8px; }
 .ap-ok { width: 64px; height: 64px; border-radius: 999px; background: #3A5139; display: flex; align-items: center; justify-content: center; }
 .ap-cal { margin-top: 28px; height: 460px; width: 100%; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; border: 1px solid #EDE5D8; border-radius: 20px; background: #FFFFFF; }
@@ -34,7 +30,6 @@
 @media (max-width: 560px) {
   .ap-chips { gap: 8px; margin-top: 22px; }
   .ap-chip { height: 42px; padding: 0 14px; font-size: 15px; }
-  .ap-ico { width: 36px; height: 36px; }
   .ap-cc-val { padding: 0 10px 0 14px; font-size: 16px; }
   .ap-cal { height: 420px; margin-top: 20px; }
 }

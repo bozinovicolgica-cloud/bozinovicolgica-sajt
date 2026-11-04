@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { apply, CAL_LINK, PRICE_EUR, PRICE_RSD, PRODUCT_NAME, RESPONSE_TIME, thousands } from '@/lib/content';
 import { HEALTH_CONSENT_TEXT } from '@/lib/legal';
-import { START_OPTIONS } from '@/lib/order-schema';
 import { CTRY_COOKIE, DEFAULT_ISO, dialForCountry, fullPhone, OTHER_COUNTRIES, TOP_COUNTRIES } from '@/lib/phone';
 import { track } from '@/lib/track';
 import { CalEmbed } from './protokol/CalEmbed';
@@ -11,20 +10,21 @@ import Price from './Price';
 
 /**
  * Kvalifikaciona forma koju otvara svaki CTA na stranici (ista ideja kao forma
- * na protokol.bozinovicolgica.rs): 4 kratka koraka, pa izbor termina za online
+ * na protokol.bozinovicolgica.rs): dva kratka koraka, pa izbor termina za online
  * poziv na Cal.com-u. Plaćanje se ne otvara odavde, dogovara se posle poziva.
  *
- * Prijava se šalje na /api/program-lead, pa se na 5. koraku bira termin.
+ * Samo dva pitanja — šta te muči i gde da ti se javim — jer svaki dodatni korak
+ * odbije deo ljudi, a ostalo se ionako sazna na pozivu.
+ *
+ * Prijava se šalje na /api/program-lead, pa se na 3. koraku bira termin.
  */
-type Step = 1 | 2 | 3 | 4 | 5;
+type Step = 1 | 2 | 3;
 type Form = {
-  syms: string[]; other: string; has: string[]; startWhen: string;
+  syms: string[]; other: string;
   name: string; ctry: string; phone: string; email: string; consent: boolean; website: string;
 };
 
-const EMPTY: Form = { syms: [], other: '', has: [], startWhen: '', name: '', ctry: DEFAULT_ISO, phone: '', email: '', consent: false, website: '' };
-/** Poslednja stavka u spisku („Nemam ništa od ovoga“) isključuje ostale. */
-const NOTHING = apply.has.length - 1;
+const EMPTY: Form = { syms: [], other: '', name: '', ctry: DEFAULT_ISO, phone: '', email: '', consent: false, website: '' };
 
 const IconX = () => (<svg width="16" height="16" viewBox="0 0 256 256" fill="none" stroke="#3A5139" strokeWidth="20" strokeLinecap="round"><path d="M64,64L192,192 M192,64L64,192" /></svg>);
 const Arrow = () => (
@@ -33,9 +33,6 @@ const Arrow = () => (
 const Back = () => (<svg width="16" height="16" viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round"><polyline points="160 208 80 128 160 48" /></svg>);
 const Check = ({ color = '#FFFFFF', size = 14 }: { color?: string; size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 256 256" fill="none" stroke={color} strokeWidth="28" strokeLinecap="round" strokeLinejoin="round"><polyline points="40 144 96 200 224 72" /></svg>
-);
-const Ico = ({ d }: { d: string }) => (
-  <svg width="20" height="20" viewBox="0 0 256 256" fill="none" stroke="#3A5139" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>
 );
 
 function utm(): Record<string, string> {
@@ -68,7 +65,7 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
 
   useEffect(() => {
     if (cardRef.current) cardRef.current.scrollTop = 0;
-    if (step !== 4) return;
+    if (step !== 2) return;
     const t = setTimeout(() => cardRef.current?.querySelector<HTMLElement>('input[name="name"]')?.focus({ preventScroll: true }), 60);
     return () => clearTimeout(t);
   }, [step]);
@@ -81,18 +78,10 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
   const toggleSym = (label: string) =>
     set({ syms: f.syms.includes(label) ? f.syms.filter((x) => x !== label) : [...f.syms, label] }, 'syms');
 
-  const toggleHas = (label: string, i: number) => {
-    if (i === NOTHING) return set({ has: f.has.includes(label) ? [] : [label] }, 'has');
-    const rest = f.has.filter((x) => x !== apply.has[NOTHING]);
-    set({ has: rest.includes(label) ? rest.filter((x) => x !== label) : [...rest, label] }, 'has');
-  };
-
   const validate = (s: Step) => {
     const e: Record<string, string> = {};
     if (s === 1 && !f.syms.length) e.syms = 'Izaberi bar jedno.';
-    if (s === 2 && !f.has.length) e.has = 'Izaberi bar jedno.';
-    if (s === 3 && !f.startWhen) e.startWhen = 'Izaberi kada planiraš da počneš.';
-    if (s === 4) {
+    if (s === 2) {
       if (f.name.trim().length < 2) e.name = 'Upiši ime.';
       if (!/^\+?[0-9][0-9 /-]{7,}$/.test(fullPhone(dialForCountry(f.ctry), f.phone))) e.phone = 'Upiši broj telefona, na primer 64 123 4567.';
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.email = 'Upiši email, da ti stigne potvrda termina.';
@@ -109,7 +98,7 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
   const next = async (ev: React.FormEvent) => {
     ev.preventDefault();
     if (busy || !validate(step)) return;
-    if (step < 4) {
+    if (step < 2) {
       track('apply_step', { step, source });
       setStep((step + 1) as Step);
       return;
@@ -121,7 +110,7 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          source, symptoms: f.syms, other: f.other, has: f.has, startWhen: f.startWhen,
+          source, symptoms: f.syms, other: f.other,
           name: f.name, phone: fullPhone(dialForCountry(f.ctry), f.phone), email: f.email,
           consent: f.consent, website: f.website, utm: utm(), page: location.href,
         }),
@@ -136,14 +125,14 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
       track('apply_lead', { source }, 'Lead');
       setLeadId(typeof j.id === 'string' ? j.id : undefined);
       setBusy(false);
-      setStep(5);
+      setStep(3);
     } catch {
       setServerErr('Nema konekcije. Proveri internet i pokušaj ponovo.');
       setBusy(false);
     }
   };
 
-  const title = step === 5 ? 'Prijava je stigla' : apply.titles[step - 1];
+  const title = step === 3 ? 'Prijava je stigla' : apply.titles[step - 1];
 
   return (
     <ModalShell open={open} onClose={onClose} labelledBy="ap-title" cardRef={cardRef}>
@@ -153,15 +142,15 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
       </div>
 
       <div className="oq-body">
-        {step < 5 && (
+        {step < 3 && (
           <div className="oq-progress">
-            <div className="oq-bar" role="progressbar" aria-valuemin={1} aria-valuemax={4} aria-valuenow={step} aria-label="Napredak prijave"><span style={{ width: `${step * 25}%` }} /></div>
-            <span className="oq-count">Korak {step} od 4</span>
+            <div className="oq-bar" role="progressbar" aria-valuemin={1} aria-valuemax={2} aria-valuenow={step} aria-label="Napredak prijave"><span style={{ width: `${step * 50}%` }} /></div>
+            <span className="oq-count">Korak {step} od 2</span>
           </div>
         )}
 
         <div key={step} className="oq-fade">
-          {step === 5 ? (
+          {step === 3 ? (
             <div className="ap-done">
               <span className="ap-ok" aria-hidden="true"><Check size={28} /></span>
               <h2 className="oq-h" id="ap-title">{title}</h2>
@@ -184,8 +173,7 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
             <>
               <h2 className="oq-h" id="ap-title">{title}</h2>
               {step === 1 && <p className="oq-hint">Možeš da izabereš više.</p>}
-              {step === 2 && <p className="oq-hint">Ne mora ništa od ovoga; pomaže mi da znam odakle polaziš.</p>}
-              {step === 4 && <p className="oq-p">Prijava nije plaćanje. Kad je pošalješ, biraš termin za kratak online poziv.</p>}
+              {step === 2 && <p className="oq-p">Prijava nije plaćanje. Kad je pošalješ, biraš termin za kratak online poziv.</p>}
 
               <form className="of-form" onSubmit={next} noValidate>
                 {step === 1 && (
@@ -209,35 +197,6 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
                 )}
 
                 {step === 2 && (
-                  <>
-                    <div className="oq-opts oq-multi">
-                      {apply.has.map((label, i) => (
-                        <button key={label} type="button" role="checkbox" aria-checked={f.has.includes(label)} className="oq-opt" onClick={() => toggleHas(label, i)}>
-                          <span className="ap-ico" aria-hidden="true"><Ico d={apply.hasIcons[i]} /></span>
-                          <span className="ap-opt-lbl">{label}</span>
-                          <span className="oq-mark" aria-hidden="true"><Check /></span>
-                        </button>
-                      ))}
-                    </div>
-                    {errors.has && <span className="of-error">{errors.has}</span>}
-                  </>
-                )}
-
-                {step === 3 && (
-                  <>
-                    <div className="oq-opts" role="radiogroup">
-                      {START_OPTIONS.map(([k, t]) => (
-                        <button key={k} type="button" role="radio" aria-checked={f.startWhen === k} className="oq-opt" onClick={() => set({ startWhen: k }, 'startWhen')}>
-                          <span className="ap-opt-lbl">{t}</span>
-                          <span className="oq-mark" aria-hidden="true"><Check /></span>
-                        </button>
-                      ))}
-                    </div>
-                    {errors.startWhen && <span className="of-error">{errors.startWhen}</span>}
-                  </>
-                )}
-
-                {step === 4 && (
                   <>
                     <label className="of-field">
                       <span className="of-label">Ime</span>
@@ -290,7 +249,7 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
                     <button type="button" className="oq-link" onClick={() => { setErrors({}); setServerErr(''); setStep((s) => (s - 1) as Step); }}><Back /> Nazad</button>
                   ) : <span />}
                   <button type="submit" className="oq-btn oq-arrow" disabled={busy}>
-                    <span>{step === 4 ? (busy ? 'Šaljem…' : 'Pošalji prijavu') : 'Dalje'}</span><Arrow />
+                    <span>{step === 2 ? (busy ? 'Šaljem…' : 'Pošalji prijavu') : 'Dalje'}</span><Arrow />
                   </button>
                 </div>
               </form>

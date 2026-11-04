@@ -142,27 +142,13 @@ export const faqs: [string, string][] = [
 
 /**
  * Kvalifikaciona forma (pop-up koji otvara svaki CTA), po modelu forme na
- * protokol.bozinovicolgica.rs: 4 kratka koraka, pa izbor termina na Cal.com-u.
+ * protokol.bozinovicolgica.rs: dva koraka (šta te muči, gde da ti se javim),
+ * pa izbor termina na Cal.com-u.
  * Vrednosti su ujedno i spisak dozvoljenih odgovora na serveru (api/program-lead).
  */
 export const apply = {
   symptoms: ['Nadutost', 'Umor posle jela', 'Kožna oboljenja', 'Zatvor', '„Magla“ u glavi', 'Nešto drugo'],
-  /** Poslednja stavka („Nemam ništa“) isključuje ostale. */
-  has: [
-    'Ultrazvuk ili nalaz sa masnom jetrom',
-    'Poslednje analize krvi',
-    'Izveštaj lekara specijaliste',
-    'Spisak terapije koju pijem',
-    'Nemam ništa od ovoga',
-  ],
-  hasIcons: [
-    'M208,144c0-72-80-128-80-128S48,72,48,144a80,80,0,0,0,160,0Z M136,184a40,40,0,0,0,32-32',
-    'M96,24H160 M152,24V184a32,32,0,0,1-64,0V24 M88,112h64',
-    'M200,224H56a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h96l56,56V216A8,8,0,0,1,200,224Z M152,32V88h56 M96,136h64 M96,168h64',
-    'M216.4,39.6a54.6,54.6,0,0,0-77.2,0L39.6,139.2a54.6,54.6,0,0,0,77.2,77.2l99.6-99.6A54.6,54.6,0,0,0,216.4,39.6Z M89.4,89.4l77.2,77.2',
-    'M128,224a96,96,0,1,1,96-96A96,96,0,0,1,128,224Z M160,96L96,160 M96,96l64,64',
-  ],
-  titles: ['Šta te najviše muči?', 'Šta već imaš?', 'Kada planiraš da počneš?', 'Gde da ti se javim?'],
+  titles: ['Šta te najviše muči?', 'Gde da ti se javim?'],
 };
 
 /**
