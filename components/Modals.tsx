@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { sourceFor, type CtaMode } from '@/lib/cta';
 import type { OrderContext } from './OrderModal';
 
 // Kviz i forme se učitavaju tek kad zatrebaju (manje JavaScript-a na prvom učitavanju)
@@ -16,15 +17,17 @@ declare global {
 }
 
 /**
- * Kviz se otvara klikom na bilo koji link sa href="#kviz", a kvalifikaciona
- * forma (prijava + izbor termina na Cal.com-u) klikom na element sa atributom
- * data-order. Dugmići na stranici više ne vode direktno na plaćanje.
+ * Kviz se otvara klikom na bilo koji link sa href="#kviz", a dugme za kupovinu
+ * (svaki element sa atributom data-order) otvara ono što odgovara verziji
+ * stranice (vidi lib/cta.ts):
+ *   mode="apply"  kvalifikaciona forma, pa izbor termina na Cal.com-u ("/")
+ *   mode="order"  porudžbina u 3 koraka i plaćanje karticom ("/kupi")
  *
- * Stara forma za porudžbinu sa Stripe plaćanjem ostaje dostupna preko adrese
- * /#porudzbina, da se link za plaćanje može poslati posle poziva i da povratak
- * sa Stripe-a (?placanje=otkazano) nastavi tamo gde je stao.
+ * Plaćanje je dostupno i na verziji sa formom, preko adrese /#porudzbina, da se
+ * link za plaćanje može poslati posle poziva i da povratak sa Stripe-a
+ * (?placanje=otkazano) nastavi tamo gde je stao.
  */
-export default function Modals() {
+export default function Modals({ mode = 'apply' }: { mode?: CtaMode }) {
   const [active, setActive] = useState<'quiz' | 'apply' | 'order' | null>(null);
   const [source, setSource] = useState('stranica');
   const [ctx, setCtx] = useState<OrderContext>({ source: 'stranica' });
@@ -34,6 +37,11 @@ export default function Modals() {
   const openApply = useCallback((s: string) => { setSource(s); setUsed((u) => ({ ...u, apply: true })); setActive('apply'); }, []);
   const openOrder = useCallback((c: OrderContext) => { setCtx(c); setUsed((u) => ({ ...u, order: true })); setActive('order'); }, []);
   const close = useCallback(() => setActive(null), []);
+  // Izvor klika nosi i verziju stranice ("kupi:cena"), da se u DataFast-u razlikuju.
+  const openCta = useCallback(
+    (s: string) => (mode === 'order' ? openOrder({ source: sourceFor(mode, s) }) : openApply(s)),
+    [mode, openApply, openOrder],
+  );
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -42,7 +50,7 @@ export default function Modals() {
       const q = t.closest('a[href="#kviz"]');
       if (q) { e.preventDefault(); e.stopPropagation(); openQuiz(); return; }
       const o = t.closest<HTMLElement>('[data-order]');
-      if (o) { e.preventDefault(); e.stopPropagation(); openApply(o.dataset.order || 'stranica'); }
+      if (o) { e.preventDefault(); e.stopPropagation(); openCta(o.dataset.order || 'stranica'); }
     };
     document.addEventListener('click', onClick, true);
     window.openLiverQuiz = openQuiz;
@@ -65,22 +73,25 @@ export default function Modals() {
 
     // kad je stranica mirna, unapred preuzmi kod za kviz i formu (bez blokiranja)
     let idle = 0;
+    const load = () => { loadQuiz(); if (mode === 'order') loadOrder(); else loadApply(); };
     const prefetch = () => {
       const ric = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
-      idle = ric ? ric(() => { loadQuiz(); loadApply(); }) : window.setTimeout(() => { loadQuiz(); loadApply(); }, 1);
+      idle = ric ? ric(load) : window.setTimeout(load, 1);
     };
     const t = window.setTimeout(prefetch, 5000);
     return () => { document.removeEventListener('click', onClick, true); clearTimeout(t); void idle; };
-  }, [openQuiz, openApply, openOrder]);
+  }, [mode, openQuiz, openApply, openOrder, openCta]);
 
   return (
     <>
       {used.quiz && <Quiz
         open={active === 'quiz'}
         onClose={close}
-        onBuy={() => {
+        onBuy={(r) => {
           setActive(null);
-          setTimeout(() => openApply('kviz'), 280);
+          setTimeout(() => (mode === 'order'
+            ? openOrder({ source: sourceFor(mode, 'kviz'), quizResult: r.result, quizScore: r.score })
+            : openApply('kviz')), 280);
         }}
       />}
       {used.apply && <ApplyModal open={active === 'apply'} source={source} onClose={close} />}
