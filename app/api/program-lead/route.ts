@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { NextResponse, after, type NextRequest } from 'next/server';
 import { apply } from '@/lib/content';
 import { startLabel, START_OPTIONS } from '@/lib/order-schema';
@@ -49,6 +50,8 @@ export async function POST(req: NextRequest) {
   const u = (typeof b.utm === 'object' && b.utm ? b.utm : {}) as Record<string, unknown>;
   const now = new Date().toISOString();
   const lead = {
+    // id pravimo ovde, da ode u Cal.com (metadata[leadId]) i da webhook nađe baš ovu prijavu
+    id: randomUUID(),
     experiment: EXPERIMENT,
     form_location: clip(b.source, 20) ?? 'stranica',
     who: 'me',
@@ -79,7 +82,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Trenutno ne možemo da primimo prijavu. Pokušaj ponovo za par minuta.' }, { status: 503 });
     }
     console.log('[program-lead:dev]', lead);
-    return NextResponse.json({ ok: true, dev: true });
+    return NextResponse.json({ ok: true, dev: true, id: lead.id });
   }
 
   const { error } = await sb.from('lp_leads').insert(lead);
@@ -100,5 +103,6 @@ export async function POST(req: NextRequest) {
     }).catch((e) => console.error('Webhook nije uspeo', e));
   });
 
-  return NextResponse.json({ ok: true });
+  // id ide u kalendar posle prijave (CalEmbed), pa u Cal.com, da webhook nađe ovu prijavu
+  return NextResponse.json({ ok: true, id: lead.id });
 }

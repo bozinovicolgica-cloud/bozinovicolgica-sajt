@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { programName } from "@/lib/protokol/ab";
 import { LEAD_STATUS, setProtokolLeadStatus } from "@/lib/server/airtable";
 import { telegramConfig } from "@/lib/server/config";
 import { supabase } from "@/lib/server/integrations";
@@ -41,7 +42,7 @@ export async function POST() {
       .eq("id", id)
       .is("followup_sent_at", null)
       .is("booked_at", null)
-      .select("name, phone, email, who, is_qa, utm_source, utm_campaign");
+      .select("name, phone, email, who, is_qa, experiment, utm_source, utm_campaign");
     const l = claimed?.[0];
     if (!l) continue;
     const ok = await notifyNoBooking(
@@ -50,6 +51,7 @@ export async function POST() {
         phone: l.phone,
         email: l.email,
         who: l.who,
+        program: programName(l.experiment),
         source: [l.utm_source, l.utm_campaign].filter(Boolean).join(" / ") || null,
         isQa: l.is_qa,
       },

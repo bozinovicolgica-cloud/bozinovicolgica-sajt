@@ -53,6 +53,8 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [serverErr, setServerErr] = useState('');
+  // id prijave: ide u Cal.com, da webhook (api/cal/webhook) spoji zakazan termin sa prijavom
+  const [leadId, setLeadId] = useState<string | undefined>();
 
   useEffect(() => {
     if (!open) return;
@@ -132,6 +134,7 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
         return;
       }
       track('apply_lead', { source }, 'Lead');
+      setLeadId(typeof j.id === 'string' ? j.id : undefined);
       setBusy(false);
       setStep(5);
     } catch {
@@ -171,6 +174,8 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
                 <CalEmbed
                   className="ap-cal"
                   calLink={CAL_LINK}
+                  leadId={leadId}
+                  onBooking={() => track('apply_booking', { source }, 'Schedule')}
                   prefill={{ name: f.name.trim(), email: f.email.trim(), phone: fullPhone(dialForCountry(f.ctry), f.phone) }}
                 />
               )}

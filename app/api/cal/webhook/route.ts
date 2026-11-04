@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
+import { programName } from "@/lib/protokol/ab";
 import { LEAD_STATUS, setProtokolLeadStatus } from "@/lib/server/airtable";
 import { supabase } from "@/lib/server/integrations";
 import { notifyBooking } from "@/lib/server/telegram";
@@ -90,6 +91,7 @@ export async function POST(req: Request) {
     phone: lead?.phone ?? p.responses?.attendeePhoneNumber?.value ?? att.phoneNumber ?? null,
     email: lead?.email ?? att.email ?? null,
     who: lead?.who ?? null,
+    program: lead ? programName(lead.experiment) : null,
     source: lead ? [lead.utm_source, lead.utm_campaign].filter(Boolean).join(" / ") || null : "Cal.com (bez prijave sa sajta)",
     isQa: lead?.is_qa ?? false,
   });

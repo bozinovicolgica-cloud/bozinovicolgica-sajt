@@ -32,6 +32,8 @@ export type LeadContact = {
   phone: string | null;
   email: string | null;
   who?: 'me' | 'kid' | null;
+  /** Koji program: prijave stižu i sa protokola i sa programske stranice. */
+  program?: string | null;
   source?: string | null;
   isQa?: boolean;
 };
@@ -51,15 +53,16 @@ const contact = (l: LeadContact) =>
     `<b>${esc(l.name)}</b>${l.who ? ` (${l.who === 'kid' ? 'za dete' : 'za sebe'})` : ''}`,
     l.phone ? `📞 ${esc(l.phone)}  ·  <a href="https://wa.me/${waNumber(l.phone)}">WhatsApp</a>` : '',
     l.email ? `✉️ ${esc(l.email)}` : '',
+    l.program ? `Program: ${esc(l.program)}` : '',
     l.source ? `Izvor: ${esc(l.source)}` : '',
   ].filter(Boolean);
 
 const message = (title: string, l: LeadContact, extra: string[] = []) =>
   send([`${l.isQa ? '🧪 TEST: ' : ''}${title}`, '', ...contact(l), ...extra].join('\n'));
 
-/** Prijava sa protokol. bez zakazanog poziva posle LEAD_FOLLOWUP_MINUTES: Olgica treba da pozove. */
+/** Prijava bez zakazanog poziva posle LEAD_FOLLOWUP_MINUTES: Olgica treba da pozove. */
 export const notifyNoBooking = (l: LeadContact, minutes: number) =>
-  message('📞 <b>Pozovi: prijavila se, a nije zakazala poziv</b>', l, [``, `Prijava pre ${minutes}+ min, Protokol ishrane.`]);
+  message('📞 <b>Pozovi: prijavila se, a nije zakazala poziv</b>', l, [``, `Prijava pre ${minutes}+ min.`]);
 
 /** Cal.com: zakazan, pomeren ili otkazan poziv. */
 export const notifyBooking = (kind: 'created' | 'rescheduled' | 'cancelled', start: string | null, l: LeadContact) =>

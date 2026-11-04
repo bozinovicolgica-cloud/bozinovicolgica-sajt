@@ -27,3 +27,13 @@ export function isVariant(v: unknown): v is Variant {
 
 export const EVENT_NAMES = ["view", "cta_click", "form_start", "form_step", "lead", "booking"] as const;
 export type EventName = (typeof EVENT_NAMES)[number];
+
+/**
+ * Ime programa po eksperimentu, za obaveštenja Olgici (Telegram).
+ * Prijave stižu sa dva mesta: protokol poddomen i programska stranica.
+ */
+export const PROGRAM_NAMES: Record<string, string> = {
+  'program-9-dana': '9 dana spašavanja jetre',
+};
+export const programName = (experiment: string | null | undefined) =>
+  (experiment && PROGRAM_NAMES[experiment]) || 'Protokol ishrane';
