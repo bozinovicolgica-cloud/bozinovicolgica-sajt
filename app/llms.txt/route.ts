@@ -16,9 +16,9 @@ export function GET() {
 ## Program: ${PRODUCT_NAME}
 
 - [${PRODUCT_NAME}](${SITE}/): ${PRODUCT_DESC}
-- Cena: ${PRICE_EUR} EUR, jednokratno. Kupuje se preko kratke forme na stranici, plaćanje karticom preko Stripe-a; materijali stižu na email.
+- Cena: ${PRICE_EUR} EUR, jednokratno. Prijavljuje se preko kratke forme na stranici, posle koje se bira termin za kratak online razgovor; dogovor i plaćanje idu posle razgovora.
 - Šta dobijaš: ${gets.map(([t, d]) => `${t} (${d.replace(/\.$/, '').toLowerCase()})`).join('; ')}.
-- U paketu: ${items.join(', ')}.
+- U paketu: ${items.map((i) => i.label).join(', ')}.
 - Nije za tebe ako: ${fitNo.join('; ')}.
 - [Kviz: da li ti je jetra preopterećena?](${SITE}/#kviz): kratak kviz o simptomima, sa preporukom da li je protokol za tebe ili da se prvo javiš lekaru.
 

@@ -40,7 +40,9 @@ function calApi(): CalFn {
 
 export type CalPrefill = { name?: string; email?: string; phone?: string };
 
-export function CalEmbed({ calLink, prefill, leadId }: { calLink: string; prefill?: CalPrefill; leadId?: string }) {
+// className: okvir kalendara se stilizuje u CSS-u sajta na kom stoji
+// (protokol: .lf-cal, program: .ap-cal).
+export function CalEmbed({ calLink, prefill, leadId, className = "lf-cal", onBooking }: { calLink: string; prefill?: CalPrefill; leadId?: string; className?: string; onBooking?: () => void }) {
   const box = useRef<HTMLDivElement>(null);
   const started = useRef(false);
 
@@ -67,8 +69,8 @@ export function CalEmbed({ calLink, prefill, leadId }: { calLink: string; prefil
     // zna šta zakazuje, a taj blok gura kalendar ~500px niže.
     Cal("ui", { hideEventTypeDetails: true, layout: "month_view" });
     // Meta Pixel "Schedule" i DataFast protokol_booking (poslednji korak funnela); u bazu upisuje webhook.
-    Cal("on", { action: "bookingSuccessfulV2", callback: () => track("booking") });
-  }, [calLink, prefill, leadId]);
+    Cal("on", { action: "bookingSuccessfulV2", callback: () => (onBooking ? onBooking() : track("booking")) });
+  }, [calLink, prefill, leadId, onBooking]);
 
-  return <div ref={box} className="lf-cal" aria-label="Izbor termina za online poziv" />;
+  return <div ref={box} className={className} aria-label="Izbor termina za online poziv" />;
 }

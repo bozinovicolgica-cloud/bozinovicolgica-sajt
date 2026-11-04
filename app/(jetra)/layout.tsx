@@ -3,6 +3,7 @@ import './fonts.css';
 import './globals.css';
 import './quiz.css';
 import './order.css';
+import './apply.css';
 import Analytics from '@/components/Analytics';
 import CookieConsent from '@/components/CookieConsent';
 import DataFast from '@/components/DataFast';

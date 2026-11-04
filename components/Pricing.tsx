@@ -1,6 +1,6 @@
 'use client';
 import { useRef } from 'react';
-import { included, PRICE_EUR, PRICE_RSD, REFUND_SHORT, thousands } from '@/lib/content';
+import { included, PRICE_EUR, PRICE_RSD, REFUND_SHORT, rsd, SAVE_EUR, SAVE_RSD, thousands, VALUE_EUR, VALUE_RSD } from '@/lib/content';
 import Price from './Price';
 import { BUY_NOTE } from '@/lib/legal';
 import { Q } from '@/lib/quiz-data';
@@ -41,12 +41,17 @@ export default function Pricing() {
             <p className="price__incH">Šta dobijaš</p>
             <ul className="price__inc">
               {included.map((inc) => (
-                <li key={inc}>
+                <li key={inc.label}>
                   <svg className="price__chk" width="20" height="20" viewBox="0 0 256 256" fill="none" stroke="#9DB799" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M40,144l56,56L224,72" /></svg>
-                  <span className="price__lbl">{inc}</span>
+                  <span className="price__lbl">{inc.label}</span>
+                  <span className="price__val"><Price rsd={rsd(inc.rsd)} eur={`${inc.eur} EUR`} /></span>
                 </li>
               ))}
             </ul>
+            <div className="price__total">
+              <span className="price__totalL">Vrednost svega zajedno</span>
+              <span className="price__totalV"><Price rsd={rsd(VALUE_RSD)} eur={`${VALUE_EUR} EUR`} /></span>
+            </div>
 
             <div className="price__box">
               <p className="price__boxH">Tvoja cena</p>
@@ -54,6 +59,7 @@ export default function Pricing() {
                 <span className="price__num"><Price rsd={thousands(PRICE_RSD)} eur={PRICE_EUR} /></span>
                 <span className="price__cur"><Price rsd="RSD" eur="EUR" /></span>
               </span>
+              <p className="price__save">Ušteda <Price rsd={rsd(SAVE_RSD)} eur={`${SAVE_EUR} EUR`} /></p>
               <p className="price__rsd"><Price rsd={`oko ${PRICE_EUR} EUR, jednokratno. Naplata ide u evrima; banka preračunava po svom kursu.`} eur="Jednokratno." /></p>
             </div>
 

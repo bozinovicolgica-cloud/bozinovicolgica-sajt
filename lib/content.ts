@@ -10,7 +10,7 @@ export const PRICE_EUR = 180;
  * Cena se ističe u dinarima, uz evro (kurs oko 117,2). Stripe naplaćuje u evrima (PRICE_EUR);
  * ako se cena u Stripe-u prebaci na RSD, PRICE_RSD postaje i iznos naplate.
  */
-export const PRICE_RSD = 21100;
+export const PRICE_RSD = 21000;
 export const thousands = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 export const rsd = (n: number) => `${thousands(n)} RSD`;
 
@@ -64,11 +64,12 @@ export const why = [
 ];
 
 export const gets = [
-  ['Plan ishrane za 9 dana', 'Tri glavna obroka i užine, za svaki dan.'],
-  ['Spisak za kupovinu', 'Sve namirnice na jednom mestu.'],
-  ['Recepti', 'Jednostavni, gotovi za desetak minuta.'],
-  ['Video lekcije', 'Kratka lekcija svakog dana, na telefonu.'],
-  ['Pristup Viber grupi', 'Zajednica ljudi koji prolaze isti protokol.'],
+  ['Plan ishrane za svih 9 dana', 'Tri glavna obroka i užine, za svaki dan.'],
+  ['Spisak namirnica', 'Sve što treba da kupiš, na jednom mestu.'],
+  ['Recepti za svako jelo iz plana', 'Jednostavni, gotovi za desetak minuta.'],
+  ['Video lekcije za svaki dan', 'Kratka lekcija svakog dana, na telefonu.'],
+  ['Pristup WhatsApp grupi', 'Zajednica ljudi koji prolaze isti protokol.'],
+  ['Moja podrška 9 dana', 'Pišeš mi kad zapneš, tu sam sve vreme protokola.'],
 ] as const;
 
 export const testimonials = [
@@ -103,15 +104,30 @@ export const fitNo = [
 ];
 
 /**
- * Stavke paketa, za karticu sa cenom. Bez pojedinačnih „vrednosti“ i precrtane ukupne cene:
- * stavke se ne prodaju posebno, pa bi precrtana cena bila izmišljena (Zakon o zaštiti potrošača).
+ * Stavke paketa, za karticu sa cenom. Uz svaku stoji vrednost (koliko bi koštala
+ * da se kupuje odvojeno), pa se ispod sabira u VALUE_EUR / VALUE_RSD.
+ * Važno: 295 EUR nije „stara cena“ po kojoj se program prodavao, nego vrednost
+ * pojedinačnih delova, zato je i tako označena („Vrednost svega zajedno“) —
+ * precrtana prethodna cena bi tražila dokaz da je program po njoj i prodavan
+ * (Zakon o zaštiti potrošača, član o istaknutoj nižoj ceni).
+ * Dinarske vrednosti su zaokružene na sto, a VALUE_RSD je njihov tačan zbir,
+ * da se posetiocu u Srbiji spisak sabere u prikazani iznos.
  */
-export const included: string[] = [
-  'Plan ishrane za svih 9 dana, sa spiskom za kupovinu',
-  'Recepti za svako jelo iz plana',
-  'Video lekcija za svaki dan',
-  'Pristup Viber grupi',
+export const included: { label: string; eur: number; rsd: number }[] = [
+  { label: 'Plan ishrane za svih 9 dana', eur: 59, rsd: 6900 },
+  { label: 'Spisak namirnica', eur: 19, rsd: 2200 },
+  { label: 'Recepti za svako jelo iz plana', eur: 24, rsd: 2800 },
+  { label: 'Video lekcije za svaki dan', eur: 100, rsd: 11700 },
+  { label: 'Pristup WhatsApp grupi', eur: 19, rsd: 2200 },
+  { label: 'Moja podrška 9 dana', eur: 84, rsd: 9800 },
 ];
+
+/** Vrednost svih stavki zajedno (zbir gornjeg spiska). */
+export const VALUE_EUR = included.reduce((n, i) => n + i.eur, 0);
+export const VALUE_RSD = included.reduce((n, i) => n + i.rsd, 0);
+/** Razlika između vrednosti i cene po kojoj se program prodaje. */
+export const SAVE_EUR = VALUE_EUR - PRICE_EUR;
+export const SAVE_RSD = VALUE_RSD - PRICE_RSD;
 
 export const faqs: [string, string][] = [
   ['Hoće li me mučiti glad?', 'Ne. Protokol nije gladovanje: imaš tri glavna obroka i užine i tačno znaš šta jedeš i kada.'],
@@ -123,3 +139,36 @@ export const faqs: [string, string][] = [
   ['Mogu li da radim protokol ako pijem lekove?', 'Zavisi od lekova koje piješ. Pre početka razgovaraj sa svojim lekarom i pokaži mu spisak namirnica i preparata iz protokola. Kada dobiješ zeleno svetlo, piši mi pa zajedno vidimo kako da kreneš.'],
   ['Da li protokol čisti jetru od toksina?', 'Protokol je program ishrane i navika, ne medicinski tretman. Ne leči i ne obećava „čišćenje“ u medicinskom smislu. Za 9 dana dobijaš jasan plan sa manje prerađene hrane, više povrća i redovnim obrocima, a kako se osećaš, beležiš sama.'],
 ];
+
+/**
+ * Kvalifikaciona forma (pop-up koji otvara svaki CTA), po modelu forme na
+ * protokol.bozinovicolgica.rs: 4 kratka koraka, pa izbor termina na Cal.com-u.
+ * Vrednosti su ujedno i spisak dozvoljenih odgovora na serveru (api/program-lead).
+ */
+export const apply = {
+  symptoms: ['Nadutost', 'Umor posle jela', 'Koža se buni', 'Zatvor', '„Magla“ u glavi', 'Nešto drugo'],
+  /** Poslednja stavka („Nemam ništa“) isključuje ostale. */
+  has: [
+    'Ultrazvuk ili nalaz sa masnom jetrom',
+    'Poslednje analize krvi',
+    'Izveštaj lekara specijaliste',
+    'Spisak terapije koju pijem',
+    'Nemam ništa od ovoga',
+  ],
+  hasIcons: [
+    'M208,144c0-72-80-128-80-128S48,72,48,144a80,80,0,0,0,160,0Z M136,184a40,40,0,0,0,32-32',
+    'M96,24H160 M152,24V184a32,32,0,0,1-64,0V24 M88,112h64',
+    'M200,224H56a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h96l56,56V216A8,8,0,0,1,200,224Z M152,32V88h56 M96,136h64 M96,168h64',
+    'M216.4,39.6a54.6,54.6,0,0,0-77.2,0L39.6,139.2a54.6,54.6,0,0,0,77.2,77.2l99.6-99.6A54.6,54.6,0,0,0,216.4,39.6Z M89.4,89.4l77.2,77.2',
+    'M128,224a96,96,0,1,1,96-96A96,96,0,0,1,128,224Z M160,96L96,160 M96,96l64,64',
+  ],
+  titles: ['Šta te najviše muči?', 'Šta već imaš?', 'Kada planiraš da počneš?', 'Gde da ti se javim?'],
+};
+
+/**
+ * Cal.com kalendar koji se pojavi posle poslate prijave (vidi ApplyModal.tsx).
+ * Prazno = bez kalendara, forma se završava porukom da se Olgica javlja na WhatsApp.
+ */
+export const CAL_LINK = process.env.NEXT_PUBLIC_CAL_LINK || 'olgica-bozinovic-om1hve/10minsaolgicom';
+/** Rok u kom se Olgica javlja ako kalendar nije podešen. */
+export const RESPONSE_TIME = 'za najviše 24h';

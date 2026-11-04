@@ -1,0 +1,104 @@
+import { NextResponse, after, type NextRequest } from 'next/server';
+import { apply } from '@/lib/content';
+import { startLabel, START_OPTIONS } from '@/lib/order-schema';
+import { supabase } from '@/lib/server/integrations';
+
+/**
+ * Prijava sa programske stranice (pop-up ApplyModal): kvalifikaciona pitanja +
+ * kontakt, posle čega posetilac bira termin na Cal.com-u.
+ *
+ * Čuva se u istu tabelu kao prijave sa protokol poddomena (`lp_leads`), samo pod
+ * drugim eksperimentom, da Olgica ima sve prijave na jednom mestu.
+ * Napomena: `who` u tabeli sme da bude samo 'me' ili 'kid'; ova forma ne pita za
+ * koga je program, pa uvek ide 'me'.
+ */
+export const runtime = 'nodejs';
+
+const EXPERIMENT = 'program-9-dana';
+const clip = (v: unknown, n: number) => (typeof v === 'string' ? v.trim().slice(0, n) : '') || null;
+
+export async function POST(req: NextRequest) {
+  let b: Record<string, unknown>;
+  try {
+    b = await req.json();
+  } catch {
+    return NextResponse.json({ ok: false, error: 'Neispravan zahtev.' }, { status: 400 });
+  }
+
+  // Honeypot: pravi korisnici ne vide ovo polje.
+  if (typeof b.website === 'string' && b.website.trim()) return NextResponse.json({ ok: true });
+
+  const symptoms = Array.isArray(b.symptoms) ? b.symptoms.filter((s): s is string => typeof s === 'string' && apply.symptoms.includes(s)) : [];
+  const has = Array.isArray(b.has) ? b.has.filter((s): s is string => typeof s === 'string' && apply.has.includes(s)) : [];
+  const startWhen = START_OPTIONS.some(([k]) => k === b.startWhen) ? String(b.startWhen) : '';
+  const name = clip(b.name, 120);
+  const phone = clip(b.phone, 40);
+  const email = clip(b.email, 200);
+  const other = clip(b.other, 500);
+
+  const errors: Record<string, string> = {};
+  if (!symptoms.length) errors.syms = 'Izaberi bar jedno.';
+  if (!has.length) errors.has = 'Izaberi bar jedno.';
+  if (!startWhen) errors.startWhen = 'Izaberi kada planiraš da počneš.';
+  if (!name) errors.name = 'Upiši ime.';
+  if (!phone || !/^\+?[0-9][0-9 /-]{7,}$/.test(phone)) errors.phone = 'Upiši broj telefona, na primer +381 64 123 4567.';
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) errors.email = 'Upiši email, da ti stigne potvrda termina.';
+  if (b.consent !== true) errors.consent = 'Potrebna je tvoja saglasnost da bih mogla da ti pomognem.';
+  if (Object.keys(errors).length) return NextResponse.json({ ok: false, errors }, { status: 422 });
+
+  const u = (typeof b.utm === 'object' && b.utm ? b.utm : {}) as Record<string, unknown>;
+  const now = new Date().toISOString();
+  const lead = {
+    experiment: EXPERIMENT,
+    form_location: clip(b.source, 20) ?? 'stranica',
+    who: 'me',
+    symptoms,
+    // Kada planira da počne ide uz slobodan tekst: `lp_leads` nema svoju kolonu za to.
+    symptoms_other: [other, `Počinje: ${startLabel(startWhen)}`].filter(Boolean).join(' | '),
+    has_documents: has,
+    name,
+    phone,
+    email,
+    consent: true,
+    consent_at: now,
+    utm_source: clip(u.utm_source, 200),
+    utm_medium: clip(u.utm_medium, 200),
+    utm_campaign: clip(u.utm_campaign, 200),
+    utm_content: clip(u.utm_content, 200),
+    utm_term: clip(u.utm_term, 200),
+    fbclid: clip(u.fbclid, 300),
+    gclid: clip(u.gclid, 300),
+    referrer: clip(b.page, 300),
+    user_agent: req.headers.get('user-agent')?.slice(0, 300) ?? null,
+  };
+
+  const sb = supabase();
+  if (!sb) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('Prijava NIJE sačuvana: Supabase nije podešen.', { name, phone });
+      return NextResponse.json({ ok: false, error: 'Trenutno ne možemo da primimo prijavu. Pokušaj ponovo za par minuta.' }, { status: 503 });
+    }
+    console.log('[program-lead:dev]', lead);
+    return NextResponse.json({ ok: true, dev: true });
+  }
+
+  const { error } = await sb.from('lp_leads').insert(lead);
+  if (error) {
+    console.error('Supabase insert u lp_leads nije uspeo:', error.message);
+    return NextResponse.json({ ok: false, error: 'Prijava nije poslata. Pokušaj ponovo za par minuta.' }, { status: 502 });
+  }
+
+  // Posle odgovora korisniku: obaveštenje Olgici (n8n, WhatsApp, Telegram...).
+  // Greška ovde ne sme da obori prijavu.
+  after(async () => {
+    const hook = process.env.LEAD_WEBHOOK_URL;
+    if (!hook) return;
+    await fetch(hook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...lead, program: '9 dana spašavanja jetre', start_when: startLabel(startWhen) }),
+    }).catch((e) => console.error('Webhook nije uspeo', e));
+  });
+
+  return NextResponse.json({ ok: true });
+}

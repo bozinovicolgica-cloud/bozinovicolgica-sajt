@@ -29,7 +29,7 @@ export default function Page() {
       <p>Programe vodi Olgica Božinović u ime prodavca. Prodavac izdaje račun i naplaćuje preko servisa Stripe. Prodavac nije upisan u registre u Srbiji, pa nema srpski matični broj ni PIB.</p>
 
       <h2>Programi</h2>
-      <p><b>„{PRODUCT_NAME}“</b> je program ishrane i navika koji traje 9 dana. Uključuje plan ishrane za svih 9 dana sa spiskom za kupovinu, recepte, kratku video lekciju za svaki dan, pristup Viber grupi i podršku na WhatsApp-u tokom programa. Cena je {rsd(PRICE_RSD)} ({PRICE_EUR} EUR), jednokratno.</p>
+      <p><b>„{PRODUCT_NAME}“</b> je program ishrane i navika koji traje 9 dana. Uključuje plan ishrane za svih 9 dana sa spiskom za kupovinu, recepte, kratku video lekciju za svaki dan, pristup WhatsApp grupi i moju podršku tokom programa. Cena je {rsd(PRICE_RSD)} ({PRICE_EUR} EUR), jednokratno.</p>
       <p><b>Protokol ishrane</b> je individualni program ishrane i navika. Uključuje online poziv, plan ishrane po obrocima napravljen na osnovu nalaza i terapije koje kupac pošalje, plan suplementacije, biljne tinkture, preporuke za kozmetiku, posuđe i limfu i dva meseca praćenja na WhatsApp-u. Cena je {pricing.priceRsd} RSD ({pricing.price} EUR). Ugovara se posle online poziva, a [način plaćanja].</p>
       <p><b>Mentorski program</b> traje 3 meseca i uključuje [šta je uključeno]. Cena je oko 211.000 RSD (1.800 EUR) i plaća se u 3 mesečne rate od oko 70.300 RSD (600 EUR). Ugovor se zaključuje na 3 meseca: rata nije pretplata koja se otkazuje, nego deo cene celog programa.</p>
       <p>Preporučujemo samo registrovane dijetetske suplemente, bez lekova na recept. [Ako Olgica dobija proviziju od nekog brenda, to se ovde navodi.]</p>

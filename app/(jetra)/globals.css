@@ -254,10 +254,10 @@ body { overflow-x: clip; }
 .price__amount { position: relative; margin-top: 8px; display: inline-flex; align-items: baseline; gap: 10px; padding-right: 8px; }
 .price__num { font-family: 'EB Garamond', serif; font-weight: 500; font-size: 88px; line-height: 80px; color: #9DB799; }
 .price__cur { font-family: 'Nunito Sans', sans-serif; font-weight: 600; font-size: 22px; line-height: 28px; color: #DFE8DC; }
-.price__save { position: absolute; top: -6px; left: 100%; margin-left: 4px; padding: 4px 8px; border-radius: 6px; background: #B8895A; color: #FFFFFF; font-family: 'Nunito Sans', sans-serif; font-weight: 600; font-size: 12px; line-height: 14px; letter-spacing: 0.02em; white-space: nowrap; transform: rotate(-4deg); pointer-events: none; user-select: none; }
+.price__save { display: inline-flex; align-items: center; margin: 12px 0 0; padding: 6px 12px; border-radius: 999px; background: #B8895A; color: #FFFFFF; font-family: 'Nunito Sans', sans-serif; font-weight: 600; font-size: 14px; line-height: 18px; letter-spacing: 0.02em; white-space: nowrap; }
 .price__btn { margin-top: 24px; display: inline-flex; width: max-content; }
 .res__note { margin: 32px 0 0; font-family: 'Nunito Sans', sans-serif; max-width: 800px; font-size: 14px; line-height: 20px; color: #7A6D5E; text-wrap: pretty; }
-.price__rsd { margin: 8px 0 0; font-family: 'Nunito Sans', sans-serif; font-size: 14px; line-height: 20px; color: #DFE8DC; }
+.price__rsd { margin: 12px 0 0; font-family: 'Nunito Sans', sans-serif; font-size: 14px; line-height: 20px; color: #DFE8DC; }
 .price__note a { color: #FFFFFF; text-decoration: underline; text-underline-offset: 3px; }
 .price__note + .price__note { margin-top: 8px; }
 .price__note { margin: 16px 0 0; font-family: 'Nunito Sans', sans-serif; font-size: 14px; line-height: 20px; color: #DFE8DC; text-wrap: pretty; }
