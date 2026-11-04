@@ -46,7 +46,7 @@ export const CHECK_PATH = 'M40,144l56,56L224,72';
 export const symptoms: Symptom[] = [
   { title: 'Nadutost', desc: 'Ujutru ravan stomak, a popodne nadut, čak i kad jedeš „zdravo“.', d: 'M128,208a24,24,0,1,0,24-24H32 M96,72a24,24,0,1,1,24,24H40 M176,104a24,24,0,1,1,24,24H32' },
   { title: 'Umor posle jela', desc: 'Posle ručka te savlada umor i treba ti dremka.', d: 'M32,72H200a16,16,0,0,1,16,16v80a16,16,0,0,1-16,16H32a16,16,0,0,1-16-16V88A16,16,0,0,1,32,72Z M240,104v48 M56,104v48' },
-  { title: 'Koža se buni', desc: 'Akne, perutanje, svrab ili osip koji se stalno vraćaju.', d: 'M208,144c0-72-80-128-80-128S48,72,48,144a80,80,0,0,0,160,0Z M136,184a40,40,0,0,0,32-32' },
+  { title: 'Kožna oboljenja', desc: 'Akne, perutanje, svrab ili osip koji se stalno vraćaju.', d: 'M208,144c0-72-80-128-80-128S48,72,48,144a80,80,0,0,0,160,0Z M136,184a40,40,0,0,0,32-32' },
   { title: 'Zatvor', desc: 'Danima ne ideš u toalet, a stomak je težak.', d: 'M56,32H200 M56,224H200 M72,32V72l56,56,56-56V32 M72,224V184l56-56,56,56v40' },
   { title: '„Magla“ u glavi', desc: 'Teško se fokusiraš, a do popodneva ti je glava kao u vati.', d: 'M76,136H184a40,40,0,0,0,0-80a56,56,0,0,0-104,24a28,28,0,0,0-4,56Z M56,176H200 M88,216H168' },
 ];
@@ -146,7 +146,7 @@ export const faqs: [string, string][] = [
  * Vrednosti su ujedno i spisak dozvoljenih odgovora na serveru (api/program-lead).
  */
 export const apply = {
-  symptoms: ['Nadutost', 'Umor posle jela', 'Koža se buni', 'Zatvor', '„Magla“ u glavi', 'Nešto drugo'],
+  symptoms: ['Nadutost', 'Umor posle jela', 'Kožna oboljenja', 'Zatvor', '„Magla“ u glavi', 'Nešto drugo'],
   /** Poslednja stavka („Nemam ništa“) isključuje ostale. */
   has: [
     'Ultrazvuk ili nalaz sa masnom jetrom',
