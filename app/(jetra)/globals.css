@@ -258,6 +258,7 @@ body { overflow-x: clip; }
 .price__btn { margin-top: 24px; display: inline-flex; width: max-content; }
 .res__note { margin: 32px 0 0; font-family: 'Nunito Sans', sans-serif; max-width: 800px; font-size: 14px; line-height: 20px; color: #7A6D5E; text-wrap: pretty; }
 .price__rsd { margin: 12px 0 0; font-family: 'Nunito Sans', sans-serif; font-size: 14px; line-height: 20px; color: #DFE8DC; }
+.price__eur { font-weight: 700; color: #FFFFFF; }
 .price__note a { color: #FFFFFF; text-decoration: underline; text-underline-offset: 3px; }
 .price__note + .price__note { margin-top: 8px; }
 .price__note { margin: 16px 0 0; font-family: 'Nunito Sans', sans-serif; font-size: 14px; line-height: 20px; color: #DFE8DC; text-wrap: pretty; }

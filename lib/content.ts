@@ -10,7 +10,7 @@ export const PRICE_EUR = 180;
  * Cena se ističe u dinarima, uz evro (kurs oko 117,2). Stripe naplaćuje u evrima (PRICE_EUR);
  * ako se cena u Stripe-u prebaci na RSD, PRICE_RSD postaje i iznos naplate.
  */
-export const PRICE_RSD = 21000;
+export const PRICE_RSD = 21100;
 export const thousands = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 export const rsd = (n: number) => `${thousands(n)} RSD`;
 

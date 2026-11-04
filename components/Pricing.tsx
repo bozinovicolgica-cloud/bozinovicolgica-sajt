@@ -60,7 +60,7 @@ export default function Pricing() {
                 <span className="price__cur"><Price rsd="RSD" eur="EUR" /></span>
               </span>
               <p className="price__save">Ušteda <Price rsd={rsd(SAVE_RSD)} eur={`${SAVE_EUR} EUR`} /></p>
-              <p className="price__rsd"><Price rsd={`oko ${PRICE_EUR} EUR, jednokratno. Naplata ide u evrima; banka preračunava po svom kursu.`} eur="Jednokratno." /></p>
+              <p className="price__rsd"><Price rsd={<><b className="price__eur">{PRICE_EUR} EUR</b>, jednokratno. Naplata ide u evrima; banka preračunava po svom kursu.</>} eur="Jednokratno." /></p>
             </div>
 
             <Pill href="#cena" order="cena" light className="price__btn">Započni devetodnevni protokol</Pill>
