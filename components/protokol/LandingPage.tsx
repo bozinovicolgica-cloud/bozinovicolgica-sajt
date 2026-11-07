@@ -7,7 +7,8 @@ import {
   HowItWorks, Parents, Pricing, Proof, Symptoms, Testimonials,
 } from "./Sections";
 
-const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+// Poseban Pixel za protokol (cilj: zakazan poziv, Schedule); program ima svoj (components/Analytics).
+const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID_PROTOKOL || process.env.NEXT_PUBLIC_META_PIXEL_ID;
 const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID;
 
 /**

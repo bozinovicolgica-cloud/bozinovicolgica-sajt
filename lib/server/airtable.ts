@@ -1,6 +1,7 @@
 import 'server-only';
 import { startLabel } from '@/lib/order-schema';
 import { airtableConfig } from './config';
+import { bump } from './site-stats';
 import type { OrderEvent } from './orders';
 
 /**
@@ -223,6 +224,8 @@ export async function syncOrderToAirtable(event: OrderEvent, id: string, f: Fiel
       [o.source]: f.source,
       [o.stripe]: pi ? `https://dashboard.stripe.com/payments/${pi}` : undefined,
     });
+    // Analitika sajta: prodaja i prihod tog dana (samo prvi put za istu uplatu)
+    if (newlyPaid) await bump('program', { sales: 1, revenue: Math.round(Number(f.amount_paid ?? f.amount_eur) || 0) });
   } catch (e) {
     console.error(`[airtable] ${event}`, e);
   }

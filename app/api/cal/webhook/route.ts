@@ -4,6 +4,7 @@ import { programName } from "@/lib/protokol/ab";
 import { LEAD_STATUS, setProtokolLeadStatus } from "@/lib/server/airtable";
 import { supabase } from "@/lib/server/integrations";
 import { notifyBooking } from "@/lib/server/telegram";
+import { bump } from "@/lib/server/site-stats";
 
 export const runtime = "nodejs";
 
@@ -83,6 +84,7 @@ export async function POST(req: Request) {
         .insert({ experiment: lead.experiment, variant: lead.variant, visitor_id: lead.visitor_id, event: "booking", props: {}, is_qa: lead.is_qa })
         .then(({ error }) => error && console.error("[cal] event", error));
     }
+    if (kind === "created" && !lead.is_qa) await bump(lead.experiment === "program-9-dana" ? "program" : "protokol", { booked: 1 });
     await setProtokolLeadStatus(lead.id, kind === "cancelled" ? LEAD_STATUS.cancelled : LEAD_STATUS.booked, start);
   }
 

@@ -1,7 +1,8 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, after, type NextRequest } from "next/server";
 import { EVENT_NAMES, type EventName } from "@/lib/protokol/ab";
 import { abContext } from "@/lib/protokol/server-context";
 import { insertRow, supabaseConfigured } from "@/lib/protokol/supabase";
+import { bump, incForEvent, isBot } from "@/lib/server/site-stats";
 
 export const runtime = "nodejs";
 
@@ -25,6 +26,12 @@ export async function POST(req: NextRequest) {
   const props: Record<string, string | number | boolean> = {};
   for (const [k, v] of Object.entries(body.props ?? {}).slice(0, 10)) {
     if (["string", "number", "boolean"].includes(typeof v)) props[k.slice(0, 40)] = typeof v === "string" ? v.slice(0, 120) : (v as number | boolean);
+  }
+
+  // brojači po danu u Airtable-u („Analitika sajta“), bez probnih poseta i botova
+  if (!ctx.isQa && !isBot(req.headers.get("user-agent"))) {
+    const inc = incForEvent(event, props);
+    after(() => bump("protokol", inc));
   }
 
   if (!supabaseConfigured) {

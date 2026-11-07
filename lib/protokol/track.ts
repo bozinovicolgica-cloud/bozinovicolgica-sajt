@@ -56,13 +56,20 @@ export function getUtm(): Record<string, string> {
   }
 }
 
+/** Koraci koji su već poslati u ovoj poseti: brojači u Airtable-u broje svaki korak jednom po poseti. */
+const seen = new Set<string>();
+
 /** Šalje događaj u našu bazu (i Meta Pixel / GA4 ako su podešeni). Nikad ne baca grešku. */
 export function track(event: EventName, props: Record<string, string | number | boolean> = {}) {
   const variant = window.__lpVariant;
-  goal(`protokol_${event}${event === "form_step" ? `_${props.step}` : ""}`, { variant, ...props });
+  const once = event === "form_step" ? `form_step_${props.step}` : event;
+  const first = !seen.has(once);
+  seen.add(once);
+  // "leave" (vreme na stranici) ide samo u našu bazu: DataFast ga i sam meri, a Pixel/GA4 ga ne trebaju.
+  if (event !== "leave") goal(`protokol_${event}${event === "form_step" ? `_${props.step}` : ""}`, { variant, ...props });
   // "lead" i "booking" u bazu upisuje server (prijava, Cal.com webhook); ovde idu samo u Pixel/GA4.
   if (event !== "lead" && event !== "booking") try {
-    const body = JSON.stringify({ event, props, path: window.location.pathname });
+    const body = JSON.stringify({ event, props: event === "leave" ? props : { ...props, first }, path: window.location.pathname });
     const ok = navigator.sendBeacon?.("/api/lp/event", new Blob([body], { type: "application/json" }));
     if (!ok) {
       void fetch("/api/lp/event", { method: "POST", body, headers: { "Content-Type": "application/json" }, keepalive: true });
@@ -71,6 +78,7 @@ export function track(event: EventName, props: Record<string, string | number | 
     /* ignore */
   }
 
+  if (event === "leave") return;
   try {
     if (window.fbq) {
       if (event === "lead") window.fbq("track", "Lead", { ab_variant: variant, content_name: "Protokol ishrane" });

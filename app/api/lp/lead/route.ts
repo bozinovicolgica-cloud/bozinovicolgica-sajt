@@ -4,6 +4,7 @@ import { form } from "@/lib/protokol/content";
 import { abContext, clip } from "@/lib/protokol/server-context";
 import { insertRow, supabaseConfigured } from "@/lib/protokol/supabase";
 import { syncProtokolLeadToAirtable } from "@/lib/server/airtable";
+import { bump } from "@/lib/server/site-stats";
 
 export const runtime = "nodejs";
 
@@ -93,6 +94,7 @@ export async function POST(req: NextRequest) {
   // Telegram Olgici ide tek kad zakaže poziv (api/cal/webhook) ili ako ne zakaže (api/lp/followup).
   // Greška ovde ne sme da obori prijavu.
   after(async () => {
+    if (!ctx.isQa) await bump("protokol", { calendar: 1 });
     if (ctx.variant && ctx.visitorId) {
       await insertRow("lp_events", {
         experiment: ctx.experiment,

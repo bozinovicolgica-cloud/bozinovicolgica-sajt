@@ -3,6 +3,8 @@ import Script from 'next/script';
 import { useEffect } from 'react';
 import { useConsent } from '@/lib/consent';
 import { TRACKED_HOST, goal } from '@/lib/datafast';
+import { funnel } from '@/lib/form-funnel';
+import { trackActiveTime } from '@/lib/engagement';
 
 const ID = process.env.NEXT_PUBLIC_DATAFAST_ID || 'dfid_pi3w2JPqca5aKjm9ltkQD';
 
@@ -15,7 +17,11 @@ export default function DataFast() {
   const consent = useConsent();
   // Prvi korak funnela za jetru (protokol ima svoj "view" u lib/protokol/track).
   useEffect(() => {
-    if (window.location.hostname.startsWith('program.') && window.location.pathname === '/') goal('jetra_view');
+    if (window.location.hostname.startsWith('program.') && window.location.pathname === '/') {
+      goal('jetra_view');
+      funnel('view'); // prvi korak u /forma-rezultati
+      return trackActiveTime((t) => funnel('leave', { props: t }));
+    }
   }, []);
   if (consent !== 'all' || !TRACKED_HOST.test(window.location.hostname)) return null;
   return (

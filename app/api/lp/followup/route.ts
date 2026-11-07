@@ -4,14 +4,18 @@ import { LEAD_STATUS, setProtokolLeadStatus } from "@/lib/server/airtable";
 import { telegramConfig } from "@/lib/server/config";
 import { supabase } from "@/lib/server/integrations";
 import { notifyNoBooking } from "@/lib/server/telegram";
+import { bump } from "@/lib/server/site-stats";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** Posle koliko minuta bez zakazanog poziva Olgica dobija „pozovi je“. */
-const MINUTES = Number(process.env.LEAD_FOLLOWUP_MINUTES) || 15;
+/**
+ * Posle koliko minuta bez zakazanog poziva Olgica dobija „hot lead, pozovi“.
+ * Sat kreće kad je prijava poslata, a to je trenutak kad se otvori kalendar (poslednji korak forme).
+ */
+const MINUTES = Number(process.env.LEAD_FOLLOWUP_MINUTES) || 5;
 
-// Poziva ga Supabase pg_cron na svakih 5 minuta (0005_protokol_booking.sql).
+// Poziva ga Supabase pg_cron svake minute (0006_followup_every_minute.sql), pa poruka stiže 5-6 min posle prijave.
 // Bezbedno je i kad ga pozove bilo ko: svaka prijava se javlja tačno jednom, samo posle MINUTES.
 export async function POST() {
   const db = supabase();
@@ -63,6 +67,7 @@ export async function POST() {
       continue;
     }
     await setProtokolLeadStatus(id, LEAD_STATUS.call);
+    if (!l.is_qa) await bump(l.experiment === "program-9-dana" ? "program" : "protokol", { alarm: 1 });
     sent++;
   }
   return NextResponse.json({ ok: true, sent });

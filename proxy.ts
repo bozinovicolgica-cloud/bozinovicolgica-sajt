@@ -33,7 +33,7 @@ function route(req: NextRequest) {
     if (process.env.NODE_ENV === 'production' && /^\/protokol(\/|$)/.test(url.pathname)) {
       return NextResponse.redirect(new URL('/', PROTOKOL_URL), 308);
     }
-    return NextResponse.next();
+    return withVisitor(req, NextResponse.next());
   }
 
   // Direktan pristup /a ili /b vraćamo na "/" da bi postojala samo jedna javna adresa.
@@ -95,6 +95,15 @@ function abSplit(req: NextRequest) {
   // CDN ne sme da kešira odgovor zajedno sa cookie-jem jednog posetioca.
   res.headers.set('Cache-Control', 'private, no-store');
   res.headers.set('x-lp-variant', variant);
+  return res;
+}
+
+// Program poddomen: anonimni ID posetioca za analitiku forme po koracima (/api/form-event, 0007_form_funnel.sql),
+// isti cookie kao na protokolu. ?qa=1 označava probne posete (ne ulaze u /forma-rezultati), važi 7 dana.
+function withVisitor(req: NextRequest, res: NextResponse) {
+  const opts = { path: '/', maxAge: COOKIE_MAX_AGE, sameSite: 'lax' as const, secure: req.nextUrl.protocol === 'https:' };
+  if (!req.cookies.get(COOKIE_VISITOR)) res.cookies.set(COOKIE_VISITOR, crypto.randomUUID(), opts);
+  if (req.nextUrl.searchParams.get('qa') === '1') res.cookies.set(COOKIE_QA, '1', { ...opts, maxAge: 60 * 60 * 24 * 7 });
   return res;
 }
 

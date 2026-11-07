@@ -25,7 +25,8 @@ export function isVariant(v: unknown): v is Variant {
   return v === "a" || v === "b";
 }
 
-export const EVENT_NAMES = ["view", "cta_click", "form_start", "form_step", "lead", "booking"] as const;
+// "leave" = vreme na stranici (props.sec, props.s = id posete), samo za /forma-rezultati
+export const EVENT_NAMES = ["view", "cta_click", "form_start", "form_step", "lead", "booking", "leave"] as const;
 export type EventName = (typeof EVENT_NAMES)[number];
 
 /**

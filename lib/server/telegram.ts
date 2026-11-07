@@ -62,7 +62,10 @@ const message = (title: string, l: LeadContact, extra: string[] = []) =>
 
 /** Prijava bez zakazanog poziva posle LEAD_FOLLOWUP_MINUTES: Olgica treba da pozove. */
 export const notifyNoBooking = (l: LeadContact, minutes: number) =>
-  message('📞 <b>Pozovi: prijavila se, a nije zakazala poziv</b>', l, [``, `Prijava pre ${minutes}+ min.`]);
+  message('🔥 <b>Hot lead nije zakazao poziv. Pozovi što pre!</b>', l, [
+    ``,
+    `Popunio/la je celu formu i došao/la do kalendara pre ${minutes}+ min, ali termin nije izabran.`,
+  ]);
 
 /** Cal.com: zakazan, pomeren ili otkazan poziv. */
 export const notifyBooking = (kind: 'created' | 'rescheduled' | 'cancelled', start: string | null, l: LeadContact) =>

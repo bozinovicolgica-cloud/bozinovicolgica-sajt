@@ -1,5 +1,7 @@
-/* Šalje događaje u Google Tag Manager (dataLayer), Meta Pixel i DataFast, ako su na stranici. */
+/* Šalje događaje u Google Tag Manager (dataLayer), Meta Pixel i DataFast, ako su na stranici,
+   a korake prijave i u našu bazu (lib/form-funnel). */
 import { goal } from '@/lib/datafast';
+import { funnelFromTrack } from '@/lib/form-funnel';
 
 type Payload = Record<string, unknown>;
 declare global {
@@ -21,4 +23,5 @@ export function track(name: string, data: Payload = {}, metaStandard?: string) {
   // Korak u imenu cilja (jetra_order_step_2, jetra_liver_quiz_cta_buy), da bi bio zaseban korak funnela.
   const suffix = name === 'order_step' ? `_${data.step}` : name === 'liver_quiz_cta' ? `_${data.cta}` : '';
   goal(`jetra_${name}${suffix}`, data);
+  funnelFromTrack(name, data);
 }

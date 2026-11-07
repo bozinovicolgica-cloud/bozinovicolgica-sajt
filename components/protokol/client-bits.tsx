@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Variant } from "@/lib/protokol/ab";
 import { captureUtm, track } from "@/lib/protokol/track";
+import { trackActiveTime } from "@/lib/engagement";
 import { CtaLink } from "./CtaLink";
 
 /** Beleži prikaz stranice za A/B rezultate i pamti UTM parametre. */
@@ -12,6 +13,8 @@ export function PageTracker({ variant }: { variant: Variant }) {
     document.documentElement.dataset.variant = variant;
     captureUtm();
     track("view", { w: window.innerWidth < 760 ? "mobile" : "desktop" });
+    // vreme na stranici za /forma-rezultati (ide samo u našu bazu, ne u Pixel/GA4/DataFast)
+    return trackActiveTime((t) => track("leave", t));
   }, [variant]);
   return null;
 }

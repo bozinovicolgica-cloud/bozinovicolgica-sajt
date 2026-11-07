@@ -2,7 +2,9 @@ import Script from 'next/script';
 import ConsentGate from './ConsentGate';
 
 const GTM = process.env.NEXT_PUBLIC_GTM_ID;
-const PIXEL = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+// program.bozinovicolgica.rs ima svoj Pixel (cilj: prodaja, Purchase); protokol ima drugi (cilj: zakazan poziv).
+// Stari zajednički NEXT_PUBLIC_META_PIXEL_ID važi dok se ne podese posebni.
+const PIXEL = process.env.NEXT_PUBLIC_META_PIXEL_ID_PROGRAM || process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
 /**
  * Google Tag Manager i Meta Pixel: samo ako su ID-jevi podešeni u .env

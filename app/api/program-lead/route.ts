@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { NextResponse, after, type NextRequest } from 'next/server';
 import { apply } from '@/lib/content';
 import { supabase } from '@/lib/server/integrations';
+import { COOKIE_QA } from '@/lib/protokol/ab';
+import { bump } from '@/lib/server/site-stats';
 
 /**
  * Prijava sa programske stranice (pop-up ApplyModal): šta te muči + kontakt,
@@ -88,7 +90,10 @@ export async function POST(req: NextRequest) {
 
   // Posle odgovora korisniku: obaveštenje Olgici (n8n, WhatsApp, Telegram...).
   // Greška ovde ne sme da obori prijavu.
+  const isQa = req.cookies.get(COOKIE_QA)?.value === '1';
   after(async () => {
+    // Analitika sajta (Airtable): poslao prijavu i dobio kalendar
+    if (!isQa) await bump('program', { calendar: 1 });
     const hook = process.env.LEAD_WEBHOOK_URL;
     if (!hook) return;
     await fetch(hook, {
