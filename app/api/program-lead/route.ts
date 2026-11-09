@@ -19,6 +19,25 @@ export const runtime = 'nodejs';
 const EXPERIMENT = 'program-9-dana';
 const clip = (v: unknown, n: number) => (typeof v === 'string' ? v.trim().slice(0, n) : '') || null;
 
+/** Kolone koje donosi migracija 0008; prijava sme da prođe i bez njih. */
+const META_COLS = ['meta_event_id', 'fbp', 'fbc'] as const;
+
+/**
+ * Upisuje prijavu. Ako migracija 0008 još nije puštena, tabela nema kolone za Meta eventID
+ * i Pixel kolačiće, pa bi ceo upis pao i posetilac ne bi mogao da se prijavi. U tom slučaju
+ * se prijava upisuje bez tih polja: kontakt je važniji od podataka za merenje.
+ */
+async function insertLead(sb: NonNullable<ReturnType<typeof supabase>>, lead: Record<string, unknown>) {
+  const { error } = await sb.from('lp_leads').insert(lead);
+  if (!error) return null;
+  const missingCol = META_COLS.some((c) => error.message?.includes(c));
+  if (!missingCol) return error;
+  console.warn('lp_leads još nema kolone iz migracije 0008; prijava upisana bez njih:', error.message);
+  const bez = Object.fromEntries(Object.entries(lead).filter(([k]) => !META_COLS.includes(k as (typeof META_COLS)[number])));
+  const retry = await sb.from('lp_leads').insert(bez);
+  return retry.error ?? null;
+}
+
 export async function POST(req: NextRequest) {
   let b: Record<string, unknown>;
   try {
@@ -87,7 +106,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, dev: true, id: lead.id });
   }
 
-  const { error } = await sb.from('lp_leads').insert(lead);
+  const error = await insertLead(sb, lead);
   if (error) {
     console.error('Supabase insert u lp_leads nije uspeo:', error.message);
     return NextResponse.json({ ok: false, error: 'Prijava nije poslata. Pokušaj ponovo za par minuta.' }, { status: 502 });
