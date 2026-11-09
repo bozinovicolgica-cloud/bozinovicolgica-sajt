@@ -226,7 +226,7 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
                             ))}
                           </select>
                         </span>
-                        <input className="of-input" type="tel" name="phone" inputMode="tel" autoComplete="tel-national" maxLength={32} placeholder={f.ctry === 'RS' ? '64 123 4567' : ''} value={f.phone} onChange={(e) => set({ phone: e.target.value }, 'phone')} aria-invalid={!!errors.phone} />
+                        <input className="of-input" type="tel" name="phone" inputMode="tel" autoComplete="tel-national" required aria-required="true" maxLength={32} placeholder={f.ctry === 'RS' ? '64 123 4567' : ''} value={f.phone} onChange={(e) => set({ phone: e.target.value }, 'phone')} aria-invalid={!!errors.phone} />
                       </span>
                       {errors.phone && <span className="of-error">{errors.phone}</span>}
                     </label>
