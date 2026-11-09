@@ -122,7 +122,8 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
         setBusy(false);
         return;
       }
-      track('apply_lead', { source }, 'Lead');
+      // CompleteRegistration je događaj na koji optimizujemo Meta kampanje; Lead ide uz njega.
+      track('apply_lead', { source }, ['CompleteRegistration', 'Lead']);
       setLeadId(typeof j.id === 'string' ? j.id : undefined);
       setBusy(false);
       setStep(3);
