@@ -68,6 +68,11 @@ export async function POST(req: NextRequest) {
     utm_term: clip(u.utm_term, 200),
     fbclid: clip(u.fbclid, 300),
     gclid: clip(u.gclid, 300),
+    // Meta: isti eventID je poslat i u Pixel (CompleteRegistration + Lead), a _fbp/_fbc služe za
+    // povezivanje sa osobom ako se prijava ikad bude slala i preko Conversions API-ja.
+    meta_event_id: clip(b.eventId, 64),
+    fbp: clip(b.fbp, 200),
+    fbc: clip(b.fbc, 400),
     referrer: clip(b.page, 300),
     user_agent: req.headers.get('user-agent')?.slice(0, 300) ?? null,
   };

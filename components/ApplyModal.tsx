@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { apply, CAL_LINK, PRICE_EUR, PRICE_RSD, PRODUCT_NAME, RESPONSE_TIME, thousands } from '@/lib/content';
 import { HEALTH_CONSENT_TEXT } from '@/lib/legal';
 import { CTRY_COOKIE, DEFAULT_ISO, dialForCountry, fullPhone, OTHER_COUNTRIES, TOP_COUNTRIES } from '@/lib/phone';
-import { track } from '@/lib/track';
+import { metaCookies, newEventId, track } from '@/lib/track';
 import { CalEmbed } from './protokol/CalEmbed';
 import ModalShell from './ModalShell';
 import Price from './Price';
@@ -105,6 +105,10 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
     }
     setBusy(true);
     setServerErr('');
+    // Isti id ide u Pixel (eventID) i u bazu uz prijavu, zajedno sa _fbp i _fbc,
+    // da se ista prijava ne izbroji dvaput ako događaj jednom krene i sa servera.
+    const eventId = newEventId();
+    const { fbp, fbc } = metaCookies();
     try {
       const res = await fetch('/api/program-lead', {
         method: 'POST',
@@ -113,6 +117,7 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
           source, symptoms: f.syms, other: f.other,
           name: f.name, phone: fullPhone(dialForCountry(f.ctry), f.phone), email: f.email,
           consent: f.consent, website: f.website, utm: utm(), page: location.href,
+          eventId, fbp, fbc,
         }),
       });
       const j = await res.json().catch(() => null);
@@ -123,7 +128,7 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
         return;
       }
       // CompleteRegistration je događaj na koji optimizujemo Meta kampanje; Lead ide uz njega.
-      track('apply_lead', { source }, ['CompleteRegistration', 'Lead']);
+      track('apply_lead', { source }, ['CompleteRegistration', 'Lead'], eventId);
       setLeadId(typeof j.id === 'string' ? j.id : undefined);
       setBusy(false);
       setStep(3);
