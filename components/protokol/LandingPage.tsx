@@ -1,5 +1,6 @@
 import Script from "next/script";
 import ConsentGate from "@/components/ConsentGate";
+import { META_PIXEL_ID } from "@/lib/pixel";
 import type { Variant } from "@/lib/protokol/ab";
 import { PageTracker } from "./client-bits";
 import {
@@ -7,8 +8,6 @@ import {
   HowItWorks, Parents, Pricing, Proof, Symptoms, Testimonials,
 } from "./Sections";
 
-// Poseban Pixel za protokol (cilj: zakazan poziv, Schedule); program ima svoj (components/Analytics).
-const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID_PROTOKOL || process.env.NEXT_PUBLIC_META_PIXEL_ID;
 const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID;
 
 /**
@@ -39,14 +38,12 @@ export function LandingPage({ variant }: { variant: Variant }) {
       </main>
       <Footer />
 
-      {/* Pixel i GA4 tek posle klika na „Prihvati“ u baneru za kolačiće. */}
+      {/* Pixel (lib/pixel, isti za oba poddomena) i GA4 tek posle klika na „Prihvati“ u baneru za kolačiće. */}
       <ConsentGate>
-        {PIXEL_ID && (
-          <Script id="meta-pixel" strategy="afterInteractive">
-            {`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','${PIXEL_ID}');fbq('track','PageView',{ab_variant:'${variant}'});`}
-          </Script>
-        )}
+        <Script id="meta-pixel" strategy="afterInteractive">
+          {`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','${META_PIXEL_ID}');fbq('track','PageView',{ab_variant:'${variant}'});`}
+        </Script>
         {GA4_ID && (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`} strategy="afterInteractive" />
