@@ -207,7 +207,7 @@ export default function OrderModal({ open, ctx, onClose }: { open: boolean; ctx:
               <>
                 <label className="of-field">
                   <span className="of-label">Telefon (WhatsApp)</span>
-                  <input className="of-input" type="tel" name="phone" inputMode="tel" autoComplete="tel" placeholder="+381 6x xxx xxxx" value={f.phone} onChange={set('phone')} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'of-e-phone' : undefined} maxLength={32} />
+                  <input className="of-input" type="tel" name="phone" inputMode="tel" autoComplete="tel" required aria-required="true" placeholder="+381 6x xxx xxxx" value={f.phone} onChange={set('phone')} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'of-e-phone' : undefined} maxLength={32} />
                   {errors.phone && <span className="of-error" id="of-e-phone">{errors.phone}</span>}
                 </label>
                 <fieldset className="of-field of-fieldset">

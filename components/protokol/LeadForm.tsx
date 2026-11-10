@@ -207,6 +207,8 @@ export function LeadForm({ size }: { size: Size }) {
           name="phone"
           autoComplete="tel-national"
           inputMode="tel"
+          required
+          aria-required="true"
           placeholder={s.ctry === "RS" ? "64 123 4567" : ""}
           {...field("phone")}
         />

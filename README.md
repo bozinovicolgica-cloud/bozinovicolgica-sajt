@@ -41,6 +41,7 @@ Isti Vercel projekat služi dva poddomena; `proxy.ts` bira sajt po adresi:
 - Svaki sajt ima svoj root layout i CSS, pa se stilovi ne mešaju. Prelaz između njih je običan link.
 - Protokol prijave i događaji idu u isti Supabase (`lp_leads`, `lp_events`, view `lp_ab_results`), migracija `supabase/migrations/0003_protokol_lp.sql`.
 - Prijava sa programske stranice pamti i `meta_event_id` (isti `eventID` kao u Pixel događajima) i Pixel kolačiće `fbp`/`fbc`, migracija `supabase/migrations/0008_meta_event_dedup.sql`. Prazni su ako posetilac nije prihvatio kolačiće.
+- Broj telefona je obavezan u svakoj formi na sajtu (porudžbina, prijava za poziv, protokol, kviz, obrazac za odustanak). Kviz lead ga upisuje u `quiz_leads.phone`, migracija `supabase/migrations/0009_quiz_lead_phone.sql`.
 - Statika protokola: `public/protokol/` (slike, fontovi, logo).
 
 ## Šta radi
@@ -49,7 +50,7 @@ Isti Vercel projekat služi dva poddomena; `proxy.ts` bira sajt po adresi:
 |---|---|
 | Dugmad „Započni 9-dnevni protokol“ | Otvaraju formu u 3 koraka: (1) ime + email, (2) telefon, kada počinje, lekovi/dijagnoze, (3) pregled + saglasnost → **Stripe Checkout** (kartica). Posle svakog koraka podaci se čuvaju (`/api/order`), pa se vide i kupci koji nisu stigli do plaćanja. Nacrt forme ostaje u browseru ako se kupac vrati sa Stripe-a. |
 | Plaćanje | `/api/checkout` pravi Stripe Checkout sesiju (cena `STRIPE_PRICE_ID`, firma OB METHOD PUT ZDRAVLJA LLC). `/api/stripe/webhook` na uspešno plaćanje upisuje `paid`, šalje kupcu potvrdu i Olgici obaveštenje (`OWNER_EMAIL`), isteklu sesiju (24 h) beleži kao `expired`. Kupac se vraća na `/hvala` (beleži Purchase za Meta/GTM). |
-| Kviz o jetri | Sva pitanja i bodovanje iz originala. Pre rezultata je opcioni korak „Gde da ti pošaljem rezultat?“ (ime + email + saglasnost). Odgovori se čuvaju i kad se korak preskoči (bez ličnih podataka). Dugme iz rezultata otvara formu za porudžbinu i prenosi rezultat kviza. |
+| Kviz o jetri | Sva pitanja i bodovanje iz originala. Pre rezultata je opcioni korak „Gde da ti pošaljem rezultat?“ (ime + obavezan telefon + email + saglasnost). Odgovori se čuvaju i kad se korak preskoči (bez ličnih podataka). Dugme iz rezultata otvara formu za porudžbinu i prenosi rezultat kviza. |
 | Supabase | Tabele `orders` i `quiz_leads` → pokreni `supabase/migrations/0001_jetra_landing.sql`. Pokreni i `0002_stripe_checkout.sql`. RLS uključen bez javnih polisa; upis samo preko server rute sa service_role ključem. Statusi: `started` (popunio 1. korak) → `checkout` (otišao na Stripe) → `paid` (webhook) → `delivered` (menjaš ručno kad pošalješ materijale); `expired` = napustio plaćanje. |
 | Email | Resend.com (`RESEND_API_KEY`, `EMAIL_FROM` sa verifikovanim domenom). |
 | Webhook | `ORDER_WEBHOOK_URL` / `QUIZ_WEBHOOK_URL` – JSON za n8n, Make, Airtable ili CRM; header `X-Webhook-Secret`. Porudžbine šalju polje `event`: `order.started`, `order.updated`, `checkout.started`, `order.paid`, `checkout.expired`, `payment.failed` (ključ reda je `id`). |

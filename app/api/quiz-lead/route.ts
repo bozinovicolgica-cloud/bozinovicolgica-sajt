@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic';
 
 const Body = z.object({
   name: z.string().trim().max(80).optional().default(''),
+  phone: z.string().trim().max(32).optional().default(''),
   email: z.union([z.literal(''), z.string().trim().toLowerCase().email().max(160)]).optional().default(''),
   consent: z.boolean().optional().default(false),
   answers: z.record(z.string(), z.union([z.number().int(), z.array(z.number().int())])),
@@ -19,6 +20,20 @@ const Body = z.object({
   tags: z.array(z.string().max(80)).max(20).optional().default([]),
   page: z.string().max(500).optional().default(''),
 });
+
+/**
+ * Upisuje kviz lead. Kolonu `phone` donosi migracija 0009, koja se pušta ručno u Supabase
+ * SQL Editoru. Ako kod ode na produkciju pre nje, Supabase odbija ceo upis sa nepoznatom
+ * kolonom i kviz lead se gubi, pa se u tom slučaju upisuje bez telefona.
+ * Rezerva se sama gasi kad kolona postane dostupna.
+ */
+async function insertLead(db: NonNullable<ReturnType<typeof supabase>>, row: Record<string, unknown>) {
+  const { error } = await db.from('quiz_leads').insert(row);
+  if (!error || !error.message?.includes('phone')) return error;
+  console.warn('quiz_leads još nema kolonu phone (migracija 0009); lead upisan bez nje:', error.message);
+  const { phone: _phone, ...bez } = row;
+  return (await db.from('quiz_leads').insert(bez)).error;
+}
 
 export async function POST(req: Request) {
   if (limited(`quiz:${clientIp(req)}`, 12, 10 * 60_000)) {
@@ -33,6 +48,7 @@ export async function POST(req: Request) {
   const hasContact = !!d.email && d.consent;
   const row = {
     name: hasContact ? d.name || null : null,
+    phone: hasContact ? d.phone || null : null,
     email: hasContact ? d.email : null,
     consent: hasContact,
     consent_at: hasContact ? new Date().toISOString() : null,
@@ -47,11 +63,11 @@ export async function POST(req: Request) {
 
   const db = supabase();
   if (db) {
-    const { error } = await db.from('quiz_leads').insert(row);
+    const error = await insertLead(db, row);
     if (error) console.error('[quiz] supabase', error);
   }
   await postWebhook('quiz', row);
-  if (hasContact) after(() => syncQuizLeadToAirtable({ name: row.name, email: d.email }));
+  if (hasContact) after(() => syncQuizLeadToAirtable({ name: row.name, phone: row.phone, email: d.email }));
 
   let emailed = false;
   if (hasContact) {

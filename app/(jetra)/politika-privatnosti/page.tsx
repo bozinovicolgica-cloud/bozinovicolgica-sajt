@@ -23,7 +23,7 @@ export default function Page() {
         <li><b>Napomena o lekovima i dijagnozi:</b> podatak o zdravlju. Čuvamo je samo ako je upišeš i posebnim čekboksom izričito pristaneš, da bismo program prilagodili tebi. Osnov: tvoj izričit pristanak.</li>
         <li><b>Dokaz o kupovini:</b> datum i vreme kupovine, potvrda da si tražila da program počne odmah (čekboks za odustanak) i datumi kada su stigli prvi i poslednji video. Osnov: zakonska obaveza i zaštita naših prava.</li>
         <li><b>Plaćanje:</b> obrađuje ga Stripe. Podatke o kartici unosiš direktno kod Stripe-a; mi ih ne vidimo. Od Stripe-a dobijamo potvrdu plaćanja, iznos, email i ime sa kartice.</li>
-        <li><b>Kviz o jetri:</b> odgovori su podaci o zdravlju. Bez imena i emaila čuvamo ih anonimno, za statistiku. Ime i email čuvamo uz odgovore samo ako ih ostaviš i štikliraš izričit pristanak; tada ti šaljemo rezultat i savete za ishranu na email. Rezultat kviza se računa automatski, ali nije dijagnoza i nema nikakve posledice po tebe.</li>
+        <li><b>Kviz o jetri:</b> odgovori su podaci o zdravlju. Bez kontakta čuvamo ih anonimno, za statistiku. Ime, broj telefona i email čuvamo uz odgovore samo ako ih ostaviš i štikliraš izričit pristanak; tada ti šaljemo rezultat i savete za ishranu na email. Rezultat kviza se računa automatski, ali nije dijagnoza i nema nikakve posledice po tebe.</li>
         <li><b>Prijava za Protokol ishrane:</b> za koga je protokol, tegobe koje izabereš, koje nalaze imaš, ime, telefon i email. Posle prijave na online pozivu i u porukama šalješ nalaze, izveštaj lekara i terapiju. Osnov: tvoj izričit pristanak za podatke o zdravlju.</li>
         <li><b>Podaci o detetu:</b> unosi ih samo roditelj ili zakonski zastupnik, uz izričit pristanak u ime deteta.</li>
         <li><b>Poruke:</b> email, WhatsApp, Viber i Instagram poruke koje nam pošalješ. Svrha: podrška i odgovor na pitanja.</li>
@@ -58,7 +58,7 @@ export default function Page() {
         <li>Porudžbine i dokaz o kupovini: koliko propisi o računovodstvu i porezima zahtevaju [rok].</li>
         <li>Podaci o zdravlju iz upitnika i napomena o lekovima: brišemo ih 12 meseci posle kraja programa, osim ako zatražiš da ih čuvamo duže ili da ih obrišemo ranije.</li>
         <li>Prijava za Protokol ishrane koja ne postane saradnja: 12 meseci od prijave.</li>
-        <li>Kviz uz email: dok ne povučeš pristanak, a najduže [rok]. Anonimni odgovori iz kviza: [rok].</li>
+        <li>Kviz uz kontakt: dok ne povučeš pristanak, a najduže [rok]. Anonimni odgovori iz kviza: [rok].</li>
         <li>Kolačići: rokovi su u <Link href="/politika-kolacica">Politici kolačića</Link>.</li>
       </ul>
 

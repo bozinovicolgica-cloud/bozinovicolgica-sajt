@@ -231,12 +231,12 @@ export async function syncOrderToAirtable(event: OrderEvent, id: string, f: Fiel
   }
 }
 
-/** Kviz sa ostavljenim emailom (i saglasnošću) postaje klijent u fazi „Kviz lead“. */
-export async function syncQuizLeadToAirtable(lead: { name: string | null; email: string }): Promise<void> {
+/** Kviz sa ostavljenim kontaktom (i saglasnošću) postaje klijent u fazi „Kviz lead“. */
+export async function syncQuizLeadToAirtable(lead: { name: string | null; phone?: string | null; email: string }): Promise<void> {
   if (!airtableConfig().enabled) return;
   try {
-    await upsertClient({ email: lead.email }, STAGES.quiz, {
-      fill: { [F.client.name]: lead.name, [F.client.source]: 'kviz' },
+    await upsertClient({ email: lead.email, phone: lead.phone }, STAGES.quiz, {
+      fill: { [F.client.name]: lead.name, [F.client.phone]: lead.phone, [F.client.source]: 'kviz' },
     });
   } catch (e) {
     console.error('[airtable] quiz', e);

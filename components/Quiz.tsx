@@ -9,6 +9,7 @@ import {
   type Answers, type Evaluation, type WhyKey,
 } from '@/lib/quiz-data';
 import { QUIZ_NOTE } from '@/lib/legal';
+import { CTRY_COOKIE, DEFAULT_ISO, dialForCountry, fullPhone, OTHER_COUNTRIES, TOP_COUNTRIES } from '@/lib/phone';
 import { COMPANY, EMAIL } from '@/lib/site';
 import { track } from '@/lib/track';
 import ModalShell from './ModalShell';
@@ -72,7 +73,7 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
   const cardRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<Step>(-1);
   const [ans, setAns] = useState<Answers>({});
-  const [lead, setLead] = useState({ name: '', email: '', consent: false });
+  const [lead, setLead] = useState({ name: '', ctry: DEFAULT_ISO, phone: '', email: '', consent: false });
   const [leadErr, setLeadErr] = useState('');
   const [emailed, setEmailed] = useState(false);
   const saved = useRef(false);
@@ -81,6 +82,9 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
   useEffect(() => {
     if (!open) return;
     if (step === 'result' || step === 'loading') { setStep(-1); setAns({}); setEmailed(false); saved.current = false; }
+    // Država posetioca iz kolačića koji upisuje proxy.ts, da dijaspora ne bira pozivni broj ručno.
+    const iso = document.cookie.match(new RegExp(`(?:^|; )${CTRY_COOKIE}=([A-Za-z]{2})`))?.[1];
+    if (iso && iso.toUpperCase() !== DEFAULT_ISO) setLead((l) => ({ ...l, ctry: iso.toUpperCase() }));
     track('liver_quiz_open');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -110,6 +114,7 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
     const r = evaluate(ans);
     const body = {
       name: withContact ? lead.name.trim() : '',
+      phone: withContact ? fullPhone(dialForCountry(lead.ctry), lead.phone) : '',
       email: withContact ? lead.email.trim() : '',
       consent: withContact ? lead.consent : false,
       answers: ans,
@@ -152,6 +157,7 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
   const submitLead = (e: React.FormEvent) => {
     e.preventDefault();
     const email = lead.email.trim();
+    if (!/^\+?[0-9][0-9 /-]{7,}$/.test(fullPhone(dialForCountry(lead.ctry), lead.phone))) { setLeadErr('Upiši broj telefona, na primer 64 123 4567.'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setLeadErr('Upiši ispravnu email adresu.'); return; }
     if (!lead.consent) { setLeadErr('Potrebna je tvoja saglasnost da bih ti poslala rezultat na email. Ili preskoči ovaj korak.'); return; }
     setLeadErr('');
@@ -244,11 +250,31 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
         <div className="oq-progress"><div className="oq-bar" aria-hidden="true"><span style={{ width: '100%' }} /></div><span className="oq-count">Još samo ovo</span></div>
         <p className="oq-eyebrow">Tvoj rezultat je spreman</p>
         <h2 className="oq-h" id="oq-title">Gde da ti pošaljem rezultat?</h2>
-        <p className="oq-p">Ostavi ime i email i rezultat sa preporukama stiže ti i u inbox, da ga imaš pri ruci. Ovaj korak nije obavezan.</p>
+        <p className="oq-p">Ostavi ime, broj telefona i email i rezultat sa preporukama stiže ti i u inbox, da ga imaš pri ruci. Ovaj korak nije obavezan.</p>
         <form className="of-form" onSubmit={submitLead} noValidate>
           <label className="of-field">
             <span className="of-label">Ime</span>
             <input className="of-input" data-oq="lead-name" name="name" autoComplete="given-name" value={lead.name} onChange={(e) => setLead({ ...lead, name: e.target.value })} maxLength={80} />
+          </label>
+          <label className="of-field">
+            <span className="of-label">Broj telefona za WhatsApp</span>
+            {/* Pozivni broj je poseban izbornik: na telefonu otvara sistemski birač. */}
+            <span className="ap-phone">
+              <span className="ap-cc">
+                <span className="ap-cc-val" aria-hidden="true">
+                  {dialForCountry(lead.ctry)}
+                  <svg width="12" height="12" viewBox="0 0 256 256" fill="none" stroke="currentColor" strokeWidth="24" strokeLinecap="round" strokeLinejoin="round"><polyline points="80 104 128 152 176 104" /></svg>
+                </span>
+                <select className="ap-cc-sel" name="country" autoComplete="tel-country-code" aria-label="Država i pozivni broj" value={lead.ctry} onChange={(e) => setLead({ ...lead, ctry: e.target.value })}>
+                  {([['Najčešće', TOP_COUNTRIES], ['Sve države', OTHER_COUNTRIES]] as const).map(([label, list]) => (
+                    <optgroup key={label} label={label}>
+                      {list.map((c) => <option key={c.iso} value={c.iso}>{c.name} {c.dial}</option>)}
+                    </optgroup>
+                  ))}
+                </select>
+              </span>
+              <input className="of-input" type="tel" name="phone" inputMode="tel" autoComplete="tel-national" required aria-required="true" placeholder={lead.ctry === 'RS' ? '64 123 4567' : ''} value={lead.phone} onChange={(e) => setLead({ ...lead, phone: e.target.value })} maxLength={32} />
+            </span>
           </label>
           <label className="of-field">
             <span className="of-label">Email</span>
@@ -256,7 +282,7 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
           </label>
           <label className="of-check">
             <input type="checkbox" checked={lead.consent} onChange={(e) => setLead({ ...lead, consent: e.target.checked })} />
-            <span>Izričito pristajem da Olgica Božinović i {COMPANY.name} uz moje ime i email čuvaju odgovore iz kviza, koji su podaci o zdravlju, i da mi pošalju rezultat i savete za ishranu na email. Pristanak mogu da povučem i da se odjavim u svakom trenutku na {EMAIL}. <a href="/politika-privatnosti" target="_blank">Politika privatnosti</a></span>
+            <span>Izričito pristajem da Olgica Božinović i {COMPANY.name} uz moje ime, broj telefona i email čuvaju odgovore iz kviza, koji su podaci o zdravlju, i da mi pošalju rezultat i savete za ishranu na email. Pristanak mogu da povučem i da se odjavim u svakom trenutku na {EMAIL}. <a href="/politika-privatnosti" target="_blank">Politika privatnosti</a></span>
           </label>
           {leadErr && <p className="of-error" role="alert">{leadErr}</p>}
           <div className="oq-nav">
