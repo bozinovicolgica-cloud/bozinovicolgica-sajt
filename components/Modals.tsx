@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { sourceFor, type CtaMode } from '@/lib/cta';
+import { QUIZ_VISIBLE } from '@/lib/flags';
 import type { OrderContext } from './OrderModal';
 
 // Kviz i forme se učitavaju tek kad zatrebaju (manje JavaScript-a na prvom učitavanju)
@@ -47,13 +48,13 @@ export default function Modals({ mode = 'apply' }: { mode?: CtaMode }) {
     const onClick = (e: MouseEvent) => {
       const t = e.target as Element | null;
       if (!t || !t.closest) return;
-      const q = t.closest('a[href="#kviz"]');
+      const q = QUIZ_VISIBLE ? t.closest('a[href="#kviz"]') : null;
       if (q) { e.preventDefault(); e.stopPropagation(); openQuiz(); return; }
       const o = t.closest<HTMLElement>('[data-order]');
       if (o) { e.preventDefault(); e.stopPropagation(); openCta(o.dataset.order || 'stranica'); }
     };
     document.addEventListener('click', onClick, true);
-    window.openLiverQuiz = openQuiz;
+    if (QUIZ_VISIBLE) window.openLiverQuiz = openQuiz;
     window.openApplyForm = (s = 'js') => openApply(s);
     window.openOrderForm = (s = 'js') => openOrder({ source: s });
 
@@ -69,11 +70,11 @@ export default function Modals({ mode = 'apply' }: { mode?: CtaMode }) {
     const cancelled = new URLSearchParams(location.search).get('placanje') === 'otkazano';
     if (location.hash === '#porudzbina' || cancelled) openOrder({ source: 'link' });
     else if (location.hash === '#prijava') openApply('link');
-    else if (location.hash === '#kviz') openQuiz();
+    else if (QUIZ_VISIBLE && location.hash === '#kviz') openQuiz();
 
     // kad je stranica mirna, unapred preuzmi kod za kviz i formu (bez blokiranja)
     let idle = 0;
-    const load = () => { loadQuiz(); if (mode === 'order') loadOrder(); else loadApply(); };
+    const load = () => { if (QUIZ_VISIBLE) loadQuiz(); if (mode === 'order') loadOrder(); else loadApply(); };
     const prefetch = () => {
       const ric = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
       idle = ric ? ric(load) : window.setTimeout(load, 1);
@@ -84,7 +85,7 @@ export default function Modals({ mode = 'apply' }: { mode?: CtaMode }) {
 
   return (
     <>
-      {used.quiz && <Quiz
+      {QUIZ_VISIBLE && used.quiz && <Quiz
         open={active === 'quiz'}
         onClose={close}
         onBuy={(r) => {

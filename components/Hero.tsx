@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { Ghost, Pill } from './ui';
+import { QUIZ_VISIBLE } from '@/lib/flags';
 import { img, imgT } from '@/lib/images';
 import { heroAvatars } from '@/lib/content';
 
@@ -57,7 +58,7 @@ export default function Hero() {
 
           <div className="hero__ctas">
             <Pill href="#cena">Započni devetodnevni protokol</Pill>
-            <Ghost href="#kviz">Proveri da li je protokol za tebe</Ghost>
+            {QUIZ_VISIBLE && <Ghost href="#kviz">Proveri da li je protokol za tebe</Ghost>}
           </div>
         </div>
       </div>

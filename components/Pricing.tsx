@@ -6,6 +6,7 @@ import { BUY_NOTE } from '@/lib/legal';
 import { Q } from '@/lib/quiz-data';
 import { EASE, rv, useSeen } from '@/lib/reveal';
 import { Ghost, Pill } from './ui';
+import { QUIZ_VISIBLE } from '@/lib/flags';
 
 export default function Pricing() {
   const ref = useRef<HTMLElement>(null);
@@ -16,10 +17,10 @@ export default function Pricing() {
         <div data-rv style={rv(pOn, 0)}>
           <div style={{ textAlign: 'center' }}>
             <h2 className="h2">Započni svojih 9 dana</h2>
-            <p className="lead price__sub">Ako se još dvoumiš, kreni od kratkog kviza.</p>
+            {QUIZ_VISIBLE && <p className="lead price__sub">Ako se još dvoumiš, kreni od kratkog kviza.</p>}
           </div>
         </div>
-        <div className="grid12 price__grid">
+        <div className={`grid12 price__grid${QUIZ_VISIBLE ? '' : ' price__grid--solo'}`}>
           <div
             data-rv
             className="price__main"
@@ -68,7 +69,7 @@ export default function Pricing() {
             <p className="price__note">{REFUND_SHORT} <a href="/uslovi-kupovine#odustanak">Uslovi povraćaja</a></p>
           </div>
 
-          <div data-rv className="price__quiz" style={rv(pOn, 270, 16, 700)}>
+          {QUIZ_VISIBLE && <div data-rv className="price__quiz" style={rv(pOn, 270, 16, 700)}>
             <span aria-hidden="true" className="price__qIcon">
               <svg width="24" height="24" viewBox="0 0 256 256" fill="none" stroke="#3A5139" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round"><path d="M96,96a32,32,0,1,1,44,30c-7,3-12,10-12,18v8" /><circle cx="128" cy="196" r="6" fill="#3A5139" /></svg>
             </span>
@@ -80,7 +81,7 @@ export default function Pricing() {
               <li><svg width="20" height="20" viewBox="0 0 256 256" fill="none" stroke="#7A6D5E" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round"><path d="M40,144l56,56L224,72" /></svg><span>Rezultat vidiš odmah</span></li>
             </ul>
             <Ghost href="#kviz" className="price__qBtn">Proveri da li je protokol za tebe</Ghost>
-          </div>
+          </div>}
         </div>
       </div>
     </section>

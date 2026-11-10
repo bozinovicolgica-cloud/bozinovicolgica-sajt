@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { CHECK_PATH, symptomFinal, symptoms } from '@/lib/content';
 import { rv, useSeen } from '@/lib/reveal';
 import { Ghost } from './ui';
+import { QUIZ_VISIBLE } from '@/lib/flags';
 
 function SymIcon({ on, d }: { on: boolean; d: string }) {
   return (
@@ -66,13 +67,15 @@ export default function Symptoms() {
           </div>
         </div>
 
-        <div data-rv style={rv(sn, 680)}>
-          <div className="sym__quiz">
-            <div style={{ ...rv(count >= 2, 0, 8, 400), pointerEvents: count >= 2 ? 'auto' : 'none' }}>
-              <Ghost href="#kviz" className="sym__quizBtn" tabIndex={count >= 2 ? 0 : -1}>Proveri da li je protokol za tebe</Ghost>
+        {QUIZ_VISIBLE && (
+          <div data-rv style={rv(sn, 680)}>
+            <div className="sym__quiz">
+              <div style={{ ...rv(count >= 2, 0, 8, 400), pointerEvents: count >= 2 ? 'auto' : 'none' }}>
+                <Ghost href="#kviz" className="sym__quizBtn" tabIndex={count >= 2 ? 0 : -1}>Proveri da li je protokol za tebe</Ghost>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

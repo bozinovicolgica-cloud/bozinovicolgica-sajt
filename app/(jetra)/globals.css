@@ -236,6 +236,9 @@ body { overflow-x: clip; }
 .sec--price { background: #F5EFE6; }
 .price__sub { margin: 24px 0 0; }
 .price__grid { margin-top: 64px; align-items: start; }
+/* Dok je kviz sakriven (QUIZ_VISIBLE u lib/flags.ts), kartica sa cenom stoji sama,
+   pa se centrira: inače bi ostala levo, a desnih pet kolona bi zjapilo prazno. */
+@media (min-width: 861px) { .price__grid--solo .price__main { grid-column: 3 / span 8; } }
 .price__main { grid-column: 1 / span 7; padding: 40px; border-radius: 32px; background: #3A5139; overflow: hidden; position: relative; z-index: 1; }
 .price__leaf { width: 44px; height: 44px; border-radius: 999px; background: #466345; display: flex; align-items: center; justify-content: center; }
 .price__h3 { margin: 20px 0 0; font-family: 'EB Garamond', serif; font-weight: 600; font-size: 28px; line-height: 36px; color: #FFFFFF; }

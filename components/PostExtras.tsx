@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { person } from '@/lib/site';
 import { PRODUCT_NAME } from '@/lib/content';
 import { Pill } from './ui';
+import { QUIZ_VISIBLE } from '@/lib/flags';
 
 export function AuthorBox() {
   return (
@@ -32,7 +33,7 @@ export function ProtocolCta() {
       <p className="cta__p">Pojednostavljeni protokol čišćenja jetre: za svaki od 9 dana dobijaš plan ishrane, spisak za kupovinu, recepte i video lekciju, uz podršku na WhatsApp-u.</p>
       <div className="cta__row">
         <Pill href="/#cena" light>Pogledaj protokol</Pill>
-        <a href="/#kviz" className="cta__link">Proveri da li je za tebe</a>
+        {QUIZ_VISIBLE && <a href="/#kviz" className="cta__link">Proveri da li je za tebe</a>}
       </div>
     </section>
   );

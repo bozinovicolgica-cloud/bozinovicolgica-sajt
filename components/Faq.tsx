@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { faqs } from '@/lib/content';
 import { EASE } from '@/lib/reveal';
+import { QUIZ_VISIBLE } from '@/lib/flags';
 
 export default function Faq() {
   const [open, setOpen] = useState<number[]>([0]);
@@ -12,9 +13,11 @@ export default function Faq() {
       <div className="container grid12 faq__grid">
         <div className="faq__left">
           <h2 className="h2">Česta pitanja</h2>
-          <p className="faq__p">
-            Ne vidiš svoje pitanje? <a href="#kviz" className="faq__link">Prođi kratak kviz</a> i vidi da li je protokol za tebe.
-          </p>
+          {QUIZ_VISIBLE && (
+            <p className="faq__p">
+              Ne vidiš svoje pitanje? <a href="#kviz" className="faq__link">Prođi kratak kviz</a> i vidi da li je protokol za tebe.
+            </p>
+          )}
         </div>
         <div className="faq__list">
           {faqs.map(([q, a], i) => {

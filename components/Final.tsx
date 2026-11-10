@@ -6,6 +6,7 @@ import Price from './Price';
 import { rv, useSeen } from '@/lib/reveal';
 import { img } from '@/lib/images';
 import { Pill } from './ui';
+import { QUIZ_VISIBLE } from '@/lib/flags';
 
 export default function Final() {
   const ref = useRef<HTMLElement>(null);
@@ -44,7 +45,7 @@ export default function Final() {
               </div>
               <Pill href="#cena" order="zavrsna" light className="final__btn">Započni devetodnevni protokol</Pill>
             </div>
-            <a href="#kviz" className="final__quiz">Proveri da li je protokol za tebe</a>
+            {QUIZ_VISIBLE && <a href="#kviz" className="final__quiz">Proveri da li je protokol za tebe</a>}
           </div>
         </div>
       </div>
