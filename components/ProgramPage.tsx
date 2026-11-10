@@ -13,7 +13,6 @@ import Faq from '@/components/Faq';
 import Final from '@/components/Final';
 import Footer from '@/components/Footer';
 import Modals from '@/components/Modals';
-import DisclaimerGate from '@/components/DisclaimerGate';
 import type { CtaMode } from '@/lib/cta';
 
 /**
@@ -42,7 +41,6 @@ export default function ProgramPage({ mode }: { mode: CtaMode }) {
       </main>
       <Footer />
       <Modals mode={mode} />
-      <DisclaimerGate />
     </>
   );
 }

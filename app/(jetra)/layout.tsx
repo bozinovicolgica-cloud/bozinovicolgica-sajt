@@ -8,7 +8,6 @@ import Analytics from '@/components/Analytics';
 import CookieConsent from '@/components/CookieConsent';
 import DataFast from '@/components/DataFast';
 import { imgT } from '@/lib/images';
-import { DISCLAIMER_HEAD_SCRIPT } from '@/lib/disclaimer';
 import { CUR_HEAD_SCRIPT } from '@/lib/currency';
 
 const OG = imgT('olgica-hero.webp', 'c_fill,g_face,w_1200,h_630,b_rgb:FBF8F3,f_jpg,q_85');
@@ -47,7 +46,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="sr" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: DISCLAIMER_HEAD_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: CUR_HEAD_SCRIPT }} />
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
