@@ -205,12 +205,12 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
                 {step === 2 && (
                   <>
                     <label className="of-field">
-                      <span className="of-label">Ime</span>
-                      <input className="of-input" name="name" autoComplete="given-name" maxLength={100} value={f.name} onChange={(e) => set({ name: e.target.value }, 'name')} aria-invalid={!!errors.name} />
+                      <span className="of-label">Ime<span className="of-req" aria-hidden="true">*</span></span>
+                      <input className="of-input" name="name" autoComplete="given-name" required aria-required="true" maxLength={100} value={f.name} onChange={(e) => set({ name: e.target.value }, 'name')} aria-invalid={!!errors.name} />
                       {errors.name && <span className="of-error">{errors.name}</span>}
                     </label>
                     <label className="of-field">
-                      <span className="of-label">Broj telefona za WhatsApp</span>
+                      <span className="of-label">Broj telefona za WhatsApp<span className="of-req" aria-hidden="true">*</span></span>
                       {/* Pozivni broj je poseban izbornik: na telefonu otvara sistemski birač. */}
                       <span className="ap-phone">
                         <span className="ap-cc">
@@ -231,8 +231,8 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
                       {errors.phone && <span className="of-error">{errors.phone}</span>}
                     </label>
                     <label className="of-field">
-                      <span className="of-label">Email</span>
-                      <input className="of-input" type="email" name="email" inputMode="email" autoComplete="email" maxLength={160} value={f.email} onChange={(e) => set({ email: e.target.value }, 'email')} aria-invalid={!!errors.email} />
+                      <span className="of-label">Email<span className="of-req" aria-hidden="true">*</span></span>
+                      <input className="of-input" type="email" name="email" inputMode="email" autoComplete="email" required aria-required="true" maxLength={160} value={f.email} onChange={(e) => set({ email: e.target.value }, 'email')} aria-invalid={!!errors.email} />
                       {errors.email && <span className="of-error">{errors.email}</span>}
                     </label>
                     <label className="of-hp" aria-hidden="true">Website<input tabIndex={-1} autoComplete="off" value={f.website} onChange={(e) => set({ website: e.target.value })} /></label>

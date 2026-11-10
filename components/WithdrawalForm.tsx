@@ -34,7 +34,7 @@ export default function WithdrawalForm() {
     <form className="wd" onSubmit={(e) => { e.preventDefault(); location.href = href; }}>
       {FIELDS.map(([k, label]) => (
         <label key={k} className="of-field">
-          <span className="of-label">{label}</span>
+          <span className="of-label">{label}{k === 'phone' && <span className="of-req" aria-hidden="true">*</span>}</span>
           <input className="of-input" value={v[k]} onChange={(e) => setV({ ...v, [k]: e.target.value })} maxLength={160}
             type={k === 'email' ? 'email' : k === 'phone' ? 'tel' : 'text'}
             inputMode={k === 'phone' ? 'tel' : undefined}

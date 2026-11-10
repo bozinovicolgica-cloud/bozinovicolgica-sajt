@@ -190,13 +190,13 @@ export default function OrderModal({ open, ctx, onClose }: { open: boolean; ctx:
             {step === 1 && (
               <>
                 <label className="of-field">
-                  <span className="of-label">Ime i prezime</span>
-                  <input className="of-input" name="name" autoComplete="name" value={f.name} onChange={set('name')} aria-invalid={!!errors.name} aria-describedby={errors.name ? 'of-e-name' : undefined} maxLength={100} />
+                  <span className="of-label">Ime i prezime<span className="of-req" aria-hidden="true">*</span></span>
+                  <input className="of-input" name="name" autoComplete="name" required aria-required="true" value={f.name} onChange={set('name')} aria-invalid={!!errors.name} aria-describedby={errors.name ? 'of-e-name' : undefined} maxLength={100} />
                   {errors.name && <span className="of-error" id="of-e-name">{errors.name}</span>}
                 </label>
                 <label className="of-field">
-                  <span className="of-label">Email</span>
-                  <input className="of-input" type="email" name="email" inputMode="email" autoComplete="email" value={f.email} onChange={set('email')} aria-invalid={!!errors.email} aria-describedby={errors.email ? 'of-e-email' : undefined} maxLength={160} />
+                  <span className="of-label">Email<span className="of-req" aria-hidden="true">*</span></span>
+                  <input className="of-input" type="email" name="email" inputMode="email" autoComplete="email" required aria-required="true" value={f.email} onChange={set('email')} aria-invalid={!!errors.email} aria-describedby={errors.email ? 'of-e-email' : undefined} maxLength={160} />
                   {errors.email && <span className="of-error" id="of-e-email">{errors.email}</span>}
                 </label>
                 <label className="of-hp" aria-hidden="true">Firma<input tabIndex={-1} autoComplete="off" name="company" value={f.company} onChange={set('company')} /></label>
@@ -206,12 +206,12 @@ export default function OrderModal({ open, ctx, onClose }: { open: boolean; ctx:
             {step === 2 && (
               <>
                 <label className="of-field">
-                  <span className="of-label">Telefon (WhatsApp)</span>
+                  <span className="of-label">Telefon (WhatsApp)<span className="of-req" aria-hidden="true">*</span></span>
                   <input className="of-input" type="tel" name="phone" inputMode="tel" autoComplete="tel" required aria-required="true" placeholder="+381 6x xxx xxxx" value={f.phone} onChange={set('phone')} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'of-e-phone' : undefined} maxLength={32} />
                   {errors.phone && <span className="of-error" id="of-e-phone">{errors.phone}</span>}
                 </label>
                 <fieldset className="of-field of-fieldset">
-                  <legend className="of-label">Kada planiraš da počneš?</legend>
+                  <legend className="of-label">Kada planiraš da počneš?<span className="of-req" aria-hidden="true">*</span></legend>
                   <div className="oq-opts of-opts" role="radiogroup" aria-invalid={!!errors.startWhen} aria-describedby={errors.startWhen ? 'of-e-start' : undefined}>
                     {START_OPTIONS.map(([k, t]) => (
                       <button key={k} type="button" role="radio" aria-checked={f.startWhen === k} className="oq-opt" onClick={() => choose(k)}>

@@ -161,8 +161,8 @@ export function LeadForm({ size }: { size: Size }) {
 
   const nameField = (
     <label className="lf-field">
-      <span>Ime</span>
-      <input type="text" name="name" autoComplete="given-name" {...field("name")} />
+      <span>Ime<span className="lf-req" aria-hidden="true">*</span></span>
+      <input type="text" name="name" autoComplete="given-name" required aria-required="true" {...field("name")} />
       {errs.name && <span className="lf-err">{errs.name}</span>}
     </label>
   );
@@ -171,7 +171,7 @@ export function LeadForm({ size }: { size: Size }) {
   // je u <select>-u koji stoji providan preko njega.
   const phoneField = (
     <label className="lf-field">
-      <span>Broj telefona za WhatsApp</span>
+      <span>Broj telefona za WhatsApp<span className="lf-req" aria-hidden="true">*</span></span>
       <div className="lf-phone">
         <span className="lf-cc">
           <span className="lf-cc-val" aria-hidden="true">
