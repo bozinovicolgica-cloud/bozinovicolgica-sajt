@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import { CAL_LINK } from '@/lib/content';
 import { CalEmbed } from './protokol/CalEmbed';
 import {
-  Q, WHY, RESULT_TITLES, TIPS_LIKELY, TIPS_OK, TIPS_DOCTOR,
-  evaluate, loadHabits, readableAnswers,
-  type Answers, type WhyKey,
+  Q, RESULT_TITLES, RESULT_INTROS, CALL_BOX, SECTIONS,
+  LIKELY_AFTER_TIPS, OK_AFTER_CHIPS, PREGNANT_AFTER, PREVENT_BTN, PREVENT_TEXT, SCALE_HIGH, SCALE_LOW,
+  evaluate, readableAnswers, tipsFor, whyItems,
+  type Answers, type ResultKey, type WhyKey,
 } from '@/lib/quiz-data';
 import { QUIZ_NOTE } from '@/lib/legal';
 import { CTRY_COOKIE, DEFAULT_ISO, dialForCountry, fullPhone, OTHER_COUNTRIES, TOP_COUNTRIES } from '@/lib/phone';
@@ -44,7 +45,7 @@ function Meter({ pos }: { pos: number }) {
   return (
     <div className="oq-meter">
       <div className="oq-track"><span className="oq-dot" style={{ left: `${left.toFixed(1)}%` }} /></div>
-      <div className="oq-scale"><span>Jetra je u dobrom stanju</span><span>Jetra je preopterećena</span></div>
+      <div className="oq-scale"><span>{SCALE_LOW}</span><span>{SCALE_HIGH}</span></div>
     </div>
   );
 }
@@ -54,17 +55,11 @@ function Chips({ list }: { list: string[] }) {
 }
 
 function WhyList({ keys, ans }: { keys: WhyKey[]; ans: Answers }) {
-  const habits = loadHabits(ans);
-  const items = keys.slice(0, 4).map((k) => {
-    const [title, body0] = WHY[k];
-    let body = body0;
-    if (k === 'load') body = body.replace('{x}', habits.length ? (habits.length > 1 ? habits.slice(0, -1).join(', ') + ' i ' + habits[habits.length - 1] : habits[0]) : 'svakodnevne navike');
-    return <li key={k}><b>{title}</b><span>{body}</span></li>;
-  });
-  if (!keys.includes('load')) {
-    items.unshift(<li key="filter"><b>Jetra je filter tvog tela</b><span>Svakog dana prerađuje sve što unosimo kroz hranu, vodu, vazduh, lekove i kozmetiku. Kad se nagomila više nego što stigne da izbaci, rad joj se usporava, a telo to pokazuje kroz simptome.</span></li>);
-  }
-  return <ul className="oq-why">{items}</ul>;
+  return (
+    <ul className="oq-why">
+      {whyItems(keys, ans).map((i) => <li key={i.title}><b>{i.title}</b><span>{i.body}</span></li>)}
+    </ul>
+  );
 }
 
 const Fine = () => <p className="oq-fine">{QUIZ_NOTE}</p>;
@@ -295,10 +290,13 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
     /* Zakazivanje poziva: isti Cal.com kalendar koji koristi i prijava (CAL_LINK u lib/content),
        sa unapred upisanim kontaktom iz prethodnog koraka. Bez CAL_LINK-a kalendara nema, pa
        rezultat ne sme da ostane bez ijednog koraka dalje: tada se nudi email. */
-    const callBox = (h3: string, text: string) => (
+    const callBox = (key: ResultKey) => {
+      const c = CALL_BOX[key];
+      if (!c) return null;
+      return (
       <div className="oq-alert">
-        <h3 className="oq-sec-h" style={{ fontSize: 22, lineHeight: '28px' }}>{h3}</h3>
-        <p className="oq-p" style={{ marginTop: 8, fontSize: 17, lineHeight: '26px' }}>{text}</p>
+        <h3 className="oq-sec-h" style={{ fontSize: 22, lineHeight: '28px' }}>{c.h}</h3>
+        <p className="oq-p" style={{ marginTop: 8, fontSize: 17, lineHeight: '26px' }}>{c.p}</p>
         {CAL_LINK ? (
           <CalEmbed
             className="oq-cal"
@@ -310,20 +308,21 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
           <p className="oq-p" style={{ marginTop: 16, fontSize: 17, lineHeight: '26px' }}>Piši mi na <a href={`mailto:${EMAIL}`}>{EMAIL}</a> pa da dogovorimo termin.</p>
         )}
       </div>
-    );
+      );
+    };
     let h: React.ReactNode;
     if (r.result === 'likely') {
       h = (<>
         <p className="oq-eyebrow">Tvoj rezultat</p>
         <h2 className="oq-h" id="oq-title">{RESULT_TITLES.likely}</h2>
-        <p className="oq-p">U odgovorima prepoznaješ više znakova koje viđam kod klijenata sa preopterećenom jetrom. Ovo nije dijagnoza: proveri ih i sa svojim lekarom.</p>
+        <p className="oq-p">{RESULT_INTROS.likely}</p>
         {sent}
         <Meter pos={r.pos} />
-        {r.tags.length > 0 && <div className="oq-sec"><h3 className="oq-sec-h">Tvoji simptomi</h3><Chips list={r.tags} /></div>}
-        <div className="oq-sec"><h3 className="oq-sec-h">Šta obično stoji iza toga</h3><WhyList keys={r.whys} ans={ans} /></div>
-        <div className="oq-sec"><h3 className="oq-sec-h">Šta da uradiš već od danas</h3><StepsList list={TIPS_LIKELY} />
-          <p className="oq-p" style={{ fontSize: 17, lineHeight: '26px' }}>Ovo su prvi koraci. Šta baš tebi treba, najlakše je da vidimo u kratkom razgovoru.</p></div>
-        {callBox('Zakaži kratak poziv sa Olgicom', 'Ovo nije dijagnoza, pa simptome svakako prvo pokaži svom lekaru. A ako želiš da čuješ šta možeš da promeniš u ishrani već od sutra, izaberi termin za poziv od 10 minuta.')}
+        {r.tags.length > 0 && <div className="oq-sec"><h3 className="oq-sec-h">{SECTIONS.symptoms}</h3><Chips list={r.tags} /></div>}
+        <div className="oq-sec"><h3 className="oq-sec-h">{SECTIONS.why}</h3><WhyList keys={r.whys} ans={ans} /></div>
+        <div className="oq-sec"><h3 className="oq-sec-h">{SECTIONS.tipsLikely}</h3><StepsList list={tipsFor('likely')} />
+          <p className="oq-p" style={{ fontSize: 17, lineHeight: '26px' }}>{LIKELY_AFTER_TIPS}</p></div>
+        {callBox('likely')}
         <Fine />
         <div className="oq-end"><button type="button" className="oq-link" onClick={restart}>Uradi kviz ponovo</button></div>
       </>);
@@ -331,33 +330,33 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
       h = (<>
         <p className="oq-eyebrow">Tvoj rezultat</p>
         <h2 className="oq-h" id="oq-title">{RESULT_TITLES.ok}</h2>
-        <p className="oq-p">U odgovorima prepoznaješ malo znakova preopterećenja. Jetra ipak radi bez pauze, pa je pametno da je čuvaš dobrim navikama.</p>
+        <p className="oq-p">{RESULT_INTROS.ok}</p>
         {sent}
         <Meter pos={r.pos} />
-        {r.tags.length > 0 && <div className="oq-sec"><h3 className="oq-sec-h">Na ovo obrati pažnju</h3><Chips list={r.tags} /><p className="oq-p" style={{ fontSize: 17, lineHeight: '26px' }}>Ako ovi simptomi postanu češći, uradi kviz ponovo.</p></div>}
-        <div className="oq-sec"><h3 className="oq-sec-h">Kako da jetru održiš u dobrom stanju</h3><StepsList list={TIPS_OK} check /></div>
-        <div className="oq-alert"><h3 className="oq-sec-h" style={{ fontSize: 22, lineHeight: '28px' }}>Želiš da je očistiš preventivno?</h3><p className="oq-p" style={{ marginTop: 8, fontSize: 17, lineHeight: '26px' }}>Devetodnevni protokol možeš da uradiš i preventivno, da jetra ostane rasterećena i pre nego što se jave tegobe.</p>
-          <div style={{ marginTop: 20 }}><a href="#resenje" className="oq-btn oq-ghost" data-oq="see" onClick={see}>Pogledaj kako izgleda protokol</a></div></div>
-        {callBox('Hoćeš da ti potvrdim da je sve u redu?', 'Ako te nešto ipak buni, izaberi termin za kratak poziv od 10 minuta. Prođemo kroz tvoje odgovore pa ti kažem da li ima nečega na šta bi trebalo da obratiš pažnju.')}
+        {r.tags.length > 0 && <div className="oq-sec"><h3 className="oq-sec-h">{SECTIONS.watch}</h3><Chips list={r.tags} /><p className="oq-p" style={{ fontSize: 17, lineHeight: '26px' }}>{OK_AFTER_CHIPS}</p></div>}
+        <div className="oq-sec"><h3 className="oq-sec-h">{SECTIONS.tipsOk}</h3><StepsList list={tipsFor('ok')} check /></div>
+        <div className="oq-alert"><h3 className="oq-sec-h" style={{ fontSize: 22, lineHeight: '28px' }}>{SECTIONS.prevent}</h3><p className="oq-p" style={{ marginTop: 8, fontSize: 17, lineHeight: '26px' }}>{PREVENT_TEXT}</p>
+          <div style={{ marginTop: 20 }}><a href="#resenje" className="oq-btn oq-ghost" data-oq="see" onClick={see}>{PREVENT_BTN}</a></div></div>
+        {callBox('ok')}
         <Fine />
         <div className="oq-end"><button type="button" className="oq-link" onClick={restart}>Uradi kviz ponovo</button></div>
       </>);
     } else if (r.result === 'doctor') {
       h = (<>
         <p className="oq-eyebrow">Tvoj rezultat</p>
-        <h2 className="oq-h" id="oq-title">Pre bilo kakvog protokola, javi se lekaru</h2>
-        <p className="oq-p">Neki od znakova iz poslednjeg pitanja, kao što su žuta boja kože ili očiju, tamna mokraća ili jak bol ispod desnog rebra, ne smeju da čekaju. Njih lekar treba da pogleda što pre, i to je sada važnije od bilo kakve promene u ishrani. Molim te da to ne odlažeš.</p>
-        <div className="oq-alert"><h3 className="oq-sec-h" style={{ fontSize: 22, lineHeight: '28px' }}>Šta da uradiš</h3><StepsList list={TIPS_DOCTOR} /></div>
-        {callBox('Kad budeš bila kod lekara, tu sam za razgovor', 'Poziv sa mnom ne zamenjuje pregled. Ali kad dobiješ nalaze, izaberi termin za kratak poziv od 10 minuta pa zajedno vidimo šta ti se iz ishrane isplati da menjaš.')}
+        <h2 className="oq-h" id="oq-title">{RESULT_TITLES.doctor}</h2>
+        <p className="oq-p">{RESULT_INTROS.doctor}</p>
+        <div className="oq-alert"><h3 className="oq-sec-h" style={{ fontSize: 22, lineHeight: '28px' }}>{SECTIONS.doctorWhat}</h3><StepsList list={tipsFor('doctor')} /></div>
+        {callBox('doctor')}
         <div className="oq-end"><button type="button" className="oq-link" onClick={restart}>Uradi kviz ponovo</button></div>
       </>);
     } else {
       h = (<>
         <p className="oq-eyebrow">Tvoj rezultat</p>
-        <h2 className="oq-h" id="oq-title">Protokol sada nije za tebe</h2>
-        <p className="oq-p">Dok si trudna ili dojiš, ne preporučujem čišćenje jetre. Tvoje telo sada ima važniji posao. Do tada jetru možeš da čuvaš ovim navikama:</p>
-        <div className="oq-sec"><StepsList list={TIPS_OK} check /></div>
-        <p className="oq-p" style={{ fontSize: 17, lineHeight: '26px' }}>Kada završiš sa dojenjem, uradi kviz ponovo. Za sve što te muči do tada, razgovaraj sa svojim lekarom.</p>
+        <h2 className="oq-h" id="oq-title">{RESULT_TITLES.pregnant}</h2>
+        <p className="oq-p">{RESULT_INTROS.pregnant}</p>
+        <div className="oq-sec"><StepsList list={tipsFor('pregnant')} check /></div>
+        <p className="oq-p" style={{ fontSize: 17, lineHeight: '26px' }}>{PREGNANT_AFTER}</p>
         <div className="oq-end"><button type="button" className="oq-btn" onClick={onClose}>Zatvori</button></div>
       </>);
     }

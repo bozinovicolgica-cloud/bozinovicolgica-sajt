@@ -119,6 +119,77 @@ export const RESULT_TITLES: Record<ResultKey, string> = {
   pregnant: 'Protokol sada nije za tebe',
 };
 
+/**
+ * Tekstovi ekrana sa rezultatom. Stoje ovde, a ne u komponenti, jer isti
+ * rezultat ide i na ekran (components/Quiz.tsx) i u mejl (lib/server/emails.ts).
+ * Dok su bili prepisani na dva mesta, mejl je govorio jedno a ekran drugo.
+ */
+export const RESULT_INTROS: Record<ResultKey, string> = {
+  likely: 'U odgovorima prepoznaje\u0161 vi\u0161e znakova koje vi\u0111am kod klijenata sa preoptere\u0107enom jetrom. Ovo nije dijagnoza: proveri ih i sa svojim lekarom.',
+  ok: 'U odgovorima prepoznaje\u0161 malo znakova preoptere\u0107enja. Jetra ipak radi bez pauze, pa je pametno da je \u010duva\u0161 dobrim navikama.',
+  doctor: 'Neki od znakova iz poslednjeg pitanja, kao \u0161to su \u017euta boja ko\u017ee ili o\u010diju, tamna mokra\u0107a ili jak bol ispod desnog rebra, ne smeju da \u010dekaju. Njih lekar treba da pogleda \u0161to pre, i to je sada va\u017enije od bilo kakve promene u ishrani. Molim te da to ne odla\u017ee\u0161.',
+  pregnant: 'Dok si trudna ili doji\u0161, ne preporu\u010dujem \u010di\u0161\u0107enje jetre. Tvoje telo sada ima va\u017eniji posao. Do tada jetru mo\u017ee\u0161 da \u010duva\u0161 ovim navikama:',
+};
+
+/** Poziv sa Olgicom. Na ekranu je ispod teksta kalendar, u mejlu dugme; tekst je isti. */
+export const CALL_BOX: Partial<Record<ResultKey, { h: string; p: string }>> = {
+  likely: {
+    h: 'Zaka\u017ei kratak poziv sa Olgicom',
+    p: 'Ovo nije dijagnoza, pa simptome svakako prvo poka\u017ei svom lekaru. A ako \u017eeli\u0161 da \u010duje\u0161 \u0161ta mo\u017ee\u0161 da promeni\u0161 u ishrani ve\u0107 od sutra, izaberi termin za poziv od 10 minuta.',
+  },
+  ok: {
+    h: 'Ho\u0107e\u0161 da ti potvrdim da je sve u redu?',
+    p: 'Ako te ne\u0161to ipak buni, izaberi termin za kratak poziv od 10 minuta. Pro\u0111emo kroz tvoje odgovore pa ti ka\u017eem da li ima ne\u010dega na \u0161ta bi trebalo da obrati\u0161 pa\u017enju.',
+  },
+  doctor: {
+    h: 'Kad bude\u0161 bila kod lekara, tu sam za razgovor',
+    p: 'Poziv sa mnom ne zamenjuje pregled. Ali kad dobije\u0161 nalaze, izaberi termin za kratak poziv od 10 minuta pa zajedno vidimo \u0161ta ti se iz ishrane isplati da menja\u0161.',
+  },
+};
+
+/** Naslovi odeljaka na rezultatu. */
+export const SECTIONS = {
+  symptoms: 'Tvoji simptomi',
+  why: '\u0160ta obi\u010dno stoji iza toga',
+  tipsLikely: '\u0160ta da uradi\u0161 ve\u0107 od danas',
+  watch: 'Na ovo obrati pa\u017enju',
+  tipsOk: 'Kako da jetru odr\u017ei\u0161 u dobrom stanju',
+  doctorWhat: '\u0160ta da uradi\u0161',
+  prevent: '\u017deli\u0161 da je o\u010disti\u0161 preventivno?',
+} as const;
+
+export const LIKELY_AFTER_TIPS = 'Ovo su prvi koraci. \u0160ta ba\u0161 tebi treba, najlak\u0161e je da vidimo u kratkom razgovoru.';
+export const OK_AFTER_CHIPS = 'Ako ovi simptomi postanu \u010de\u0161\u0107i, uradi kviz ponovo.';
+export const PREVENT_TEXT = 'Devetodnevni protokol mo\u017ee\u0161 da uradi\u0161 i preventivno, da jetra ostane rastere\u0107ena i pre nego \u0161to se jave tegobe.';
+export const PREVENT_BTN = 'Pogledaj kako izgleda protokol';
+export const PREGNANT_AFTER = 'Kada zavr\u0161i\u0161 sa dojenjem, uradi kviz ponovo. Za sve \u0161to te mu\u010di do tada, razgovaraj sa svojim lekarom.';
+export const SCALE_LOW = 'Jetra je u dobrom stanju';
+export const SCALE_HIGH = 'Jetra je preoptere\u0107ena';
+
+const WHY_FILTER = {
+  title: 'Jetra je filter tvog tela',
+  body: 'Svakog dana prera\u0111uje sve \u0161to unosimo kroz hranu, vodu, vazduh, lekove i kozmetiku. Kad se nagomila vi\u0161e nego \u0161to stigne da izbaci, rad joj se usporava, a telo to pokazuje kroz simptome.',
+};
+
+/** Objasnjenja „zasto“, sa popunjenim navikama. Isto na ekranu i u mejlu. */
+export function whyItems(keys: WhyKey[], ans: Answers): { title: string; body: string }[] {
+  const habits = loadHabits(ans);
+  const spisak = habits.length > 1
+    ? habits.slice(0, -1).join(', ') + ' i ' + habits[habits.length - 1]
+    : habits[0] || 'svakodnevne navike';
+  const items = keys.slice(0, 4).map((k) => {
+    const [title, body] = WHY[k];
+    return { title, body: k === 'load' ? body.replace('{x}', spisak) : body };
+  });
+  if (!keys.includes('load')) items.unshift(WHY_FILTER);
+  return items;
+}
+
+/** Saveti koji idu uz rezultat. */
+export function tipsFor(result: ResultKey): string[] {
+  return result === 'likely' ? TIPS_LIKELY : result === 'doctor' ? TIPS_DOCTOR : TIPS_OK;
+}
+
 export function points(q: Question, ans: Answers): number {
   const a = ans[q.id];
   if (a == null) return 0;

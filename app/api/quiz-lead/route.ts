@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { syncQuizLeadToAirtable } from '@/lib/server/airtable';
 import { postWebhook, sendEmail, supabase } from '@/lib/server/integrations';
 import { quizResultEmail } from '@/lib/server/emails';
+import { evaluate } from '@/lib/quiz-data';
 import { clientIp, limited } from '@/lib/server/rate-limit';
 
 export const runtime = 'nodejs';
@@ -71,7 +72,8 @@ export async function POST(req: Request) {
 
   let emailed = false;
   if (hasContact) {
-    const m = quizResultEmail(d.name, d.result);
+    // Rezultat se ra\u010duna ponovo na serveru, iz istih odgovora: mejl tako ne mo\u017ee\n    // da se razi\u0111e sa onim \u0161to je \u010dovek upravo video na ekranu.
+    const m = quizResultEmail(d.name, evaluate(d.answers), d.answers);
     emailed = await sendEmail(d.email, m.subject, m.html);
   }
   return NextResponse.json({ ok: true, emailed });
