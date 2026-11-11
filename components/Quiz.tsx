@@ -255,7 +255,7 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
             <input className="of-input" data-oq="lead-name" name="name" autoComplete="given-name" value={lead.name} onChange={(e) => setLead({ ...lead, name: e.target.value })} maxLength={80} />
           </label>
           <label className="of-field">
-            <span className="of-label">Broj telefona za WhatsApp<span className="of-req" aria-hidden="true">*</span></span>
+            <span className="of-label">Broj telefona<span className="of-req" aria-hidden="true">*</span></span>
             {/* Pozivni broj je poseban izbornik: na telefonu otvara sistemski birač. */}
             <span className="ap-phone">
               <span className="ap-cc">
