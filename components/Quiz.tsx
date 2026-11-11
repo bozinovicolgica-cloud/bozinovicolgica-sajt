@@ -108,15 +108,15 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
     }, 1400);
   };
 
-  const save = (withContact: boolean) => {
+  const save = () => {
     if (saved.current) return;
     saved.current = true;
     const r = evaluate(ans);
     const body = {
-      name: withContact ? lead.name.trim() : '',
-      phone: withContact ? fullPhone(dialForCountry(lead.ctry), lead.phone) : '',
-      email: withContact ? lead.email.trim() : '',
-      consent: withContact ? lead.consent : false,
+      name: lead.name.trim(),
+      phone: fullPhone(dialForCountry(lead.ctry), lead.phone),
+      email: lead.email.trim(),
+      consent: lead.consent,
       answers: ans,
       readable: readableAnswers(ans),
       score: r.score,
@@ -159,14 +159,12 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
     const email = lead.email.trim();
     if (!/^\+?[0-9][0-9 /-]{7,}$/.test(fullPhone(dialForCountry(lead.ctry), lead.phone))) { setLeadErr('Upiši broj telefona, na primer 64 123 4567.'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setLeadErr('Upiši ispravnu email adresu.'); return; }
-    if (!lead.consent) { setLeadErr('Potrebna je tvoja saglasnost da bih ti poslala rezultat na email. Ili preskoči ovaj korak.'); return; }
+    if (!lead.consent) { setLeadErr('Potrebna je tvoja saglasnost da bih ti poslala rezultat na email.'); return; }
     setLeadErr('');
     track('liver_quiz_lead', {}, 'Lead');
-    save(true);
+    save();
     showResult();
   };
-
-  const skipLead = () => { track('liver_quiz_lead_skip'); save(false); showResult(); };
 
   const buy = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -250,7 +248,7 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
         <div className="oq-progress"><div className="oq-bar" aria-hidden="true"><span style={{ width: '100%' }} /></div><span className="oq-count">Još samo ovo</span></div>
         <p className="oq-eyebrow">Tvoj rezultat je spreman</p>
         <h2 className="oq-h" id="oq-title">Gde da ti pošaljem rezultat?</h2>
-        <p className="oq-p">Ostavi ime, broj telefona i email i rezultat sa preporukama stiže ti i u inbox, da ga imaš pri ruci. Ovaj korak nije obavezan.</p>
+        <p className="oq-p">Ostavi ime, broj telefona i email i rezultat sa preporukama stiže ti i u inbox, da ga imaš pri ruci.</p>
         <form className="of-form" onSubmit={submitLead} noValidate>
           <label className="of-field">
             <span className="of-label">Ime</span>
@@ -286,7 +284,7 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
           </label>
           {leadErr && <p className="of-error" role="alert">{leadErr}</p>}
           <div className="oq-nav">
-            <button type="button" className="oq-link" onClick={skipLead}>Preskoči</button>
+            <span />
             <button type="submit" className="oq-btn oq-arrow"><span>Prikaži rezultat</span><Arrow color="#FFFFFF" /></button>
           </div>
         </form>
