@@ -1,12 +1,12 @@
 'use client';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import { PRICE_EUR, PRICE_RSD, thousands } from '@/lib/content';
-import Price from './Price';
+import { CAL_LINK } from '@/lib/content';
+import { CalEmbed } from './protokol/CalEmbed';
 import {
   Q, WHY, RESULT_TITLES, TIPS_LIKELY, TIPS_OK, TIPS_DOCTOR,
   evaluate, loadHabits, readableAnswers,
-  type Answers, type Evaluation, type WhyKey,
+  type Answers, type WhyKey,
 } from '@/lib/quiz-data';
 import { QUIZ_NOTE } from '@/lib/legal';
 import { CTRY_COOKIE, DEFAULT_ISO, dialForCountry, fullPhone, OTHER_COUNTRIES, TOP_COUNTRIES } from '@/lib/phone';
@@ -69,7 +69,7 @@ function WhyList({ keys, ans }: { keys: WhyKey[]; ans: Answers }) {
 
 const Fine = () => <p className="oq-fine">{QUIZ_NOTE}</p>;
 
-export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose: () => void; onBuy: (r: Evaluation) => void }) {
+export default function Quiz({ open, onClose }: { open: boolean; onClose: () => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<Step>(-1);
   const [ans, setAns] = useState<Answers>({});
@@ -166,11 +166,6 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
     showResult();
   };
 
-  const buy = (e: React.MouseEvent) => {
-    e.preventDefault();
-    track('liver_quiz_cta', { cta: 'buy' });
-    onBuy(evaluate(ans));
-  };
   const see = (e: React.MouseEvent) => {
     e.preventDefault();
     track('liver_quiz_cta', { cta: 'see' });
@@ -297,6 +292,25 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
   } else {
     const r = evaluate(ans);
     const sent = emailed ? <p className="oq-fine" style={{ marginTop: 12 }}>Rezultat smo ti poslali i na email.</p> : null;
+    /* Zakazivanje poziva: isti Cal.com kalendar koji koristi i prijava (CAL_LINK u lib/content),
+       sa unapred upisanim kontaktom iz prethodnog koraka. Bez CAL_LINK-a kalendara nema, pa
+       rezultat ne sme da ostane bez ijednog koraka dalje: tada se nudi email. */
+    const callBox = (h3: string, text: string) => (
+      <div className="oq-alert">
+        <h3 className="oq-sec-h" style={{ fontSize: 22, lineHeight: '28px' }}>{h3}</h3>
+        <p className="oq-p" style={{ marginTop: 8, fontSize: 17, lineHeight: '26px' }}>{text}</p>
+        {CAL_LINK ? (
+          <CalEmbed
+            className="oq-cal"
+            calLink={CAL_LINK}
+            onBooking={() => track('liver_quiz_booking', {}, 'Schedule')}
+            prefill={{ name: lead.name.trim(), email: lead.email.trim(), phone: fullPhone(dialForCountry(lead.ctry), lead.phone) }}
+          />
+        ) : (
+          <p className="oq-p" style={{ marginTop: 16, fontSize: 17, lineHeight: '26px' }}>Piši mi na <a href={`mailto:${EMAIL}`}>{EMAIL}</a> pa da dogovorimo termin.</p>
+        )}
+      </div>
+    );
     let h: React.ReactNode;
     if (r.result === 'likely') {
       h = (<>
@@ -308,13 +322,8 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
         {r.tags.length > 0 && <div className="oq-sec"><h3 className="oq-sec-h">Tvoji simptomi</h3><Chips list={r.tags} /></div>}
         <div className="oq-sec"><h3 className="oq-sec-h">Šta obično stoji iza toga</h3><WhyList keys={r.whys} ans={ans} /></div>
         <div className="oq-sec"><h3 className="oq-sec-h">Šta da uradiš već od danas</h3><StepsList list={TIPS_LIKELY} />
-          <p className="oq-p" style={{ fontSize: 17, lineHeight: '26px' }}>Ovo su prvi koraci. Ako želiš da ih pretvoriš u naviku, pomaže jasan plan: tačno šta jedeš, svakog dana.</p></div>
-        <div className="oq-offer">
-          <p style={{ margin: 0, fontWeight: 600, fontSize: 13, lineHeight: '16px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#C2D3BE' }}>Moja preporuka za tebe</p>
-          <h4 style={{ marginTop: 10 }}>9 dana spašavanja jetre</h4>
-          <p>Plan ishrane za svih 9 dana, spisak za kupovinu, recepti i kratka video lekcija za svaki dan. Ako zapneš, tu sam na WhatsApp-u.</p>
-          <div className="oq-offer-row"><span className="oq-priceWrap"><span className="oq-price"><Price rsd={<>{thousands(PRICE_RSD)}<small>RSD</small></>} eur={<>{PRICE_EUR}<small>EUR</small></>} /></span></span><a href="#cena" className="oq-btn oq-light oq-arrow" data-oq="buy" onClick={buy}><span>Započni devetodnevni protokol</span><Arrow color="#3A5139" /></a></div>
-        </div>
+          <p className="oq-p" style={{ fontSize: 17, lineHeight: '26px' }}>Ovo su prvi koraci. Šta baš tebi treba, najlakše je da vidimo u kratkom razgovoru.</p></div>
+        {callBox('Zakaži kratak poziv sa Olgicom', 'Ovo nije dijagnoza, pa simptome svakako prvo pokaži svom lekaru. A ako želiš da čuješ šta možeš da promeniš u ishrani već od sutra, izaberi termin za poziv od 10 minuta.')}
         <Fine />
         <div className="oq-end"><button type="button" className="oq-link" onClick={restart}>Uradi kviz ponovo</button></div>
       </>);
@@ -329,6 +338,7 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
         <div className="oq-sec"><h3 className="oq-sec-h">Kako da jetru održiš u dobrom stanju</h3><StepsList list={TIPS_OK} check /></div>
         <div className="oq-alert"><h3 className="oq-sec-h" style={{ fontSize: 22, lineHeight: '28px' }}>Želiš da je očistiš preventivno?</h3><p className="oq-p" style={{ marginTop: 8, fontSize: 17, lineHeight: '26px' }}>Devetodnevni protokol možeš da uradiš i preventivno, da jetra ostane rasterećena i pre nego što se jave tegobe.</p>
           <div style={{ marginTop: 20 }}><a href="#resenje" className="oq-btn oq-ghost" data-oq="see" onClick={see}>Pogledaj kako izgleda protokol</a></div></div>
+        {callBox('Hoćeš da ti potvrdim da je sve u redu?', 'Ako te nešto ipak buni, izaberi termin za kratak poziv od 10 minuta. Prođemo kroz tvoje odgovore pa ti kažem da li ima nečega na šta bi trebalo da obratiš pažnju.')}
         <Fine />
         <div className="oq-end"><button type="button" className="oq-link" onClick={restart}>Uradi kviz ponovo</button></div>
       </>);
@@ -336,9 +346,9 @@ export default function Quiz({ open, onClose, onBuy }: { open: boolean; onClose:
       h = (<>
         <p className="oq-eyebrow">Tvoj rezultat</p>
         <h2 className="oq-h" id="oq-title">Pre bilo kakvog protokola, javi se lekaru</h2>
-        <p className="oq-p">Neki od znakova iz poslednjeg pitanja, kao što su žuta boja kože ili očiju, tamna mokraća ili jak bol ispod desnog rebra, traže da ih lekar pogleda što pre.</p>
+        <p className="oq-p">Neki od znakova iz poslednjeg pitanja, kao što su žuta boja kože ili očiju, tamna mokraća ili jak bol ispod desnog rebra, ne smeju da čekaju. Njih lekar treba da pogleda što pre, i to je sada važnije od bilo kakve promene u ishrani. Molim te da to ne odlažeš.</p>
         <div className="oq-alert"><h3 className="oq-sec-h" style={{ fontSize: 22, lineHeight: '28px' }}>Šta da uradiš</h3><StepsList list={TIPS_DOCTOR} /></div>
-        <div className="oq-end"><button type="button" className="oq-btn" onClick={onClose}>Razumem</button></div>
+        {callBox('Kad budeš bila kod lekara, tu sam za razgovor', 'Poziv sa mnom ne zamenjuje pregled. Ali kad dobiješ nalaze, izaberi termin za kratak poziv od 10 minuta pa zajedno vidimo šta ti se iz ishrane isplati da menjaš.')}
         <div className="oq-end"><button type="button" className="oq-link" onClick={restart}>Uradi kviz ponovo</button></div>
       </>);
     } else {

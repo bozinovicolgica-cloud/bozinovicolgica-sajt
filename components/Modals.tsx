@@ -85,16 +85,7 @@ export default function Modals({ mode = 'apply' }: { mode?: CtaMode }) {
 
   return (
     <>
-      {QUIZ_VISIBLE && used.quiz && <Quiz
-        open={active === 'quiz'}
-        onClose={close}
-        onBuy={(r) => {
-          setActive(null);
-          setTimeout(() => (mode === 'order'
-            ? openOrder({ source: sourceFor(mode, 'kviz'), quizResult: r.result, quizScore: r.score })
-            : openApply('kviz')), 280);
-        }}
-      />}
+      {QUIZ_VISIBLE && used.quiz && <Quiz open={active === 'quiz'} onClose={close} />}
       {used.apply && <ApplyModal open={active === 'apply'} source={source} onClose={close} />}
       {used.order && <OrderModal open={active === 'order'} ctx={ctx} onClose={close} />}
     </>
