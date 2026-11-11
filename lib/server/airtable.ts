@@ -59,12 +59,13 @@ export const F = {
     utm: 'UTM',
     leadId: 'Lead ID',
     slot: 'Termin poziva',
+    program: 'Program',
   },
 } as const;
 
 /** Faze klijenta; faza nikad ne ide unazad (kupac ostaje kupac i kad posle uradi kviz). */
-export const STAGES = { quiz: 'Kviz lead', protokol: 'Protokol lead', started: 'Započela porudžbinu', abandoned: 'Napustila checkout', buyer: 'Kupac' } as const;
-const RANK: Record<string, number> = { [STAGES.quiz]: 1, [STAGES.protokol]: 1, [STAGES.started]: 2, [STAGES.abandoned]: 2, [STAGES.buyer]: 3 };
+export const STAGES = { quiz: 'Kviz lead', protokol: 'Protokol lead', program: 'Program lead', started: 'Započela porudžbinu', abandoned: 'Napustila checkout', buyer: 'Kupac' } as const;
+const RANK: Record<string, number> = { [STAGES.quiz]: 1, [STAGES.protokol]: 1, [STAGES.program]: 1, [STAGES.started]: 2, [STAGES.abandoned]: 2, [STAGES.buyer]: 3 };
 
 export const STATUS: Record<string, string> = {
   started: 'Započeta',
@@ -251,9 +252,13 @@ export const LEAD_STATUS = {
   cancelled: 'Otkazan poziv',
 } as const;
 
+/** Naziv programa u koloni „Program“ tabele „Protokol prijave“ (u njoj su prijave sa oba sajta). */
+export const LEAD_PROGRAM = { protokol: 'Protokol ishrane', program: '9 dana spašavanja jetre' } as const;
+
 /**
- * Prijava sa protokol.bozinovicolgica.rs: klijent u fazi „Protokol lead“ (po emailu, a bez njega po telefonu)
- * i red u „Protokol prijave“ sa statusom koji Olgica dalje menja ručno. Tegobe i nalazi ne idu u Airtable.
+ * Prijava sa protokol.bozinovicolgica.rs ili sa programske stranice (program.bozinovicolgica.rs, ApplyModal):
+ * klijent u fazi „Protokol lead“ / „Program lead“ (po emailu, a bez njega po telefonu) i red u „Protokol prijave“
+ * sa kolonom „Program“ i statusom koji Olgica dalje menja ručno. Tegobe i nalazi ne idu u Airtable.
  */
 export async function syncProtokolLeadToAirtable(lead: {
   id: string;
@@ -264,12 +269,14 @@ export async function syncProtokolLeadToAirtable(lead: {
   variant: string | null;
   isQa: boolean;
   utm: Record<string, string | null>;
+  kind?: 'protokol' | 'program';
 }): Promise<void> {
   if (!airtableConfig().enabled) return;
+  const kind = lead.kind ?? 'protokol';
   try {
     const utm = Object.fromEntries(Object.entries(lead.utm).filter(([, v]) => v)) as Record<string, string>;
-    const source = utm.utm_source ? [utm.utm_source, utm.utm_campaign].filter(Boolean).join(' / ') : 'protokol';
-    const clientId = await upsertClient({ email: lead.email, phone: lead.phone }, STAGES.protokol, {
+    const source = utm.utm_source ? [utm.utm_source, utm.utm_campaign].filter(Boolean).join(' / ') : kind;
+    const clientId = await upsertClient({ email: lead.email, phone: lead.phone }, STAGES[kind], {
       fill: {
         [F.client.name]: lead.name,
         [F.client.phone]: lead.phone,
@@ -290,9 +297,10 @@ export async function syncProtokolLeadToAirtable(lead: {
       [l.source]: source,
       [l.utm]: utmText(utm),
       [l.leadId]: lead.id,
+      [l.program]: LEAD_PROGRAM[kind],
     });
   } catch (e) {
-    console.error('[airtable] protokol lead', e);
+    console.error(`[airtable] ${kind} lead`, e);
   }
 }
 

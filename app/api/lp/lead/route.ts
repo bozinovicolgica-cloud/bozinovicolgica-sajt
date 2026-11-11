@@ -106,6 +106,7 @@ export async function POST(req: NextRequest) {
       }).catch((e) => console.error(e));
     }
     await syncProtokolLeadToAirtable({
+      kind: "protokol",
       id: lead.id,
       name: name!,
       phone: phone!,

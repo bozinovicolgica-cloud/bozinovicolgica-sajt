@@ -4,6 +4,7 @@ import { apply } from '@/lib/content';
 import { supabase } from '@/lib/server/integrations';
 import { COOKIE_QA } from '@/lib/protokol/ab';
 import { bump } from '@/lib/server/site-stats';
+import { syncProtokolLeadToAirtable } from '@/lib/server/airtable';
 
 /**
  * Prijava sa programske stranice (pop-up ApplyModal): šta te muči + kontakt,
@@ -64,6 +65,8 @@ export async function POST(req: NextRequest) {
   if (Object.keys(errors).length) return NextResponse.json({ ok: false, errors }, { status: 422 });
 
   const u = (typeof b.utm === 'object' && b.utm ? b.utm : {}) as Record<string, unknown>;
+  // probna poseta (?qa=1): ne ulazi u analitiku, a u Airtable ide sa statusom „Test“
+  const isQa = req.cookies.get(COOKIE_QA)?.value === '1';
   const now = new Date().toISOString();
   const lead = {
     // id pravimo ovde, da ode u Cal.com (metadata[leadId]) i da webhook nađe baš ovu prijavu
@@ -71,6 +74,7 @@ export async function POST(req: NextRequest) {
     experiment: EXPERIMENT,
     form_location: clip(b.source, 20) ?? 'stranica',
     who: 'me',
+    is_qa: isQa,
     symptoms,
     symptoms_other: other,
     // Forma više ne pita za nalaze; kolona ostaje u tabeli zbog prijava sa protokola.
@@ -114,10 +118,22 @@ export async function POST(req: NextRequest) {
 
   // Posle odgovora korisniku: obaveštenje Olgici (n8n, WhatsApp, Telegram...).
   // Greška ovde ne sme da obori prijavu.
-  const isQa = req.cookies.get(COOKIE_QA)?.value === '1';
   after(async () => {
     // Analitika sajta (Airtable): poslao prijavu i dobio kalendar
     if (!isQa) await bump('program', { calendar: 1 });
+    // Airtable CRM: klijent „Program lead“ + red u „Protokol prijave“ (Program = 9 dana spašavanja jetre).
+    // Lead ID = lp_leads.id, pa Cal.com webhook i hot lead alarm menjaju status baš ovog reda.
+    await syncProtokolLeadToAirtable({
+      kind: 'program',
+      id: lead.id,
+      name: name!,
+      phone: phone!,
+      email,
+      who: 'me',
+      variant: null,
+      isQa,
+      utm: { utm_source: lead.utm_source, utm_medium: lead.utm_medium, utm_campaign: lead.utm_campaign, utm_content: lead.utm_content, utm_term: lead.utm_term },
+    });
     const hook = process.env.LEAD_WEBHOOK_URL;
     if (!hook) return;
     await fetch(hook, {

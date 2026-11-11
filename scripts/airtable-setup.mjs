@@ -60,7 +60,7 @@ const orderFields = {
   'Order ID': text,
 };
 
-// Prijave sa protokol.bozinovicolgica.rs; Status menja Olgica ručno. Tegobe i nalazi ostaju samo u Supabase-u.
+// Prijave sa protokol.bozinovicolgica.rs i sa programske stranice (kolona Program); Status menja Olgica ručno. Tegobe i nalazi ostaju samo u Supabase-u.
 const leadFields = {
   Telefon: { type: 'phoneNumber' },
   Email: { type: 'email' },
@@ -72,6 +72,7 @@ const leadFields = {
   Izvor: text,
   UTM: longText,
   'Lead ID': text,
+  Program: select(['Protokol ishrane', 'blueLight2'], ['9 dana spašavanja jetre', 'greenLight2']),
 };
 
 const { tables } = await meta('tables');
