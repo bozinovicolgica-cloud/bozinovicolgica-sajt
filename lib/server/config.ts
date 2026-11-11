@@ -47,4 +47,9 @@ export const airtableConfig = () => {
 };
 
 /** Telegram bot koji Olgici javlja nove prijave (token od @BotFather, chat_id iz scripts/telegram-chat-id.mjs). */
-export const telegramConfig = () => ({ token: env('TELEGRAM_BOT_TOKEN'), chatId: env('TELEGRAM_CHAT_ID') });
+export const telegramConfig = () => ({
+  token: env('TELEGRAM_BOT_TOKEN'),
+  chatId: env('TELEGRAM_CHAT_ID'),
+  // Kopija svake poruke još nekome (npr. Vukašinu): chat_id-jevi odvojeni zarezom. Svako mora prvo da pošalje botu /start.
+  ccChatIds: env('TELEGRAM_CC_CHAT_IDS').split(',').map((s) => s.trim()).filter(Boolean),
+});

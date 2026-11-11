@@ -9,9 +9,7 @@ const waNumber = (phone: string) => {
   return d.startsWith('00') ? d.slice(2) : d.startsWith('0') ? `381${d.slice(1)}` : d;
 };
 
-async function send(text: string): Promise<boolean> {
-  const { token, chatId } = telegramConfig();
-  if (!token || !chatId) return false;
+async function sendTo(token: string, chatId: string, text: string): Promise<boolean> {
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
@@ -19,12 +17,23 @@ async function send(text: string): Promise<boolean> {
       body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true }),
       signal: AbortSignal.timeout(8000),
     });
-    if (!res.ok) console.error('[telegram]', res.status, await res.text().catch(() => ''));
+    if (!res.ok) console.error('[telegram]', chatId, res.status, await res.text().catch(() => ''));
     return res.ok;
   } catch (e) {
-    console.error('[telegram]', e);
+    console.error('[telegram]', chatId, e);
     return false;
   }
+}
+
+/** Olgici (TELEGRAM_CHAT_ID) i kopija svima iz TELEGRAM_CC_CHAT_IDS. Uspeh = stiglo Olgici. */
+async function send(text: string): Promise<boolean> {
+  const { token, chatId, ccChatIds } = telegramConfig();
+  if (!token || !chatId) return false;
+  const [main] = await Promise.all([
+    sendTo(token, chatId, text),
+    ...ccChatIds.filter((id) => id !== chatId).map((id) => sendTo(token, id, text)),
+  ]);
+  return main;
 }
 
 export type LeadContact = {
