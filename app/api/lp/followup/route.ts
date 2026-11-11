@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { programName, siteForExperiment } from "@/lib/protokol/ab";
-import { LEAD_STATUS, setProtokolLeadStatus } from "@/lib/server/airtable";
+import { LEAD_STATUS, setProtokolLeadStatus, syncQuizSessions } from "@/lib/server/airtable";
 import { telegramConfig } from "@/lib/server/config";
 import { supabase } from "@/lib/server/integrations";
 import { notifyNoBooking } from "@/lib/server/telegram";
@@ -20,8 +20,13 @@ const MINUTES = Number(process.env.LEAD_FOLLOWUP_MINUTES) || 5;
 export async function POST() {
   const db = supabase();
   if (!db) return NextResponse.json({ ok: false }, { status: 503 });
+  // Kviz korak po korak u Airtable „Kviz koraci“ (nezavisno od Telegrama). Greška ovde ne sme da zaustavi alarme.
+  const quizSessions = await syncQuizSessions(db).catch((e) => {
+    console.error("[followup] kviz koraci", e);
+    return 0;
+  });
   const { token, chatId } = telegramConfig();
-  if (!token || !chatId) return NextResponse.json({ ok: true, skipped: "telegram" });
+  if (!token || !chatId) return NextResponse.json({ ok: true, skipped: "telegram", quizSessions });
 
   const now = Date.now();
   const { data, error } = await db
@@ -71,7 +76,7 @@ export async function POST() {
     if (!l.is_qa) await bump(siteForExperiment(l.experiment), { alarm: 1 });
     sent++;
   }
-  return NextResponse.json({ ok: true, sent });
+  return NextResponse.json({ ok: true, sent, quizSessions });
 }
 
 export const GET = POST;

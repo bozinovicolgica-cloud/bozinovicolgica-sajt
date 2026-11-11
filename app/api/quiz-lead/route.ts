@@ -23,6 +23,8 @@ const Body = z.object({
   result: z.enum(['likely', 'ok', 'doctor', 'pregnant']),
   tags: z.array(z.string().max(80)).max(20).optional().default([]),
   page: z.string().max(500).optional().default(''),
+  // id prolaza kroz kviz (quiz_sessions), da se zna da je ovaj prolaz ostavio kontakt
+  sid: z.string().uuid().optional(),
 });
 
 /**
@@ -145,6 +147,13 @@ export async function POST(req: NextRequest) {
         );
       }
     }
+  }
+  if (db && d.sid) {
+    const { error: sErr } = await db
+      .from('quiz_sessions')
+      .update({ contact: hasContact, lead_id: leadId, dirty: true, updated_at: new Date().toISOString() })
+      .eq('id', d.sid);
+    if (sErr) console.error('[quiz] quiz_sessions', sErr.message);
   }
   await postWebhook('quiz', row);
   // Bez prijave u lp_leads (nema telefona, ili upis nije uspeo) kviz ostaje samo klijent u „Kviz lead“ fazi.

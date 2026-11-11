@@ -2,6 +2,7 @@ import 'server-only';
 import { startLabel } from '@/lib/order-schema';
 import { airtableConfig, quizDetails } from './config';
 import { answersText, resultShort } from '@/lib/quiz-details';
+import { quizStepLabel, quizStepQuestion } from '@/lib/quiz-steps';
 import { bump } from './site-stats';
 import type { OrderEvent } from './orders';
 
@@ -334,4 +335,88 @@ export async function setProtokolLeadStatus(leadId: string, status: string, slot
   } catch (e) {
     console.error('[airtable] protokol status', e);
   }
+}
+
+type QuizSession = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  is_qa: boolean;
+  last_step: number;
+  answered: number;
+  answers: Record<string, string | string[]> | null;
+  finished: boolean;
+  contact: boolean;
+  lead_id: string | null;
+  page: string | null;
+  user_agent: string | null;
+  airtable_id: string | null;
+};
+
+/** „11. 11. u 15:17“ po beogradskom vremenu, za naziv reda. */
+const shortWhen = (iso: string) =>
+  new Intl.DateTimeFormat('sr-Latn-RS', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Belgrade' }).format(new Date(iso));
+
+const sourceFromPage = (page: string | null) => {
+  try {
+    const p = new URL(page ?? '').searchParams;
+    return [p.get('utm_source'), p.get('utm_campaign')].filter(Boolean).join(' / ') || null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Prolazi kroz kviz koji 10 min nemaju novi korak (posetilac je stao ili završio) upisuje u
+ * Airtable „Kviz koraci“, jedan red po prolazu; ako posle nastavi, isti red se dopuni.
+ * Zove ga api/lp/followup (pg_cron svake minute). Odgovori idu samo kad je QUIZ_DETAILS=full.
+ */
+export async function syncQuizSessions(
+  db: { from: (t: string) => any },
+  { idleMinutes = 10, limit = 10 } = {},
+): Promise<number> {
+  if (!airtableConfig().enabled) return 0;
+  const cutoff = new Date(Date.now() - idleMinutes * 60_000).toISOString();
+  const { data, error } = await db
+    .from('quiz_sessions')
+    .select('*')
+    .eq('dirty', true)
+    .lt('updated_at', cutoff)
+    .order('updated_at', { ascending: true })
+    .limit(limit);
+  if (error) {
+    // najčešće: 0011_quiz_sessions.sql još nije pokrenut
+    console.error('[airtable] kviz koraci', error.message);
+    return 0;
+  }
+  const full = quizDetails() === 'full';
+  const table = airtableConfig().quizSteps;
+  let done = 0;
+  for (const s of (data ?? []) as QuizSession[]) {
+    if (/(bot|crawl|spider|headless)/i.test(s.user_agent ?? '')) {
+      await db.from('quiz_sessions').update({ dirty: false }).eq('id', s.id);
+      continue;
+    }
+    try {
+      const recId = await save(table, s.airtable_id, {
+        Sesija: `${shortWhen(s.created_at)} · ${s.id.slice(0, 6)}`,
+        'Početak': s.created_at,
+        'Poslednji korak': s.updated_at,
+        'Stao na': quizStepLabel(s.last_step),
+        Korak: s.last_step + 1,
+        Pitanje: quizStepQuestion(s.last_step),
+        'Odgovoreno pitanja': s.answered,
+        'Ostavio kontakt': s.contact,
+        'Lead ID': s.lead_id,
+        Izvor: sourceFromPage(s.page),
+        Test: s.is_qa,
+        Odgovori: full ? answersText(s.answers) : undefined,
+      });
+      await db.from('quiz_sessions').update({ dirty: false, airtable_id: recId }).eq('id', s.id).lte('updated_at', s.updated_at);
+      done++;
+    } catch (e) {
+      console.error('[airtable] kviz koraci', s.id, e);
+    }
+  }
+  return done;
 }

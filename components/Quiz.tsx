@@ -13,6 +13,7 @@ import { QUIZ_NOTE } from '@/lib/legal';
 import { CTRY_COOKIE, DEFAULT_ISO, dialForCountry, fullPhone, OTHER_COUNTRIES, TOP_COUNTRIES } from '@/lib/phone';
 import { COMPANY, EMAIL } from '@/lib/site';
 import { track } from '@/lib/track';
+import { QUIZ_STEP_CONTACT, QUIZ_STEP_RESULT, sendQuizStep } from '@/lib/quiz-steps';
 import ModalShell from './ModalShell';
 import { img } from '@/lib/images';
 
@@ -74,6 +75,23 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
   // id prijave iz /api/quiz-lead: ide u Cal.com, da zakazan poziv nađe baš ovu prijavu
   const [leadId, setLeadId] = useState<string | undefined>();
   const saved = useRef(false);
+  // prolaz kroz kviz (quiz_sessions): id od klika na „Započni kviz“ i najdalji korak do sada
+  const sid = useRef<string | null>(null);
+  const reached = useRef(-1);
+  const newSession = () => {
+    try { sid.current = crypto.randomUUID(); } catch { sid.current = null; }
+    reached.current = -1;
+  };
+
+  // svaki novi korak (pitanje, kontakt forma, rezultat) ide u bazu, sa odgovorima do tada
+  useEffect(() => {
+    if (!open || !sid.current) return;
+    const idx = typeof step === 'number' ? step : step === 'lead' ? QUIZ_STEP_CONTACT : step === 'result' ? QUIZ_STEP_RESULT : -1;
+    if (idx < 0 || idx <= reached.current) return;
+    reached.current = idx;
+    sendQuizStep(sid.current, idx, ans);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, open]);
 
   // kao u originalu: ako je kviz završen, sledeće otvaranje kreće od početka
   useEffect(() => {
@@ -94,7 +112,7 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
     if (f && (typeof step === 'number' || step === 'lead' || step === 'result')) try { f.focus({ preventScroll: true }); } catch {}
   }, [step, open]);
 
-  const restart = () => { setAns({}); setStep(0); setEmailed(false); setLeadId(undefined); saved.current = false; };
+  const restart = () => { newSession(); setAns({}); setStep(0); setEmailed(false); setLeadId(undefined); saved.current = false; };
 
   const showResult = () => {
     setStep('loading');
@@ -120,6 +138,7 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
       result: r.result,
       tags: r.tags,
       page: typeof location !== 'undefined' ? location.href : '',
+      sid: sid.current ?? undefined,
     };
     fetch('/api/quiz-lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), keepalive: true })
       .then((res) => res.json())
@@ -200,7 +219,7 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
         <p className="oq-p">Odgovori na {Q.length} kratkih pitanja o tome kako se osećaš. Na kraju vidiš svoj rezultat, šta obično stoji iza tvojih simptoma i šta ti predlažem da uradiš.</p>
         <div className="oq-meta"><span className="oq-pill">Traje 2 minuta</span><span className="oq-pill">{Q.length} pitanja</span><span className="oq-pill">Rezultat odmah</span></div>
         <div className="oq-nav" style={{ marginTop: 32 }}>
-          <button type="button" className="oq-btn oq-arrow" data-oq="start" onClick={() => { setStep(0); track('liver_quiz_start'); }}><span>Započni kviz</span><Arrow color="#FFFFFF" /></button>
+          <button type="button" className="oq-btn oq-arrow" data-oq="start" onClick={() => { newSession(); setStep(0); track('liver_quiz_start'); }}><span>Započni kviz</span><Arrow color="#FFFFFF" /></button>
         </div>
         <p className="oq-fine">Kviz ne postavlja dijagnozu i ne zamenjuje pregled kod lekara.</p>
       </div>
