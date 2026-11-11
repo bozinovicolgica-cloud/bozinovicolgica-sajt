@@ -73,6 +73,11 @@ const leadFields = {
   UTM: longText,
   'Lead ID': text,
   Program: select(['Protokol ishrane', 'blueLight2'], ['9 dana spašavanja jetre', 'greenLight2']),
+  Forma: select(['Protokol forma', 'blueLight2'], ['Prijava (program)', 'greenLight2'], ['Kviz', 'purpleLight2']),
+  // podaci o zdravlju: popunjavaju se samo kad je QUIZ_DETAILS uključen
+  'Ocena (0-100)': { type: 'number', options: { precision: 0 } },
+  'Rezultat kviza': select(['Preopterećena jetra', 'orangeLight2'], ['Jetra u redu', 'greenLight2'], ['Alarmni znaci, prvo lekar', 'redLight2'], ['Trudnoća ili dojenje', 'grayLight2']),
+  'Odgovori iz kviza': longText,
 };
 
 const { tables } = await meta('tables');

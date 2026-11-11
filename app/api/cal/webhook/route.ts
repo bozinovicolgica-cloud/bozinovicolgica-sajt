@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
-import { programName } from "@/lib/protokol/ab";
+import { programName, siteForExperiment } from "@/lib/protokol/ab";
 import { LEAD_STATUS, setProtokolLeadStatus } from "@/lib/server/airtable";
 import { supabase } from "@/lib/server/integrations";
 import { notifyBooking } from "@/lib/server/telegram";
@@ -23,6 +23,10 @@ type Lead = {
   experiment: string;
   utm_source: string | null;
   utm_campaign: string | null;
+  // iz 0010_quiz_in_lp_leads.sql; pre migracije ih nema
+  quiz_rating?: number | null;
+  quiz_result?: string | null;
+  quiz_answers?: Record<string, string | string[]> | null;
 };
 
 /**
@@ -59,7 +63,7 @@ export async function POST(req: Request) {
   if (db && (leadId || att.email)) {
     let q = db
       .from("lp_leads")
-      .select("id, name, phone, email, who, is_qa, visitor_id, variant, experiment, utm_source, utm_campaign");
+      .select("*"); // * a ne spisak kolona: quiz_* postoje tek posle 0010
     q = leadId
       ? q.eq("id", leadId)
       : q.ilike("email", String(att.email)).gt("created_at", new Date(Date.now() - 30 * 86_400_000).toISOString());
@@ -84,7 +88,7 @@ export async function POST(req: Request) {
         .insert({ experiment: lead.experiment, variant: lead.variant, visitor_id: lead.visitor_id, event: "booking", props: {}, is_qa: lead.is_qa })
         .then(({ error }) => error && console.error("[cal] event", error));
     }
-    if (kind === "created" && !lead.is_qa) await bump(lead.experiment === "program-9-dana" ? "program" : "protokol", { booked: 1 });
+    if (kind === "created" && !lead.is_qa) await bump(siteForExperiment(lead.experiment), { booked: 1 });
     await setProtokolLeadStatus(lead.id, kind === "cancelled" ? LEAD_STATUS.cancelled : LEAD_STATUS.booked, start);
   }
 
@@ -96,6 +100,7 @@ export async function POST(req: Request) {
     program: lead ? programName(lead.experiment) : null,
     source: lead ? [lead.utm_source, lead.utm_campaign].filter(Boolean).join(" / ") || null : "Cal.com (bez prijave sa sajta)",
     isQa: lead?.is_qa ?? false,
+    quiz: lead?.quiz_result ? { rating: lead.quiz_rating ?? null, result: lead.quiz_result, answers: lead.quiz_answers ?? null } : null,
   });
   return NextResponse.json({ ok: true, matched: !!lead });
 }

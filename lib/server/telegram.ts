@@ -1,5 +1,6 @@
 import 'server-only';
-import { telegramConfig } from './config';
+import { quizDetails, telegramConfig } from './config';
+import { answersText, resultShort } from '@/lib/quiz-details';
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -45,6 +46,20 @@ export type LeadContact = {
   program?: string | null;
   source?: string | null;
   isQa?: boolean;
+  /** Kviz uz prijavu (lp_leads.quiz_*); prikazuje se samo kad QUIZ_DETAILS nije „off“. */
+  quiz?: { rating: number | null; result: string | null; answers: Record<string, string | string[]> | null } | null;
+};
+
+/** Ocena i rezultat (QUIZ_DETAILS=score), plus odgovori (QUIZ_DETAILS=full). */
+const quizLines = (l: LeadContact): string[] => {
+  const mode = quizDetails();
+  if (mode === 'off' || !l.quiz) return [];
+  const { rating, result, answers } = l.quiz;
+  const head = [rating != null ? `ocena ${rating}/100` : '', resultShort(result) ?? ''].filter(Boolean).join(', ');
+  const out = head ? ['', `🩺 Kviz: <b>${esc(head)}</b>`] : [];
+  const text = mode === 'full' ? answersText(answers) : null;
+  if (text) out.push(...text.split('\n').map((line) => `• ${esc(line)}`));
+  return out;
 };
 
 /** Termin u beogradskom vremenu, npr. „pon 3. 11. u 14:30“. */
@@ -56,7 +71,7 @@ export const when = (iso: string) => {
   return `${day} ${date} u ${time}`;
 };
 
-/** Ime, telefon sa WhatsApp linkom, email. Tegobe i nalazi (podaci o zdravlju) ne idu u Telegram. */
+/** Ime, telefon sa WhatsApp linkom, email. Podaci o zdravlju samo preko quizLines (QUIZ_DETAILS). */
 const contact = (l: LeadContact) =>
   [
     `<b>${esc(l.name)}</b>${l.who ? ` (${l.who === 'kid' ? 'za dete' : 'za sebe'})` : ''}`,
@@ -67,7 +82,7 @@ const contact = (l: LeadContact) =>
   ].filter(Boolean);
 
 const message = (title: string, l: LeadContact, extra: string[] = []) =>
-  send([`${l.isQa ? '🧪 TEST: ' : ''}${title}`, '', ...contact(l), ...extra].join('\n'));
+  send([`${l.isQa ? '🧪 TEST: ' : ''}${title}`, '', ...contact(l), ...quizLines(l), ...extra].join('\n'));
 
 /** Prijava bez zakazanog poziva posle LEAD_FOLLOWUP_MINUTES: Olgica treba da pozove. */
 export const notifyNoBooking = (l: LeadContact, minutes: number) =>

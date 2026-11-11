@@ -53,3 +53,15 @@ export const telegramConfig = () => ({
   // Kopija svake poruke još nekome (npr. Vukašinu): chat_id-jevi odvojeni zarezom. Svako mora prvo da pošalje botu /start.
   ccChatIds: env('TELEGRAM_CC_CHAT_IDS').split(',').map((s) => s.trim()).filter(Boolean),
 });
+
+/**
+ * Da li ocena, rezultat i odgovori iz kviza (podaci o zdravlju) idu u Airtable i na Telegram.
+ *   off   (podrazumevano) samo ime, kontakt, status i oznaka da je lead iz kviza
+ *   score + ocena 0–100 i rezultat
+ *   full  + i odgovori pitanje po pitanje
+ * U Supabase-u se sve čuva uvek. Uključuje se tek uz Olgičinu saglasnost i ažuriran tekst saglasnosti.
+ */
+export const quizDetails = (): 'off' | 'score' | 'full' => {
+  const v = env('QUIZ_DETAILS').toLowerCase();
+  return v === 'full' || v === 'score' ? v : 'off';
+};

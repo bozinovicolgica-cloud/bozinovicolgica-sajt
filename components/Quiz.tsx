@@ -71,12 +71,14 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
   const [lead, setLead] = useState({ name: '', ctry: DEFAULT_ISO, phone: '', email: '', consent: false });
   const [leadErr, setLeadErr] = useState('');
   const [emailed, setEmailed] = useState(false);
+  // id prijave iz /api/quiz-lead: ide u Cal.com, da zakazan poziv nađe baš ovu prijavu
+  const [leadId, setLeadId] = useState<string | undefined>();
   const saved = useRef(false);
 
   // kao u originalu: ako je kviz završen, sledeće otvaranje kreće od početka
   useEffect(() => {
     if (!open) return;
-    if (step === 'result' || step === 'loading') { setStep(-1); setAns({}); setEmailed(false); saved.current = false; }
+    if (step === 'result' || step === 'loading') { setStep(-1); setAns({}); setEmailed(false); setLeadId(undefined); saved.current = false; }
     // Država posetioca iz kolačića koji upisuje proxy.ts, da dijaspora ne bira pozivni broj ručno.
     const iso = document.cookie.match(new RegExp(`(?:^|; )${CTRY_COOKIE}=([A-Za-z]{2})`))?.[1];
     if (iso && iso.toUpperCase() !== DEFAULT_ISO) setLead((l) => ({ ...l, ctry: iso.toUpperCase() }));
@@ -92,7 +94,7 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
     if (f && (typeof step === 'number' || step === 'lead' || step === 'result')) try { f.focus({ preventScroll: true }); } catch {}
   }, [step, open]);
 
-  const restart = () => { setAns({}); setStep(0); setEmailed(false); saved.current = false; };
+  const restart = () => { setAns({}); setStep(0); setEmailed(false); setLeadId(undefined); saved.current = false; };
 
   const showResult = () => {
     setStep('loading');
@@ -121,7 +123,7 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
     };
     fetch('/api/quiz-lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), keepalive: true })
       .then((res) => res.json())
-      .then((j) => { if (j?.emailed) setEmailed(true); })
+      .then((j) => { if (j?.emailed) setEmailed(true); if (typeof j?.leadId === 'string') setLeadId(j.leadId); })
       .catch(() => {});
   };
 
@@ -301,6 +303,7 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
           <CalEmbed
             className="oq-cal"
             calLink={CAL_LINK}
+            leadId={leadId}
             onBooking={() => track('liver_quiz_booking', {}, 'Schedule')}
             prefill={{ name: lead.name.trim(), email: lead.email.trim(), phone: fullPhone(dialForCountry(lead.ctry), lead.phone) }}
           />

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { programName } from "@/lib/protokol/ab";
+import { programName, siteForExperiment } from "@/lib/protokol/ab";
 import { LEAD_STATUS, setProtokolLeadStatus } from "@/lib/server/airtable";
 import { telegramConfig } from "@/lib/server/config";
 import { supabase } from "@/lib/server/integrations";
@@ -46,7 +46,7 @@ export async function POST() {
       .eq("id", id)
       .is("followup_sent_at", null)
       .is("booked_at", null)
-      .select("name, phone, email, who, is_qa, experiment, utm_source, utm_campaign");
+      .select("*"); // * a ne spisak kolona: quiz_* postoje tek posle 0010, a upit ne sme da pukne bez njih
     const l = claimed?.[0];
     if (!l) continue;
     const ok = await notifyNoBooking(
@@ -58,6 +58,7 @@ export async function POST() {
         program: programName(l.experiment),
         source: [l.utm_source, l.utm_campaign].filter(Boolean).join(" / ") || null,
         isQa: l.is_qa,
+        quiz: l.quiz_result ? { rating: l.quiz_rating ?? null, result: l.quiz_result, answers: l.quiz_answers ?? null } : null,
       },
       MINUTES,
     );
@@ -67,7 +68,7 @@ export async function POST() {
       continue;
     }
     await setProtokolLeadStatus(id, LEAD_STATUS.call);
-    if (!l.is_qa) await bump(l.experiment === "program-9-dana" ? "program" : "protokol", { alarm: 1 });
+    if (!l.is_qa) await bump(siteForExperiment(l.experiment), { alarm: 1 });
     sent++;
   }
   return NextResponse.json({ ok: true, sent });

@@ -1,6 +1,7 @@
 import 'server-only';
 import { startLabel } from '@/lib/order-schema';
-import { airtableConfig } from './config';
+import { airtableConfig, quizDetails } from './config';
+import { answersText, resultShort } from '@/lib/quiz-details';
 import { bump } from './site-stats';
 import type { OrderEvent } from './orders';
 
@@ -60,6 +61,10 @@ export const F = {
     leadId: 'Lead ID',
     slot: 'Termin poziva',
     program: 'Program',
+    form: 'Forma',
+    rating: 'Ocena (0-100)',
+    quizResult: 'Rezultat kviza',
+    answers: 'Odgovori iz kviza',
   },
 } as const;
 
@@ -253,7 +258,10 @@ export const LEAD_STATUS = {
 } as const;
 
 /** Naziv programa u koloni „Program“ tabele „Protokol prijave“ (u njoj su prijave sa oba sajta). */
-export const LEAD_PROGRAM = { protokol: 'Protokol ishrane', program: '9 dana spašavanja jetre' } as const;
+export const LEAD_PROGRAM = { protokol: 'Protokol ishrane', program: '9 dana spašavanja jetre', kviz: '9 dana spašavanja jetre' } as const;
+/** Kolona „Forma“: sa koje forme je prijava stigla. */
+export const LEAD_FORM = { protokol: 'Protokol forma', program: 'Prijava (program)', kviz: 'Kviz' } as const;
+const LEAD_STAGE = { protokol: STAGES.protokol, program: STAGES.program, kviz: STAGES.quiz } as const;
 
 /**
  * Prijava sa protokol.bozinovicolgica.rs ili sa programske stranice (program.bozinovicolgica.rs, ApplyModal):
@@ -269,22 +277,27 @@ export async function syncProtokolLeadToAirtable(lead: {
   variant: string | null;
   isQa: boolean;
   utm: Record<string, string | null>;
-  kind?: 'protokol' | 'program';
+  kind?: 'protokol' | 'program' | 'kviz';
+  /** Samo za kviz; u Airtable ide po QUIZ_DETAILS (podaci o zdravlju). */
+  quiz?: { rating: number; result: string; answers: Record<string, string | string[]> } | null;
 }): Promise<void> {
   if (!airtableConfig().enabled) return;
   const kind = lead.kind ?? 'protokol';
   try {
     const utm = Object.fromEntries(Object.entries(lead.utm).filter(([, v]) => v)) as Record<string, string>;
     const source = utm.utm_source ? [utm.utm_source, utm.utm_campaign].filter(Boolean).join(' / ') : kind;
-    const clientId = await upsertClient({ email: lead.email, phone: lead.phone }, STAGES[kind], {
+    const clientId = await upsertClient({ email: lead.email, phone: lead.phone }, LEAD_STAGE[kind], {
       fill: {
         [F.client.name]: lead.name,
         [F.client.phone]: lead.phone,
-        [F.client.source]: source,
+        // kod klijenta Izvor ostaje „kviz“ kao i do sada; reklama je u redu prijave
+        [F.client.source]: kind === 'kviz' ? 'kviz' : source,
         [F.client.utm]: utmText(utm),
       },
     });
     const l = F.lead;
+    const mode = quizDetails();
+    const q = mode !== 'off' ? lead.quiz : null;
     await save(airtableConfig().leads, null, {
       [l.name]: lead.name,
       [l.client]: [clientId],
@@ -298,6 +311,10 @@ export async function syncProtokolLeadToAirtable(lead: {
       [l.utm]: utmText(utm),
       [l.leadId]: lead.id,
       [l.program]: LEAD_PROGRAM[kind],
+      [l.form]: LEAD_FORM[kind],
+      [l.rating]: q?.rating,
+      [l.quizResult]: q ? resultShort(q.result) : undefined,
+      [l.answers]: q && mode === 'full' ? answersText(q.answers) : undefined,
     });
   } catch (e) {
     console.error(`[airtable] ${kind} lead`, e);

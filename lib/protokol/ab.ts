@@ -35,6 +35,11 @@ export type EventName = (typeof EVENT_NAMES)[number];
  */
 export const PROGRAM_NAMES: Record<string, string> = {
   'program-9-dana': '9 dana spašavanja jetre',
+  'kviz-jetra': '9 dana spašavanja jetre (kviz)',
 };
 export const programName = (experiment: string | null | undefined) =>
   (experiment && PROGRAM_NAMES[experiment]) || 'Protokol ishrane';
+
+/** Kom sajtu pripada prijava, za „Analitika sajta“: kviz i prijava su na programskoj stranici. */
+export const siteForExperiment = (experiment: string | null | undefined): 'program' | 'protokol' =>
+  experiment === 'program-9-dana' || experiment === 'kviz-jetra' ? 'program' : 'protokol';

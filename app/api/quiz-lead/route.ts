@@ -1,9 +1,12 @@
-import { after, NextResponse } from 'next/server';
+import { randomUUID } from 'node:crypto';
+import { after, NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
-import { syncQuizLeadToAirtable } from '@/lib/server/airtable';
+import { syncProtokolLeadToAirtable, syncQuizLeadToAirtable } from '@/lib/server/airtable';
+import { COOKIE_QA, COOKIE_VISITOR } from '@/lib/protokol/ab';
+import { quizRating } from '@/lib/quiz-details';
 import { postWebhook, sendEmail, supabase } from '@/lib/server/integrations';
 import { quizResultEmail } from '@/lib/server/emails';
-import { evaluate } from '@/lib/quiz-data';
+import { evaluate, readableAnswers } from '@/lib/quiz-data';
 import { clientIp, limited } from '@/lib/server/rate-limit';
 
 export const runtime = 'nodejs';
@@ -36,7 +39,31 @@ async function insertLead(db: NonNullable<ReturnType<typeof supabase>>, row: Rec
   return (await db.from('quiz_leads').insert(bez)).error;
 }
 
-export async function POST(req: Request) {
+const UUID = /^[0-9a-f-]{36}$/i;
+const PHONE = /^\+?[0-9][0-9 /-]{7,}$/;
+
+/** UTM i fbclid iz adrese stranice na kojoj je rađen kviz. */
+function utmFrom(page: string): Record<string, string | null> {
+  const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid'] as const;
+  let p: URLSearchParams | null = null;
+  try { p = new URL(page).searchParams; } catch {}
+  return Object.fromEntries(keys.map((k) => [k, p?.get(k)?.slice(0, k.endsWith('clid') ? 300 : 200) || null]));
+}
+
+/**
+ * Kviz sa telefonom je i prijava u lp_leads (experiment 'kviz-jetra'): tako ga pokriva isti hot lead
+ * alarm (api/lp/followup), Cal.com webhook i red u Airtable „Protokol prijave“ kao prijavu sa stranice.
+ * Kolone quiz_* donosi 0010_quiz_in_lp_leads.sql; pre nje se prijava upisuje bez njih.
+ */
+async function insertLpLead(db: NonNullable<ReturnType<typeof supabase>>, row: Record<string, unknown>) {
+  const { error } = await db.from('lp_leads').insert(row);
+  if (!error || !error.message?.includes('quiz_')) return error;
+  console.warn('lp_leads još nema kolone quiz_* (migracija 0010); prijava iz kviza upisana bez njih:', error.message);
+  const { quiz_score: _a, quiz_rating: _b, quiz_result: _c, quiz_answers: _d, ...bez } = row;
+  return (await db.from('lp_leads').insert(bez)).error;
+}
+
+export async function POST(req: NextRequest) {
   if (limited(`quiz:${clientIp(req)}`, 12, 10 * 60_000)) {
     return NextResponse.json({ ok: false }, { status: 429 });
   }
@@ -62,13 +89,66 @@ export async function POST(req: Request) {
     user_agent: req.headers.get('user-agent')?.slice(0, 300) ?? null,
   };
 
+  // Ocena se računa ponovo na serveru, iz samih odgovora, a ne uzima iz browsera.
+  const ev = evaluate(d.answers);
+  const readable = readableAnswers(d.answers);
+  const isQa = req.cookies.get(COOKIE_QA)?.value === '1';
+  const visitor = req.cookies.get(COOKIE_VISITOR)?.value;
+
   const db = supabase();
+  let leadId: string | null = null;
   if (db) {
     const error = await insertLead(db, row);
     if (error) console.error('[quiz] supabase', error);
+
+    if (hasContact && row.phone && PHONE.test(row.phone)) {
+      const utm = utmFrom(d.page);
+      const now = new Date().toISOString();
+      const lp = {
+        id: randomUUID(),
+        experiment: 'kviz-jetra',
+        visitor_id: visitor && UUID.test(visitor) ? visitor : null,
+        is_qa: isQa,
+        form_location: 'kviz',
+        who: 'me',
+        symptoms: d.tags,
+        name: row.name || d.email,
+        phone: row.phone,
+        email: d.email,
+        consent: true,
+        consent_at: now,
+        ...utm,
+        referrer: d.page ? d.page.slice(0, 300) : null,
+        user_agent: row.user_agent,
+        quiz_score: ev.score,
+        quiz_rating: quizRating(ev.score),
+        quiz_result: ev.result,
+        quiz_answers: readable,
+      };
+      const lpError = await insertLpLead(db, lp);
+      if (lpError) console.error('[quiz] lp_leads', lpError);
+      else leadId = lp.id;
+      if (!lpError) {
+        after(() =>
+          syncProtokolLeadToAirtable({
+            kind: 'kviz',
+            id: lp.id,
+            name: lp.name,
+            phone: lp.phone,
+            email: d.email,
+            who: 'me',
+            variant: null,
+            isQa,
+            utm: { utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, utm_content: utm.utm_content, utm_term: utm.utm_term },
+            quiz: { rating: quizRating(ev.score), result: ev.result, answers: readable },
+          }),
+        );
+      }
+    }
   }
   await postWebhook('quiz', row);
-  if (hasContact) after(() => syncQuizLeadToAirtable({ name: row.name, phone: row.phone, email: d.email }));
+  // Bez prijave u lp_leads (nema telefona, ili upis nije uspeo) kviz ostaje samo klijent u „Kviz lead“ fazi.
+  if (hasContact && !leadId) after(() => syncQuizLeadToAirtable({ name: row.name, phone: row.phone, email: d.email }));
 
   let emailed = false;
   if (hasContact) {
@@ -76,5 +156,5 @@ export async function POST(req: Request) {
     const m = quizResultEmail(d.name, evaluate(d.answers), d.answers);
     emailed = await sendEmail(d.email, m.subject, m.html);
   }
-  return NextResponse.json({ ok: true, emailed });
+  return NextResponse.json({ ok: true, emailed, leadId });
 }
