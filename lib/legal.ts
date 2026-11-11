@@ -6,7 +6,7 @@
 import { COMPANY, EMAIL, SITE } from './site';
 
 /** Datum poslednje izmene pravnih stranica. */
-export const LEGAL_UPDATED = '29. 10. 2026.';
+export const LEGAL_UPDATED = '11. 11. 2026.';
 
 export const LINKS = {
   terms: `${SITE}/uslovi-kupovine`,

@@ -156,7 +156,7 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
     const email = lead.email.trim();
     if (!/^\+?[0-9][0-9 /-]{7,}$/.test(fullPhone(dialForCountry(lead.ctry), lead.phone))) { setLeadErr('Upiši broj telefona, na primer 64 123 4567.'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setLeadErr('Upiši ispravnu email adresu.'); return; }
-    if (!lead.consent) { setLeadErr('Potrebna je tvoja saglasnost da bih ti poslala rezultat na email.'); return; }
+    if (!lead.consent) { setLeadErr('Potrebna je tvoja saglasnost da bih ti poslala rezultat i da bismo mogli da te pozovemo.'); return; }
     setLeadErr('');
     track('liver_quiz_lead', {}, 'Lead');
     save();
@@ -272,7 +272,7 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
           </label>
           <label className="of-check">
             <input type="checkbox" checked={lead.consent} onChange={(e) => setLead({ ...lead, consent: e.target.checked })} />
-            <span>Izričito pristajem da Olgica Božinović i {COMPANY.name} uz moje ime, broj telefona i email čuvaju odgovore iz kviza, koji su podaci o zdravlju, i da mi pošalju rezultat i savete za ishranu na email. Pristanak mogu da povučem i da se odjavim u svakom trenutku na {EMAIL}. <a href="/politika-privatnosti" target="_blank">Politika privatnosti</a></span>
+            <span>Izričito pristajem da Olgica Božinović i {COMPANY.name} uz moje ime, broj telefona i email čuvaju odgovore iz kviza, koji su podaci o zdravlju, da ih Olgica i njen tim vide u evidenciji klijenata (Airtable) i obaveštenjima (Telegram) da bi me pozvali, i da mi pošalju rezultat i savete za ishranu na email. Znam da se ovi podaci čuvaju i kod pružalaca usluga u SAD. Pristanak mogu da povučem i da se odjavim u svakom trenutku na {EMAIL}. <a href="/politika-privatnosti" target="_blank">Politika privatnosti</a></span>
           </label>
           {leadErr && <p className="of-error" role="alert">{leadErr}</p>}
           <div className="oq-nav">

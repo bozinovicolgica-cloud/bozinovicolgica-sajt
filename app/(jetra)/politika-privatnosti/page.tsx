@@ -23,7 +23,7 @@ export default function Page() {
         <li><b>Napomena o lekovima i dijagnozi:</b> podatak o zdravlju. Čuvamo je samo ako je upišeš i posebnim čekboksom izričito pristaneš, da bismo program prilagodili tebi. Osnov: tvoj izričit pristanak.</li>
         <li><b>Dokaz o kupovini:</b> datum i vreme kupovine, potvrda da si tražila da program počne odmah (čekboks za odustanak) i datumi kada su stigli prvi i poslednji video. Osnov: zakonska obaveza i zaštita naših prava.</li>
         <li><b>Plaćanje:</b> obrađuje ga Stripe. Podatke o kartici unosiš direktno kod Stripe-a; mi ih ne vidimo. Od Stripe-a dobijamo potvrdu plaćanja, iznos, email i ime sa kartice.</li>
-        <li><b>Kviz o jetri:</b> odgovori su podaci o zdravlju. Bez kontakta čuvamo ih anonimno, za statistiku. Ime, broj telefona i email čuvamo uz odgovore samo ako ih ostaviš i štikliraš izričit pristanak; tada ti šaljemo rezultat i savete za ishranu na email. Rezultat kviza se računa automatski, ali nije dijagnoza i nema nikakve posledice po tebe.</li>
+        <li><b>Kviz o jetri:</b> odgovori su podaci o zdravlju. Bez kontakta čuvamo ih anonimno, za statistiku. Ime, broj telefona i email čuvamo uz odgovore samo ako ih ostaviš i štikliraš izričit pristanak; tada ti šaljemo rezultat i savete za ishranu na email, a Olgica i njen tim vide ocenu, rezultat i odgovore u evidenciji klijenata (Airtable) i u obaveštenju na Telegramu, da bi te pozvali. Rezultat kviza se računa automatski, ali nije dijagnoza i nema nikakve posledice po tebe.</li>
         <li><b>Prijava za Protokol ishrane:</b> za koga je protokol, tegobe koje izabereš, koje nalaze imaš, ime, telefon i email. Posle prijave na online pozivu i u porukama šalješ nalaze, izveštaj lekara i terapiju. Osnov: tvoj izričit pristanak za podatke o zdravlju.</li>
         <li><b>Podaci o detetu:</b> unosi ih samo roditelj ili zakonski zastupnik, uz izričit pristanak u ime deteta.</li>
         <li><b>Poruke:</b> email, WhatsApp, Viber i Instagram poruke koje nam pošalješ. Svrha: podrška i odgovor na pitanja.</li>
@@ -38,11 +38,11 @@ export default function Page() {
         <li>Supabase (baza porudžbina i prijava, [region])</li>
         <li>Stripe (plaćanje, SAD i Irska)</li>
         <li>Resend (slanje emailova, SAD; slanje iz EU)</li>
-        <li>Airtable (evidencija klijenata, SAD): samo ime, kontakt i status porudžbine, bez podataka o zdravlju</li>
+        <li>Airtable (evidencija klijenata, SAD): ime, kontakt, status porudžbine i prijave, a za kviz uz tvoj izričit pristanak i ocena, rezultat i odgovori iz kviza</li>
         <li>Meta (Meta Pixel uz pristanak; WhatsApp i Instagram poruke) i Google (analitika uz pristanak)</li>
         <li>DataFast (analitika poseta, uz pristanak)</li>
         <li>Cal.com (zakazivanje online poziva posle prijave za Protokol ishrane, SAD): ime, email, telefon i termin, bez podataka o zdravlju</li>
-        <li>Telegram (obaveštenje Olgici o zakazanom pozivu ili prijavi bez termina: samo ime i kontakt, bez podataka o zdravlju)</li>
+        <li>Telegram (obaveštenje Olgici i njenom timu o zakazanom pozivu ili prijavi bez termina: ime i kontakt, a za kviz uz tvoj izričit pristanak i ocena, rezultat i odgovori iz kviza)</li>
         <li>[Tally, ManyChat i alat za newsletter, ako se koriste: navesti šta tačno vide]</li>
       </ul>
       <p>Podatke ne prodajemo i ne ustupamo trećim licima u druge svrhe.</p>
