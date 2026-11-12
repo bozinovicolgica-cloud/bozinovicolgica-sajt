@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
   // Telegram Olgici ide tek kad zakaže poziv (api/cal/webhook) ili ako ne zakaže (api/lp/followup).
   // Greška ovde ne sme da obori prijavu.
   after(async () => {
-    if (!ctx.isQa) await bump("protokol", { calendar: 1 });
+    if (!ctx.isQa) await bump("protokol", { calendar: 1, leads: 1 });
     if (ctx.variant && ctx.visitorId) {
       await insertRow("lp_events", {
         experiment: ctx.experiment,
