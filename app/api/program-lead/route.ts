@@ -119,8 +119,8 @@ export async function POST(req: NextRequest) {
   // Posle odgovora korisniku: obaveštenje Olgici (n8n, WhatsApp, Telegram...).
   // Greška ovde ne sme da obori prijavu.
   after(async () => {
-    // Analitika sajta (Airtable): poslao prijavu i dobio kalendar
-    if (!isQa) await bump('program', { calendar: 1 });
+    // Analitika sajta (Airtable): poslao prijavu (lid) i dobio kalendar
+    if (!isQa) await bump('program', { calendar: 1, leads: 1 });
     // Airtable CRM: klijent „Program lead“ + red u „Protokol prijave“ (Program = 9 dana spašavanja jetre).
     // Lead ID = lp_leads.id, pa Cal.com webhook i hot lead alarm menjaju status baš ovog reda.
     await syncProtokolLeadToAirtable({
