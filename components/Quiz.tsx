@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { CAL_LINK } from '@/lib/content';
 import { CalEmbed } from './protokol/CalEmbed';
+import { storedUtm } from '@/lib/utm';
 import {
   Q, RESULT_TITLES, RESULT_INTROS, CALL_BOX, SECTIONS,
   LIKELY_AFTER_TIPS, OK_AFTER_CHIPS, PREGNANT_AFTER, PREVENT_BTN, PREVENT_TEXT, SCALE_HIGH, SCALE_LOW,
@@ -138,6 +139,7 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
       result: r.result,
       tags: r.tags,
       page: typeof location !== 'undefined' ? location.href : '',
+      utm: storedUtm(),
       sid: sid.current ?? undefined,
     };
     fetch('/api/quiz-lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), keepalive: true })
