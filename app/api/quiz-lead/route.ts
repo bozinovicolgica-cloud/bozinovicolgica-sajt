@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { after, NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { syncProtokolLeadToAirtable, syncQuizLeadToAirtable } from '@/lib/server/airtable';
+import { bump } from '@/lib/server/site-stats';
 import { COOKIE_QA, COOKIE_VISITOR } from '@/lib/protokol/ab';
 import { quizRating } from '@/lib/quiz-details';
 import { postWebhook, sendEmail, supabase } from '@/lib/server/integrations';
@@ -23,6 +24,8 @@ const Body = z.object({
   result: z.enum(['likely', 'ok', 'doctor', 'pregnant']),
   tags: z.array(z.string().max(80)).max(20).optional().default([]),
   page: z.string().max(500).optional().default(''),
+  // UTM sa ulaska na sajt (sessionStorage ob_utm), za slučaj da adresa kviza više nema UTM
+  utm: z.record(z.string(), z.string().max(300)).optional().default({}),
   // id prolaza kroz kviz (quiz_sessions), da se zna da je ovaj prolaz ostavio kontakt
   sid: z.string().uuid().optional(),
 });
@@ -44,12 +47,18 @@ async function insertLead(db: NonNullable<ReturnType<typeof supabase>>, row: Rec
 const UUID = /^[0-9a-f-]{36}$/i;
 const PHONE = /^\+?[0-9][0-9 /-]{7,}$/;
 
-/** UTM i fbclid iz adrese stranice na kojoj je rađen kviz. */
-function utmFrom(page: string): Record<string, string | null> {
+/**
+ * UTM i fbclid iz adrese stranice na kojoj je rađen kviz. Ako adresa nema nijedan utm_ parametar
+ * (posetilac je posle reklame prošetao po sajtu), uzima se UTM zapamćen na ulasku (`stored`).
+ * Dva izvora se ne mešaju, da utm_content jedne reklame ne završi uz utm_campaign druge.
+ */
+function utmFrom(page: string, stored: Record<string, string> = {}): Record<string, string | null> {
   const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid'] as const;
   let p: URLSearchParams | null = null;
   try { p = new URL(page).searchParams; } catch {}
-  return Object.fromEntries(keys.map((k) => [k, p?.get(k)?.slice(0, k.endsWith('clid') ? 300 : 200) || null]));
+  const fromPage = keys.some((k) => k.startsWith('utm_') && p?.get(k));
+  const get = (k: string) => (fromPage ? p?.get(k) : stored[k] || p?.get(k)) || null;
+  return Object.fromEntries(keys.map((k) => [k, get(k)?.slice(0, k.endsWith('clid') ? 300 : 200) || null]));
 }
 
 /**
@@ -104,7 +113,7 @@ export async function POST(req: NextRequest) {
     if (error) console.error('[quiz] supabase', error);
 
     if (hasContact && row.phone && PHONE.test(row.phone)) {
-      const utm = utmFrom(d.page);
+      const utm = utmFrom(d.page, d.utm);
       const now = new Date().toISOString();
       const lp = {
         id: randomUUID(),
@@ -131,8 +140,10 @@ export async function POST(req: NextRequest) {
       if (lpError) console.error('[quiz] lp_leads', lpError);
       else leadId = lp.id;
       if (!lpError) {
-        after(() =>
-          syncProtokolLeadToAirtable({
+        after(async () => {
+          // Analitika sajta: lid iz kviza (kviz ne prolazi kroz Kliknuli dugme / Počeli formu / Korak 2)
+          if (!isQa) await bump('program', { leads: 1, quizLeads: 1 });
+          await syncProtokolLeadToAirtable({
             kind: 'kviz',
             id: lp.id,
             name: lp.name,
@@ -143,8 +154,8 @@ export async function POST(req: NextRequest) {
             isQa,
             utm: { utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, utm_content: utm.utm_content, utm_term: utm.utm_term },
             quiz: { rating: quizRating(ev.score), result: ev.result, answers: readable },
-          }),
-        );
+          });
+        });
       }
     }
   }
@@ -157,7 +168,12 @@ export async function POST(req: NextRequest) {
   }
   await postWebhook('quiz', row);
   // Bez prijave u lp_leads (nema telefona, ili upis nije uspeo) kviz ostaje samo klijent u „Kviz lead“ fazi.
-  if (hasContact && !leadId) after(() => syncQuizLeadToAirtable({ name: row.name, phone: row.phone, email: d.email }));
+  if (hasContact && !leadId) {
+    after(async () => {
+      if (!isQa) await bump('program', { leads: 1, quizLeads: 1 });
+      await syncQuizLeadToAirtable({ name: row.name, phone: row.phone, email: d.email });
+    });
+  }
 
   let emailed = false;
   if (hasContact) {
