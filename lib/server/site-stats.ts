@@ -22,6 +22,8 @@ export const STAT = {
   step4: 'Korak 4',
   calendar: 'Otvorili kalendar',
   booked: 'Zakazali poziv',
+  leads: 'Lidovi',
+  quizLeads: 'Lidovi iz kviza',
   alarm: 'Hot lead alarmi',
   sales: 'Prodaje',
   revenue: 'Prihod',
