@@ -1,12 +1,17 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { programName, siteForExperiment } from "@/lib/protokol/ab";
-import { LEAD_STATUS, setProtokolLeadStatus } from "@/lib/server/airtable";
+import { LEAD_STATUS, findCallUrl, findLeadUrl, setProtokolLeadStatus } from "@/lib/server/airtable";
 import { supabase } from "@/lib/server/integrations";
 import { notifyBooking } from "@/lib/server/telegram";
 import { bump } from "@/lib/server/site-stats";
 
 export const runtime = "nodejs";
+// poruka na Telegram čeka da Vukasinova automatizacija napravi red u „Pozivi“ (do ~40 s, posle odgovora Cal.com-u)
+export const maxDuration = 60;
+
+/** Pauze (ms) pre svakog traženja reda u „Pozivi“: ukupno ~40 s. */
+const CALL_ROW_WAITS = [0, 3_000, 5_000, 7_000, 10_000, 15_000];
 
 const KIND = { BOOKING_CREATED: "created", BOOKING_RESCHEDULED: "rescheduled", BOOKING_CANCELLED: "cancelled" } as const;
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -92,7 +97,7 @@ export async function POST(req: Request) {
     await setProtokolLeadStatus(lead.id, kind === "cancelled" ? LEAD_STATUS.cancelled : LEAD_STATUS.booked, start);
   }
 
-  await notifyBooking(kind, start, {
+  const contact = {
     name: lead?.name ?? att.name ?? p.responses?.name?.value ?? "Bez imena",
     phone: lead?.phone ?? p.responses?.attendeePhoneNumber?.value ?? att.phoneNumber ?? null,
     email: lead?.email ?? att.email ?? null,
@@ -101,6 +106,18 @@ export async function POST(req: Request) {
     source: lead ? [lead.utm_source, lead.utm_campaign].filter(Boolean).join(" / ") || null : "Cal.com (bez prijave sa sajta)",
     isQa: lead?.is_qa ?? false,
     quiz: lead?.quiz_result ? { rating: lead.quiz_rating ?? null, result: lead.quiz_result, answers: lead.quiz_answers ?? null } : null,
+  };
+  // Link na red u Airtable-u, da Olgica sa telefona upiše beleške: red u „Pozivi“ (pravi ga Vukasinova
+  // automatizacija, pa se čeka da se pojavi), a ako ga nema, red prijave u „Protokol prijave“.
+  // Otkazan poziv: red za taj termin već postoji, ne čeka se. Telefon i email za traženje uzimaju se i iz Cal.com-a.
+  const callStart: string | null = p.startTime ?? null;
+  after(async () => {
+    const airtableUrl =
+      (await findCallUrl(
+        { email: att.email ?? contact.email, phone: p.responses?.attendeePhoneNumber?.value ?? contact.phone, start: callStart },
+        kind === "cancelled" ? [0] : CALL_ROW_WAITS,
+      )) ?? (lead ? await findLeadUrl(lead.id) : null);
+    await notifyBooking(kind, start, { ...contact, airtableUrl });
   });
   return NextResponse.json({ ok: true, matched: !!lead });
 }
