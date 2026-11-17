@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { programName, siteForExperiment } from "@/lib/protokol/ab";
-import { LEAD_STATUS, setProtokolLeadStatus, syncQuizSessions } from "@/lib/server/airtable";
+import { LEAD_STATUS, findLeadUrl, setProtokolLeadStatus, syncQuizSessions } from "@/lib/server/airtable";
 import { telegramConfig } from "@/lib/server/config";
 import { supabase } from "@/lib/server/integrations";
 import { notifyNoBooking } from "@/lib/server/telegram";
@@ -64,6 +64,8 @@ export async function POST() {
         source: [l.utm_source, l.utm_campaign].filter(Boolean).join(" / ") || null,
         isQa: l.is_qa,
         quiz: l.quiz_result ? { rating: l.quiz_rating ?? null, result: l.quiz_result, answers: l.quiz_answers ?? null } : null,
+        // red prijave u „Protokol prijave“, da Olgica sa telefona upiše beleške (poziva još nema)
+        airtableUrl: await findLeadUrl(l.id),
       },
       MINUTES,
     );
