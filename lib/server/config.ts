@@ -40,6 +40,10 @@ export const airtableConfig = () => {
     orders: env('AIRTABLE_ORDERS_TABLE') || 'Porudžbine',
     // prijave sa protokol.bozinovicolgica.rs (Protokol ishrane)
     leads: env('AIRTABLE_LEADS_TABLE') || 'Protokol prijave',
+    // ID-jevi tabela trebaju za link na red u Telegram porukama (airtable.com/app…/tbl…/rec…)
+    leadsTableId: env('AIRTABLE_LEADS_TABLE_ID') || 'tbl17gLinq35Dcrxv',
+    // „Pozivi“: red pravi Vukasinova Cal.com automatizacija, tu Olgica upisuje beleške o pozivu
+    callsTableId: env('AIRTABLE_CALLS_TABLE_ID') || 'tblrhiGOmDoPXSeXy',
     // kviz korak po korak (quiz_sessions): gde posetioci stanu i šta su do tada odgovorili
     quizSteps: env('AIRTABLE_QUIZ_TABLE') || 'Kviz koraci',
     products: env('AIRTABLE_PRODUCTS_TABLE') || 'Programi i Proizvodi',

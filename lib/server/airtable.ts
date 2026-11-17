@@ -50,6 +50,7 @@ export const F = {
     orderId: 'Order ID',
   },
   product: { name: 'Ime Programa / Proizvoda' },
+  call: { email: 'Email', phone: 'Broj telefona', start: 'Datum poziva' },
   lead: {
     name: 'Ime',
     client: 'Klijent',
@@ -331,6 +332,59 @@ export async function syncProtokolLeadToAirtable(lead: {
     });
   } catch (e) {
     console.error(`[airtable] ${kind} lead`, e);
+  }
+}
+
+/** Link na red u Airtable-u; otvara se i u Airtable aplikaciji na telefonu. */
+const recordUrl = (tableId: string, recId: string) => `https://airtable.com/${airtableConfig().baseId}/${tableId}/${recId}`;
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Link na red u „Pozivi“ za ovaj termin, da Olgica sa telefona otvori red i upiše beleške.
+ * Red pravi Vukasinova Airtable automatizacija iz istog Cal.com webhooka, pa često još ne postoji
+ * kad naš webhook stigne: zato se traži više puta, sa pauzama `waits` (ms) pre svakog pokušaja.
+ * Traži se po terminu (±1 min) i emailu ili telefonu.
+ */
+export async function findCallUrl(
+  { email, phone, start }: { email?: string | null; phone?: string | null; start: string | null },
+  waits: number[] = [0],
+): Promise<string | null> {
+  const { enabled, callsTableId } = airtableConfig();
+  const t = start ? Date.parse(start) : NaN;
+  if (!enabled || Number.isNaN(t)) return null;
+  const c = F.call;
+  const who = [
+    email?.trim() ? `LOWER({${c.email}}&'')=${quote(email.trim().toLowerCase())}` : null,
+    phone && phoneKey(phone).length === 8
+      ? `RIGHT(REGEX_REPLACE({${c.phone}}&'', '[^0-9]', ''), 8)=${quote(phoneKey(phone))}`
+      : null,
+  ].filter(Boolean);
+  if (!who.length) return null;
+  const iso = (ms: number) => quote(new Date(ms).toISOString());
+  const formula = `AND({${c.start}}!='', NOT(IS_BEFORE({${c.start}}, ${iso(t - 60_000)})), IS_BEFORE({${c.start}}, ${iso(t + 60_000)}), OR(${who.join(', ')}))`;
+  for (const ms of waits) {
+    if (ms) await sleep(ms);
+    try {
+      const rec = await findOne(callsTableId, formula, [c.start]);
+      if (rec) return recordUrl(callsTableId, rec.id);
+    } catch (e) {
+      console.error('[airtable] link poziva', e);
+    }
+  }
+  return null;
+}
+
+/** Link na red prijave u „Protokol prijave“ (po Lead ID-ju = lp_leads.id). */
+export async function findLeadUrl(leadId: string): Promise<string | null> {
+  const { enabled, leads, leadsTableId } = airtableConfig();
+  if (!enabled) return null;
+  try {
+    const row = await findOne(leads, `{${F.lead.leadId}}=${quote(leadId)}`, [F.lead.leadId]);
+    return row ? recordUrl(leadsTableId, row.id) : null;
+  } catch (e) {
+    console.error('[airtable] link prijave', e);
+    return null;
   }
 }
 

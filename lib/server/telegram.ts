@@ -46,6 +46,8 @@ export type LeadContact = {
   program?: string | null;
   source?: string | null;
   isQa?: boolean;
+  /** Red u Airtable-u gde Olgica upisuje beleške (Pozivi, a bez njega Protokol prijave). */
+  airtableUrl?: string | null;
   /** Kviz uz prijavu (lp_leads.quiz_*); prikazuje se samo kad QUIZ_DETAILS nije „off“. */
   quiz?: { rating: number | null; result: string | null; answers: Record<string, string | string[]> | null } | null;
 };
@@ -81,8 +83,11 @@ const contact = (l: LeadContact) =>
     l.source ? `Izvor: ${esc(l.source)}` : '',
   ].filter(Boolean);
 
+const airtableLine = (l: LeadContact) =>
+  l.airtableUrl ? ['', `📝 <a href="${esc(l.airtableUrl)}">Otvori u Airtable-u i upiši beleške</a>`] : [];
+
 const message = (title: string, l: LeadContact, extra: string[] = []) =>
-  send([`${l.isQa ? '🧪 TEST: ' : ''}${title}`, '', ...contact(l), ...quizLines(l), ...extra].join('\n'));
+  send([`${l.isQa ? '🧪 TEST: ' : ''}${title}`, '', ...contact(l), ...quizLines(l), ...extra, ...airtableLine(l)].join('\n'));
 
 /** Prijava bez zakazanog poziva posle LEAD_FOLLOWUP_MINUTES: Olgica treba da pozove. */
 export const notifyNoBooking = (l: LeadContact, minutes: number) =>
