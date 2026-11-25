@@ -97,9 +97,14 @@ async function apply(site: StatSite, inc: StatInc) {
   if (ids.size > 50) ids.clear();
 }
 
-/** Uvećava brojače za današnji dan. Nikad ne baca grešku. */
+/**
+ * Uvećava brojače za današnji dan. Nikad ne baca grešku.
+ * Radi samo uz AIRTABLE_STATS=on: svako uvećanje su 2 Airtable poziva (čitanje + upis), a Free plan ima
+ * 1000 poziva mesečno za ceo workspace. Isti brojevi se i dalje beleže u Supabase-u (/forma-rezultati).
+ */
 export function bump(site: StatSite, inc: StatInc): Promise<void> {
-  if (!airtableConfig().enabled || !Object.values(inc).some(Boolean)) return Promise.resolve();
+  const { enabled, stats } = airtableConfig();
+  if (!enabled || !stats || !Object.values(inc).some(Boolean)) return Promise.resolve();
   chain = chain.then(() => apply(site, inc)).catch((e) => console.error('[site-stats]', e));
   return chain;
 }

@@ -49,8 +49,25 @@ export const airtableConfig = () => {
     products: env('AIRTABLE_PRODUCTS_TABLE') || 'Programi i Proizvodi',
     // red u „Programi i Proizvodi“ za koji se vezuje kupovina sa ovog sajta
     product: env('AIRTABLE_PRODUCT') || 'Protokol čišćenja jetre',
+    // Airtable Free plan dozvoljava 1000 API poziva mesečno, pa u Airtable ide samo CRM (prijave, klijenti, porudžbine).
+    // „Analitika sajta“ troši 2 poziva po svakoj poseti i kliku: isključena, brojevi su u Supabase-u (/forma-rezultati).
+    stats: env('AIRTABLE_STATS').toLowerCase() === 'on',
+    // „Kviz koraci“ troši 1 poziv i 1 red po prolazu kroz kviz: isključeno, podaci su u Supabase-u (quiz_sessions).
+    quizStepsSync: env('AIRTABLE_QUIZ_STEPS').toLowerCase() === 'on',
+    // Klijent u „Klijenti“ za svaku prijavu (2 poziva po prijavi). `off` ostavlja samo red u „Protokol prijave“.
+    leadClients: env('AIRTABLE_LEAD_CLIENTS').toLowerCase() !== 'off',
   };
 };
+
+/**
+ * Olgica Reminder bot (Render). Sajt mu posle Cal.com webhooka javi da je poziv zakazan, pomeren ili otkazan:
+ * bot tada učita „Pozivi“ i vrati link na red tog poziva, pa sajt za taj link ne troši Airtable pozive.
+ * Ključ računaju obe strane isto: POKE_SECRET ako je postavljen na obe, inače iz ID-ja Airtable baze.
+ */
+export const reminderBot = () => ({
+  url: (env('REMINDER_BOT_URL') || 'https://olgica-reminder-bot.onrender.com').replace(/\/+$/, ''),
+  secret: env('POKE_SECRET') || `olgica-poke:${env('AIRTABLE_BASE_ID')}`,
+});
 
 /** Telegram bot koji Olgici javlja nove prijave (token od @BotFather, chat_id iz scripts/telegram-chat-id.mjs). */
 export const telegramConfig = () => ({
