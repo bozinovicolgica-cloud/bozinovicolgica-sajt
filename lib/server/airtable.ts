@@ -72,6 +72,7 @@ export const F = {
     at: 'Prijavljeno',
     variant: 'Varijanta',
     source: 'Izvor',
+    country: 'Zemlja',
     utm: 'UTM',
     leadId: 'Lead ID',
     slot: 'Termin poziva',
@@ -336,6 +337,7 @@ type LpLead = {
   utm_campaign: string | null;
   utm_content: string | null;
   utm_term: string | null;
+  utm_country?: string | null;
   booked_at?: string | null;
   booking_start?: string | null;
   followup_sent_at?: string | null;
@@ -386,6 +388,7 @@ async function writeFullLead(lead: LpLead, status: string, slot: string | null |
       utm_campaign: lead.utm_campaign,
       utm_content: lead.utm_content,
       utm_term: lead.utm_term,
+      utm_country: lead.utm_country,
     }).filter(([, v]) => v),
   ) as Record<string, string>;
   const source = utm.utm_source ? [utm.utm_source, utm.utm_campaign].filter(Boolean).join(' / ') : kind;
@@ -423,6 +426,7 @@ async function writeFullLead(lead: LpLead, status: string, slot: string | null |
     [l.at]: lead.created_at,
     [l.variant]: lead.variant?.toUpperCase(),
     [l.source]: source,
+    [l.country]: lead.utm_country,
     [l.utm]: utmText(utm),
     [l.slot]: slot,
     [l.program]: LEAD_PROGRAM[kind],

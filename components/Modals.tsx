@@ -62,7 +62,7 @@ export default function Modals({ mode = 'apply' }: { mode?: CtaMode }) {
     try {
       const p = new URLSearchParams(location.search);
       const keep: Record<string, string> = {};
-      ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid'].forEach((k) => { const v = p.get(k); if (v) keep[k] = v.slice(0, 200); });
+      ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'country', 'utm_country', 'fbclid', 'gclid'].forEach((k) => { const v = p.get(k); if (v) keep[k] = v.slice(0, 200); });
       if (Object.keys(keep).length) sessionStorage.setItem('ob_utm', JSON.stringify(keep));
     } catch {}
 

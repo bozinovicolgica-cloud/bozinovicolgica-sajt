@@ -70,6 +70,7 @@ const leadFields = {
   'Termin poziva': dateTime,
   Varijanta: select(['A', 'grayLight2'], ['B', 'grayLight2']),
   Izvor: text,
+  Zemlja: text,
   UTM: longText,
   'Lead ID': text,
   Program: select(['Protokol ishrane', 'blueLight2'], ['9 dana spašavanja jetre', 'greenLight2']),
