@@ -58,7 +58,10 @@ function utmFrom(page: string, stored: Record<string, string> = {}): Record<stri
   try { p = new URL(page).searchParams; } catch {}
   const fromPage = keys.some((k) => k.startsWith('utm_') && p?.get(k));
   const get = (k: string) => (fromPage ? p?.get(k) : stored[k] || p?.get(k)) || null;
-  return Object.fromEntries(keys.map((k) => [k, get(k)?.slice(0, k.endsWith('clid') ? 300 : 200) || null]));
+  const out = Object.fromEntries(keys.map((k) => [k, get(k)?.slice(0, k.endsWith('clid') ? 300 : 200) || null]));
+  // zemlja iz URL parametra reklame (country ili utm_country); u bazi je kolona utm_country
+  out.utm_country = (get('utm_country') || get('country'))?.slice(0, 200) || null;
+  return out;
 }
 
 /**
@@ -152,7 +155,7 @@ export async function POST(req: NextRequest) {
             who: 'me',
             variant: null,
             isQa,
-            utm: { utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, utm_content: utm.utm_content, utm_term: utm.utm_term },
+            utm: { utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, utm_content: utm.utm_content, utm_term: utm.utm_term, utm_country: utm.utm_country },
             quiz: { rating: quizRating(ev.score), result: ev.result, answers: readable },
           });
         });

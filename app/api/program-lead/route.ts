@@ -89,6 +89,8 @@ export async function POST(req: NextRequest) {
     utm_campaign: clip(u.utm_campaign, 200),
     utm_content: clip(u.utm_content, 200),
     utm_term: clip(u.utm_term, 200),
+    // zemlja iz URL parametra reklame (country ili utm_country)
+    utm_country: clip(u.utm_country, 200) ?? clip(u.country, 200),
     fbclid: clip(u.fbclid, 300),
     gclid: clip(u.gclid, 300),
     // Meta: isti eventID je poslat i u Pixel (CompleteRegistration + Lead), a _fbp/_fbc služe za
@@ -132,7 +134,7 @@ export async function POST(req: NextRequest) {
       who: 'me',
       variant: null,
       isQa,
-      utm: { utm_source: lead.utm_source, utm_medium: lead.utm_medium, utm_campaign: lead.utm_campaign, utm_content: lead.utm_content, utm_term: lead.utm_term },
+      utm: { utm_source: lead.utm_source, utm_medium: lead.utm_medium, utm_campaign: lead.utm_campaign, utm_content: lead.utm_content, utm_term: lead.utm_term, utm_country: lead.utm_country },
     });
     const hook = process.env.LEAD_WEBHOOK_URL;
     if (!hook) return;

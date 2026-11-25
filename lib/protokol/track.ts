@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid", "gclid"] as const;
+const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "country", "utm_country", "fbclid", "gclid"] as const;
 const UTM_STORE = "lp_utm";
 
 /** Pamti UTM parametre sa prvog ulaska, da bi išli uz prijavu i kad korisnik skroluje/klikće. */
