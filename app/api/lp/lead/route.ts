@@ -5,6 +5,8 @@ import { abContext, clip } from "@/lib/protokol/server-context";
 import { insertRow, supabaseConfigured } from "@/lib/protokol/supabase";
 import { syncProtokolLeadToAirtable } from "@/lib/server/airtable";
 import { bump } from "@/lib/server/site-stats";
+import { sendMetaLead } from "@/lib/server/meta-capi";
+import { clientIp } from "@/lib/server/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -41,6 +43,8 @@ export async function POST(req: NextRequest) {
   if (who === "kid" && b.guardian !== true) errors.guardian = "Potrebna je potvrda roditelja ili zakonskog zastupnika.";
   if (Object.keys(errors).length) return NextResponse.json({ ok: false, errors }, { status: 422 });
 
+  // IP se čita pre odgovora: posle njega (u after) zahtev više ne mora da bude dostupan.
+  const ip = clientIp(req);
   const ctx = abContext(req);
   const utm = (typeof b.utm === "object" && b.utm) || {};
   const u = utm as Record<string, unknown>;
@@ -117,6 +121,23 @@ export async function POST(req: NextRequest) {
       variant: ctx.variant,
       isQa: ctx.isQa,
       utm: { utm_source: lead.utm_source, utm_medium: lead.utm_medium, utm_campaign: lead.utm_campaign, utm_content: lead.utm_content, utm_term: lead.utm_term, utm_country: lead.utm_country },
+    });
+    // Meta Conversions API: isti Lead i isti eventID kao iz Pixel-a, da se prijava izbroji i kad
+    // Pixel u brauzeru ne prođe (blokator reklama, iOS, zatvoren tab odmah posle slanja).
+    await sendMetaLead({
+      events: ["Lead"],
+      eventId: clip(b.eventId, 64),
+      consent: b.metaConsent === true,
+      isQa: ctx.isQa,
+      name,
+      email,
+      phone,
+      fbp: clip(b.fbp, 200),
+      fbc: clip(b.fbc, 400),
+      ip,
+      userAgent: lead.user_agent,
+      sourceUrl: clip(b.page, 300) ?? lead.referrer,
+      customData: { content_name: "Protokol ishrane", lead_source: lead.form_location, ab_variant: ctx.variant },
     });
     // Npr. n8n webhook koji Olgici šalje obaveštenje na WhatsApp ili Telegram.
     const hook = process.env.LEAD_WEBHOOK_URL;

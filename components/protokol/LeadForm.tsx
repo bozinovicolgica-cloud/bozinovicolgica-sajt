@@ -6,6 +6,8 @@ import { calLink as CAL_LINK, form as F, responseTime, site } from "@/lib/protok
 import { CTRY_COOKIE, DEFAULT_ISO, OTHER_COUNTRIES, TOP_COUNTRIES, dialForCountry, fullPhone } from "@/lib/phone";
 import { safeHref } from "@/lib/protokol/rv";
 import { getUtm, track } from "@/lib/protokol/track";
+import { readConsent } from "@/lib/consent";
+import { metaCookies, newEventId } from "@/lib/track";
 import { CalEmbed } from "./CalEmbed";
 import { ArrowUpRight, CHECK, Ico, WHATSAPP_A, WHATSAPP_B } from "./icons";
 
@@ -102,6 +104,10 @@ export function LeadForm({ size }: { size: Size }) {
     const e = validate(s);
     if (Object.keys(e).length) return set({ tried: true });
     set({ submitting: true, serverError: "", serverErrors: {} });
+    // Isti id ide u Pixel (eventID) i sa servera u Meta Conversions API: po njemu Meta zna da je
+    // to jedna ista prijava i ne broji je dvaput. _fbp i _fbc je vezuju za klik na oglas.
+    const eventId = newEventId();
+    const { fbp, fbc } = metaCookies();
     try {
       const res = await fetch("/api/lp/lead", {
         method: "POST",
@@ -110,13 +116,16 @@ export function LeadForm({ size }: { size: Size }) {
           who: s.who, symptoms: s.syms, other: s.other, has: s.has,
           name: s.name, phone: fullPhone(dialForCountry(s.ctry), s.phone), email: s.email, consent: s.consent, guardian: s.guardian,
           website: s.website, formLocation: size, utm: getUtm(),
+          // metaConsent: je li posetilac prihvatio kolačiće. Bez toga server ne šalje ništa Meti,
+          // isto kao što se i Pixel učitava tek posle pristanka.
+          eventId, fbp, fbc, metaConsent: readConsent() === "all", page: location.href,
         }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.ok) {
         // id prijave ide u Cal.com (metadata), da webhook zna čija je rezervacija
         set({ submitting: false, leadId: String(data.id ?? "") });
-        track("lead", { form: size });
+        track("lead", { form: size }, eventId);
         go(5);
         return;
       }

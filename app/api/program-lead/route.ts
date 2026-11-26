@@ -5,6 +5,8 @@ import { supabase } from '@/lib/server/integrations';
 import { COOKIE_QA } from '@/lib/protokol/ab';
 import { bump } from '@/lib/server/site-stats';
 import { syncProtokolLeadToAirtable } from '@/lib/server/airtable';
+import { sendMetaLead } from '@/lib/server/meta-capi';
+import { clientIp } from '@/lib/server/rate-limit';
 
 /**
  * Prijava sa programske stranice (pop-up ApplyModal): šta te muči + kontakt,
@@ -93,14 +95,18 @@ export async function POST(req: NextRequest) {
     utm_country: clip(u.utm_country, 200) ?? clip(u.country, 200),
     fbclid: clip(u.fbclid, 300),
     gclid: clip(u.gclid, 300),
-    // Meta: isti eventID je poslat i u Pixel (CompleteRegistration + Lead), a _fbp/_fbc služe za
-    // povezivanje sa osobom ako se prijava ikad bude slala i preko Conversions API-ja.
+    // Meta: isti eventID je poslat i u Pixel (CompleteRegistration + Lead) i ide u Conversions API
+    // niže u ovom fajlu, da Meta po njemu zna da je to jedna ista prijava. _fbp/_fbc povezuju
+    // prijavu sa klikom na oglas.
     meta_event_id: clip(b.eventId, 64),
     fbp: clip(b.fbp, 200),
     fbc: clip(b.fbc, 400),
     referrer: clip(b.page, 300),
     user_agent: req.headers.get('user-agent')?.slice(0, 300) ?? null,
   };
+
+  // IP se čita pre odgovora: posle njega (u after) zahtev više ne mora da bude dostupan.
+  const ip = clientIp(req);
 
   const sb = supabase();
   if (!sb) {
@@ -135,6 +141,23 @@ export async function POST(req: NextRequest) {
       variant: null,
       isQa,
       utm: { utm_source: lead.utm_source, utm_medium: lead.utm_medium, utm_campaign: lead.utm_campaign, utm_content: lead.utm_content, utm_term: lead.utm_term, utm_country: lead.utm_country },
+    });
+    // Meta Conversions API: isti događaji i isti eventID kao iz Pixel-a (CompleteRegistration + Lead),
+    // da se prijava izbroji i kad Pixel u brauzeru ne prođe (blokator, iOS, zatvoren tab).
+    await sendMetaLead({
+      events: ['CompleteRegistration', 'Lead'],
+      eventId: lead.meta_event_id,
+      consent: b.metaConsent === true,
+      isQa,
+      name,
+      email,
+      phone,
+      fbp: lead.fbp,
+      fbc: lead.fbc,
+      ip,
+      userAgent: lead.user_agent,
+      sourceUrl: lead.referrer,
+      customData: { content_name: '9 dana spašavanja jetre', lead_source: lead.form_location },
     });
     const hook = process.env.LEAD_WEBHOOK_URL;
     if (!hook) return;

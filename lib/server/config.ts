@@ -1,4 +1,5 @@
 import 'server-only';
+import { META_PIXEL_ID } from '@/lib/pixel';
 
 const env = (k: string) => (process.env[k] || '').trim();
 
@@ -88,3 +89,16 @@ export const quizDetails = (): 'off' | 'score' | 'full' => {
   const v = env('QUIZ_DETAILS').toLowerCase();
   return v === 'full' || v === 'score' ? v : 'off';
 };
+
+/**
+ * Meta Conversions API: prijave se javljaju Meti i sa servera (lib/server/meta-capi.ts),
+ * da Pixel u brauzeru ne bude jedini izvor. Token se pravi u Events Manager-u
+ * (Settings → Conversions API → Generate access token) i stavlja na Vercel.
+ * META_TEST_EVENT_CODE se koristi samo privremeno, za „Test events“ u Events Manager-u.
+ */
+export const metaCapiConfig = () => ({
+  // Isti piksel koji se učitava u brauzeru (lib/pixel.ts), da server i Pixel pišu u isti dataset.
+  pixelId: META_PIXEL_ID,
+  token: env('META_CAPI_TOKEN'),
+  testCode: env('META_TEST_EVENT_CODE') || undefined,
+});

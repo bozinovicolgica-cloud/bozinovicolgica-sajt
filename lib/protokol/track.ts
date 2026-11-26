@@ -59,8 +59,13 @@ export function getUtm(): Record<string, string> {
 /** Koraci koji su već poslati u ovoj poseti: brojači u Airtable-u broje svaki korak jednom po poseti. */
 const seen = new Set<string>();
 
-/** Šalje događaj u našu bazu (i Meta Pixel / GA4 ako su podešeni). Nikad ne baca grešku. */
-export function track(event: EventName, props: Record<string, string | number | boolean> = {}) {
+/**
+ * Šalje događaj u našu bazu (i Meta Pixel / GA4 ako su podešeni). Nikad ne baca grešku.
+ *
+ * eventId: isti id koji ide i sa servera u Meta Conversions API (vidi lib/server/meta-capi.ts).
+ * Bez njega bi Meta istu prijavu izbrojala dvaput — jednom iz brauzera, jednom sa servera.
+ */
+export function track(event: EventName, props: Record<string, string | number | boolean> = {}, eventId?: string) {
   const variant = window.__lpVariant;
   const once = event === "form_step" ? `form_step_${props.step}` : event;
   const first = !seen.has(once);
@@ -81,9 +86,15 @@ export function track(event: EventName, props: Record<string, string | number | 
   if (event === "leave") return;
   try {
     if (window.fbq) {
-      if (event === "lead") window.fbq("track", "Lead", { ab_variant: variant, content_name: "Protokol ishrane" });
-      else if (event === "booking") window.fbq("track", "Schedule", { ab_variant: variant, content_name: "Protokol ishrane" });
-      else if (event === "form_start") window.fbq("trackCustom", "FormStart", { ab_variant: variant });
+      const meta = event === "lead" ? "Lead" : event === "booking" ? "Schedule" : null;
+      if (meta) {
+        const data = { ab_variant: variant, content_name: "Protokol ishrane" };
+        // Isti eventID kao sa servera: Meta po njemu spoji dva izveštaja o istoj prijavi u jedan.
+        if (eventId) window.fbq("track", meta, data, { eventID: eventId });
+        else window.fbq("track", meta, data);
+      } else if (event === "form_start") {
+        window.fbq("trackCustom", "FormStart", { ab_variant: variant });
+      }
     }
     if (window.gtag) {
       const name = event === "lead" ? "generate_lead" : event === "view" ? "lp_view" : event;

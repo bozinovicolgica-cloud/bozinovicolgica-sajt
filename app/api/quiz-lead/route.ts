@@ -9,6 +9,7 @@ import { postWebhook, sendEmail, supabase } from '@/lib/server/integrations';
 import { quizResultEmail } from '@/lib/server/emails';
 import { evaluate, readableAnswers } from '@/lib/quiz-data';
 import { clientIp, limited } from '@/lib/server/rate-limit';
+import { sendMetaLead } from '@/lib/server/meta-capi';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -28,6 +29,11 @@ const Body = z.object({
   utm: z.record(z.string(), z.string().max(300)).optional().default({}),
   // id prolaza kroz kviz (quiz_sessions), da se zna da je ovaj prolaz ostavio kontakt
   sid: z.string().uuid().optional(),
+  // Meta: isti eventID koji Pixel pošalje uz Lead, pa kolačići Pixel-a i pristanak za kolačiće.
+  eventId: z.string().max(64).optional().default(''),
+  fbp: z.string().max(200).optional().default(''),
+  fbc: z.string().max(400).optional().default(''),
+  metaConsent: z.boolean().optional().default(false),
 });
 
 /**
@@ -78,7 +84,9 @@ async function insertLpLead(db: NonNullable<ReturnType<typeof supabase>>, row: R
 }
 
 export async function POST(req: NextRequest) {
-  if (limited(`quiz:${clientIp(req)}`, 12, 10 * 60_000)) {
+  // IP se čita pre odgovora: posle njega (u after) zahtev više ne mora da bude dostupan.
+  const ip = clientIp(req);
+  if (limited(`quiz:${ip}`, 12, 10 * 60_000)) {
     return NextResponse.json({ ok: false }, { status: 429 });
   }
   let d: z.infer<typeof Body>;
@@ -176,6 +184,28 @@ export async function POST(req: NextRequest) {
       if (!isQa) await bump('program', { leads: 1, quizLeads: 1 });
       await syncQuizLeadToAirtable({ name: row.name, phone: row.phone, email: d.email });
     });
+  }
+  // Meta Conversions API: isti Lead i isti eventID kao iz Pixel-a, da se kviz lead izbroji i kad
+  // Pixel u brauzeru ne prođe (blokator reklama, iOS, zatvoren tab posle slanja). Ide za svaki
+  // kviz lead sa kontaktom, bez obzira na to da li je ušao i u lp_leads.
+  if (hasContact) {
+    after(() =>
+      sendMetaLead({
+        events: ['Lead'],
+        eventId: d.eventId || null,
+        consent: d.metaConsent,
+        isQa,
+        name: d.name,
+        email: d.email,
+        phone: d.phone,
+        fbp: d.fbp,
+        fbc: d.fbc,
+        ip,
+        userAgent: row.user_agent,
+        sourceUrl: row.page,
+        customData: { content_name: 'Kviz o jetri', lead_source: 'kviz' },
+      }),
+    );
   }
 
   let emailed = false;

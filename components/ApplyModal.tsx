@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { apply, CAL_LINK, PRICE_EUR, PRICE_RSD, PRODUCT_NAME, RESPONSE_TIME, thousands } from '@/lib/content';
 import { HEALTH_CONSENT_TEXT } from '@/lib/legal';
 import { CTRY_COOKIE, DEFAULT_ISO, dialForCountry, fullPhone, OTHER_COUNTRIES, TOP_COUNTRIES } from '@/lib/phone';
+import { readConsent } from '@/lib/consent';
 import { metaCookies, newEventId, track } from '@/lib/track';
 import { CalEmbed } from './protokol/CalEmbed';
 import ModalShell from './ModalShell';
@@ -105,8 +106,8 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
     }
     setBusy(true);
     setServerErr('');
-    // Isti id ide u Pixel (eventID) i u bazu uz prijavu, zajedno sa _fbp i _fbc,
-    // da se ista prijava ne izbroji dvaput ako događaj jednom krene i sa servera.
+    // Isti id ide u Pixel (eventID), u bazu i u Meta Conversions API sa servera, zajedno sa
+    // _fbp i _fbc: po njemu Meta zna da je to jedna ista prijava i ne broji je dvaput.
     const eventId = newEventId();
     const { fbp, fbc } = metaCookies();
     try {
@@ -118,6 +119,9 @@ export default function ApplyModal({ open, source, onClose }: { open: boolean; s
           name: f.name, phone: fullPhone(dialForCountry(f.ctry), f.phone), email: f.email,
           consent: f.consent, website: f.website, utm: utm(), page: location.href,
           eventId, fbp, fbc,
+          // Je li posetilac prihvatio kolačiće: server po ovome zna sme li da pošalje
+          // prijavu i u Meta Conversions API (isto pravilo kao za Pixel).
+          metaConsent: readConsent() === 'all',
         }),
       });
       const j = await res.json().catch(() => null);

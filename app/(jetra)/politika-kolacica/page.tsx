@@ -42,6 +42,7 @@ export default function Page() {
 
       <h2>Analitika i oglašavanje (samo uz pristanak)</h2>
       <p>Ovi kolačići se ne postavljaju i skripte se ne učitavaju dok u baneru ne klikneš „Prihvati“. Ako klikneš „Odbij“, sajt radi isto, samo bez njih. Na stranicama sa upitnicima Meta i Google ne dobijaju tvoje odgovore, samo neutralne događaje (npr. da je forma poslata).</p>
+      <p>Ako si prihvatila kolačiće, događaj „forma poslata“ Meta dobije i sa našeg servera (Meta Conversions API), da merenje oglasa radi i kad pregledač blokira skripte. Uz njega idu samo nepovratni kriptografski otisci (SHA-256) tvog imena, email adrese i broja telefona, koji Meti služe da prijavu poveže sa klikom na oglas — nikad tvoji odgovori iz upitnika, ni email i telefon u čitljivom obliku. Ako si kolačiće odbila ili nisi izabrala, Meta ne dobija ni ovaj događaj.</p>
       <Table rows={OPTIONAL} />
       <p>Podaci iz ovih alata se mogu prenositi u SAD (vidi Politiku privatnosti).</p>
 

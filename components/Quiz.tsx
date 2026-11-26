@@ -13,7 +13,8 @@ import {
 import { QUIZ_NOTE } from '@/lib/legal';
 import { CTRY_COOKIE, DEFAULT_ISO, dialForCountry, fullPhone, OTHER_COUNTRIES, TOP_COUNTRIES } from '@/lib/phone';
 import { COMPANY, EMAIL } from '@/lib/site';
-import { track } from '@/lib/track';
+import { metaCookies, newEventId, track } from '@/lib/track';
+import { readConsent } from '@/lib/consent';
 import { QUIZ_STEP_CONTACT, QUIZ_STEP_RESULT, sendQuizStep } from '@/lib/quiz-steps';
 import ModalShell from './ModalShell';
 import { img } from '@/lib/images';
@@ -128,6 +129,10 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
     if (saved.current) return;
     saved.current = true;
     const r = evaluate(ans);
+    // Isti id ide u Pixel (eventID) i sa servera u Meta Conversions API: po njemu Meta zna
+    // da je to jedna ista prijava, pa je ne broji dvaput. _fbp i _fbc je vezuju za klik na oglas.
+    const eventId = newEventId();
+    const { fbp, fbc } = metaCookies();
     const body = {
       name: lead.name.trim(),
       phone: fullPhone(dialForCountry(lead.ctry), lead.phone),
@@ -141,10 +146,22 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
       page: typeof location !== 'undefined' ? location.href : '',
       utm: storedUtm(),
       sid: sid.current ?? undefined,
+      eventId,
+      fbp,
+      fbc,
+      // Je li posetilac prihvatio kolačiće: server po ovome zna sme li da pošalje prijavu
+      // u Meta Conversions API (isto pravilo kao za Pixel).
+      metaConsent: readConsent() === 'all',
     };
     fetch('/api/quiz-lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), keepalive: true })
-      .then((res) => res.json())
-      .then((j) => { if (j?.emailed) setEmailed(true); if (typeof j?.leadId === 'string') setLeadId(j.leadId); })
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
+      .then((j) => {
+        if (j?.emailed) setEmailed(true);
+        if (typeof j?.leadId === 'string') setLeadId(j.leadId);
+        // Lead se Meti javlja tek kad je kviz lead stvarno upisan, da u Meti ne stoji
+        // prijava koju nemamo u bazi. Server isti događaj šalje i preko Conversions API-ja.
+        track('liver_quiz_lead', {}, 'Lead', eventId);
+      })
       .catch(() => {});
   };
 
@@ -179,7 +196,6 @@ export default function Quiz({ open, onClose }: { open: boolean; onClose: () => 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setLeadErr('Upiši ispravnu email adresu.'); return; }
     if (!lead.consent) { setLeadErr('Potrebna je tvoja saglasnost da bih ti poslala rezultat i da bismo mogli da te pozovemo.'); return; }
     setLeadErr('');
-    track('liver_quiz_lead', {}, 'Lead');
     save();
     showResult();
   };
